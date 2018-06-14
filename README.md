@@ -1,18 +1,18 @@
-# ÏîÄ¿ÔËĞĞ»·¾³
+# é¡¹ç›®è¿è¡Œç¯å¢ƒ
 Vue + Typescript + Webpack
-# ÔËĞĞÇ°¶Ë
-°²×°ÒÀÀµ
+# è¿è¡Œå‰ç«¯
+å®‰è£…ä¾èµ–
 npm install
 
-Éú³ÉÉú³É»·¾³×îĞ¡»¯°ü
+ç”Ÿæˆç”Ÿæˆç¯å¢ƒæœ€å°åŒ–åŒ…
 npm run build
 
-# Ä¿Â¼½á¹¹
-- srcÊÇÇ°¶Ë´úÂë
-- buildÊÇwebpack¹¹½¨ÅäÖÃÎÄ¼ş
-- distÊÇbuildºóÉú³ÉµÄ¿É·¢²¼ÎÄ¼ş
-- staticÊÇ¾²Ì¬css/js/fontsÎÄ¼ş£¬±àÒëÊ±»á±»¸´ÖÆµ½distÄ¿Â¼ÏÂ¡£
+# ç›®å½•ç»“æ„
+- srcæ˜¯å‰ç«¯ä»£ç 
+- buildæ˜¯webpackæ„å»ºé…ç½®æ–‡ä»¶
+- distæ˜¯buildåç”Ÿæˆçš„å¯å‘å¸ƒæ–‡ä»¶
+- staticæ˜¯é™æ€css/js/fontsæ–‡ä»¶ï¼Œç¼–è¯‘æ—¶ä¼šè¢«å¤åˆ¶åˆ°distç›®å½•ä¸‹ã€‚
 
-# ÎÄÕÂ´«ËÍÃÅ
-- [³äÖµÉÏÁ´ËµÃ÷](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/payintro.md "³äÖµÉÏÁ´ËµÃ÷")
-- [³äÖµÉÏÁ´¿ª·¢ÎÄµµ](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/paydev.md "³äÖµÉÏÁ´¿ª·¢ÎÄµµ")
+# æ–‡ç« ä¼ é€é—¨
+- [å……å€¼ä¸Šé“¾è¯´æ˜](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/payintro.md "å……å€¼ä¸Šé“¾è¯´æ˜")
+- [å……å€¼ä¸Šé“¾å¼€å‘æ–‡æ¡£](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/paydev.md "å……å€¼ä¸Šé“¾å¼€å‘æ–‡æ¡£")
