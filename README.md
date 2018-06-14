@@ -16,3 +16,6 @@ npm run build
 # 文章传送门
 - [充值上链说明](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/payintro.md "充值上链说明")
 - [充值上链开发文档](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/paydev.md "充值上链开发文档")
+
+# 接入SDK
+- 接入NEOGAMESDK，请加QQ群：377076520
