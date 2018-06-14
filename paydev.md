@@ -7,7 +7,7 @@
 
 ## 二、NEOGAMESDK使用说明
 ### 1、引入
-`<script src="http://182.254.139.130/sdk.js"></script>`
+`<script src="static/js/sdk.js"></script>`
 ### 2、接口说明
 #### 1、初始化
 使用NEOGAMESDK必须先执行初始化。
