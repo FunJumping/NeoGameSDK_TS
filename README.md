@@ -1,17 +1,14 @@
 # 项目运行环境
-Vue + Typescript + Webpack
-# 运行前端
-安装依赖
-npm install
+Typescript
 
 生成生成环境最小化包
-npm run build
+cd wallet
+tsc
 
 # 目录结构
-- src是前端代码
-- build是webpack构建配置文件
-- dist是build后生成的可发布文件
-- static是静态css/js/fonts文件，编译时会被复制到dist目录下。
+- wallet是前端sdk代码
+- res是静态css/js/fonts文件
+- lib是执行引用的js库，wallet工程编译成code.js
 
 # 文章传送门
 - [充值上链说明](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/payintro.md "充值上链说明")

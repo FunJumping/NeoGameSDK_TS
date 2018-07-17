@@ -1,0 +1,4 @@
+
+cd wallet
+tsc
+cd ..

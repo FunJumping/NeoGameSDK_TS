@@ -7,16 +7,112 @@
 
 ## 二、NEOGAMESDK使用说明
 ### 1、引入
-`<script src="static/js/sdk.js"></script>`
-### 2、接口说明
+    <link rel="stylesheet" href="res/css/panel.css" type="text/css" />
+    <script src="lib/rollup/aes.js"></script>
+    <script src="lib/component/aes.js"></script>
+    <script src="lib/component/mode-ecb.js"></script>
+    <script src="lib/component/pad-nopadding.js"></script>
+    <script src="lib/scrypt.js"></script>
+    <script src="lib/jsrsasign.js"></script>
+    <script src="lib/neo-ts.js"></script>
+    <script src="lib/code.js"></script>
+
+### 2、回调方式说明
+NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注册回调函数方式
+
+回调方式1：
+    
+    BlackCat.SDK.functionName(data, function(res){  
+	    //回调结果处理
+	})
+
+回调方式2：
+
+    var listener = function(data)
+    {
+    	// 回调处理，data是JSON格式String
+		var res = JSON.parse(data)
+		switch (res.cmd) {
+			case "loginRes": // 登录回调
+				var loginInfo = res.data;
+				// 此处需要发送接收到的数据到服务端验证后再登录应用
+				break;
+			case "invokescriptRes": // 合约读取调用
+				var params = res.data.params; // 合约调用参数
+				var result = rs.data.res; // 合约调用结果
+				if (result.err == true) {
+					// 执行失败
+					
+				}
+				else {
+					// 执行成功
+					var success = result.info;
+				}
+				break;
+			case "makeRawTransactionRes": // 合约写入请求结果
+				// 回调数据格式参考invokescriptRes
+				break;
+			case "makeRechargeRes": // 充值回调
+				// 回调数据格式参考invokescriptRes
+				break;
+			case "makeGasTransferRes": // GAS转账回调
+				// 回调数据格式参考invokescriptRes
+				break;
+			case "confirmAppNotifyRes": // 交易通知接收确认回调
+				// 回调数据格式参考invokescriptRes
+				break;
+			case "getBalanceRes": // 获取余额
+				var result = res.data;
+				var sgas = result.sgas;
+				var gas = result.gas;
+				break;
+			case "getUserInfoRes": // 获取登录用户信息
+				var userInfo = res.data;
+				break;
+			case "getNetTypeRes": // 获取网络类型
+				var net_type = res.data;
+				if (net_type == 1) {
+					// 主网
+				}
+				else if (net_type == 2) {
+					// 测试网
+				}
+				break;
+			case "changeNetTypeRes": // 网络切换回调
+				var net_type = res.data;
+				if (net_type == 1) {
+					// 主网
+				}
+				else if (net_type == 2) {
+					// 测试网
+				}
+				break;
+		}
+    };
+
+
+
+### 3、接口说明
 #### 1、初始化
 使用NEOGAMESDK必须先执行初始化。
-`NEOGAMESDK.init()`
+`BlackCat.SDK.init(appid, appkey, listener, lang)`
+
+**参数说明：** 
+
+|参数名|必选|类型|说明|
+|:----    |:---|:----- |-----   |
+|appid |是  |string |SDK分配的appid   |
+|appkey |是  |string |SDK分配的appkey   |
+|listener |是  |function |SDK回调函数   |
+|lang |否  |string |SDK语言，默认cn（中文），可取值cn、en   |
+**回调说明：** 
+无回调
+
 #### 2、发起充值
 应用客户端调用SDK发起充值接口，发起链上支付交易。以下为支付0.001个sgas代码。
 ``` 
-  var data = { count: "0.001" };
-  NEOGAMESDK.makeRecharge(data, function(res){
+  var data = { count: "0.001", extString: "extString" };
+  BlackCat.SDK.makeRecharge(data, function(res){
     // 接口回调
     if（res.err == false）{
       // 获取支付交易提交成功的txid
@@ -30,6 +126,7 @@
 |参数名|必选|类型|说明|
 |:----    |:---|:----- |-----   |
 |count |是  |string |需要转换sgas的数量   |
+|extString |是  |string |透传参数  |
 
 **返回示例**
 
@@ -49,9 +146,10 @@
   var data = {
       sbParamJson: ["(integer)1"],
       sbPushString: "isReadyToBreed",
-      nnc: "0xccab4cee886dd58f17b32eff16d5e59961113a4c"
+      nnc: "0xccab4cee886dd58f17b32eff16d5e59961113a4c",
+	  extString: "extString"
   };
-  NEOGAMESDK.invokescript(data, function(res){
+  BlackCat.SDK.invokescript(data, function(res){
     // 接口回调
     if（res.err == false）{
       // 获取合约调用数据结果
@@ -66,6 +164,7 @@
 |sbParamJson |是  |Array |合约参数数组   |
 |sbPushString |是  |string |合约方法名   |
 |nnc |是  |string |合约地址   |
+|extString |是  |string |透传参数  |
 
 **返回示例**
 
@@ -91,9 +190,10 @@
   var data = {
       sbParamJson: ["(address)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT", "(integer)61"],
       sbPushString: "buyOnAuction",
-      nnc: "0xfcd70b3f0465eefdd51f92864b15e651f9a72058"
+      nnc: "0xfcd70b3f0465eefdd51f92864b15e651f9a72058",
+	  extString: "extString"
   };
-  NEOGAMESDK.makeRawTransaction(data, function(res){
+  BlackCat.SDK.makeRawTransaction(data, function(res){
     // 接口回调
     if（res.err == false）{
       // 获取合约执行结果
@@ -108,6 +208,7 @@
 |sbParamJson |是  |Array |合约参数数组   |
 |sbPushString |是  |string |合约方法名   |
 |nnc |是  |string |合约地址   |
+|extString |是  |string |透传参数  |
 
 **返回示例**
 
@@ -119,6 +220,141 @@
       "txid": "a55e30075527c063bd366dffb54fca9fba5a58ff7d1ba835201ef396cbffad7e"
     }
   }
+```
+
+#### 5、GAS转账
+执行GAS转账操作，该调用需要钱包用户签名。
+``` 
+var data = {
+	toaddr: "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
+	count: "0.01",
+	extString: "extString"
+}
+BlackCat.SDK.makeGasTransfer(data, function(res){
+    console.log("makeGasTransfer.callback.function.res ", res)
+})
+```
+**data参数：** 
+
+|参数名|必选|类型|说明|
+|:----    |:---|:----- |-----   |
+|toaddr |是  |String |转账收款地址   |
+|count |是  |string |转账数量   |
+|extString |是  |string |透传参数  |
+
+**返回示例**
+
+``` 
+  {
+    "err": false,
+    "info":
+    {
+      "txid": "7df725a5f8d700f7705a875b4e701ab244ca1b70ca915e7d4535685896091af6"
+    }
+  }
+```
+
+#### 6、交易通知确认
+执行转账、合约写入等需要打开钱包的操作，都应该执行交易通知确认回调。应用客户端收到交易结果通知回调后，必须调用此接口进行回复，否则交易通知数据会一直传回。
+``` 
+var data = {
+	txid: "7df725a5f8d700f7705a875b4e701ab244ca1b70ca915e7d4535685896091af6"
+}
+
+BlackCat.SDK.confirmAppNotify(data, function(res){
+	console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
+})
+```
+**data参数：** 
+
+|参数名|必选|类型|说明|
+|:----    |:---|:----- |-----   |
+|txid |是  |String |交易txid   |
+
+**返回示例**
+
+``` 
+  {
+    "err": false,
+    "info": 1
+  }
+```
+
+#### 7、余额查询
+查询gas、sgas余额。
+``` 
+BlackCat.SDK.getBalance(function(res){
+	console.log("getbalance.callback.function.res ", res)
+})
+```
+
+**返回示例**
+
+``` 
+  {
+    "sgas": 0,
+    "gas": 1
+  }
+```
+#### 8、获取登录用户信息
+获取登录完成的用户信息。
+``` 
+BlackCat.SDK.getUserInfo(data, function(res){
+	console.log('[BlackCat]', 'getUserInfo.callback.function.res => ', res)
+})
+```
+
+**返回示例**
+
+``` 
+{
+  "uid": "13661943882",
+  "name": "136****3882",
+  "invitor": "",
+  "phone": "13661943882@86",
+  "ip": "58.247.115.74",
+  "lastlogin": "1531492354",
+  "token": "6468aed6ea4f2e7add4d11ee84c6fd4a",
+  "jifen": "0",
+  "wallet": "AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf",
+  "region": "CN",
+  "area": "",
+  "email": "",
+  "qq": "",
+  "icon": ""
+}
+```
+
+#### 9、获取当前网络类型
+获取当前网络类型
+``` 
+BlackCat.SDK.getNetType(function(res){
+	console.log("getNetType.callback.function.res ", res)
+})
+```
+
+**返回示例**
+
+``` 
+2
+```
+
+#### 9、设置语言
+设置当前SDK语言，可选cn、en
+``` 
+BlackCat.SDK.setLang(lang)
+```
+
+#### 10、显示SDK界面
+显示SDK界面
+``` 
+BlackCat.SDK.showMain()
+```
+
+#### 11、最小化SDK界面
+最小化SDK界面
+``` 
+BlackCat.SDK.showIcon()
 ```
 
 ### 三、交易确认（后端通知）
@@ -143,6 +379,7 @@
 |from |是  |string | 发起支付的钱包地址    |
 |count     |是  |string | 支付sgas数量    |
 |tm     |是  |string | 请求时间戳，单位秒    |
+|params|是|String|请求参数params，JSON|
 |sign     |是  |string | 请求签名    |
 
 
@@ -175,13 +412,13 @@ md5("count=0.001&from=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT&g_id=1&tm=1528374108&tx
     
 **简要描述：** 
 
-- 用户通过游戏入口地址登录游戏
+- 应用通过获取登录回调来验证后登录游戏
 
-**请求URL：** 
-- ` http://游戏入口地址/ `
+**请求方法：** 
+- ` BlackCat.SDK.login()`
   
-**请求方式：**
-- GET 
+**请求回调：**
+- 回调方式二
 
 **参数：** 
 
@@ -200,7 +437,7 @@ md5("count=0.001&from=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT&g_id=1&tm=1528374108&tx
 
 #### 2、sign签名方法
 
-登录请求GET参数按照字典升序排列
+参数按照字典升序排列
 ```
 g_id=1&time=1528371487&uid=sj_5mqbokfwk328&wallet=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT
 ```
