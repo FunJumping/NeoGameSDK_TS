@@ -1118,12 +1118,7 @@ namespace BlackCat {
             var divObj = this.objCreate("div")
             divObj.textContent = Main.langMgr.get("nettype_"+type)
             divObj.onclick = () => {
-                if (Main.changeNetType(type)) {
-                     // 刷新视图
-                    Main.viewMgr.update()
-                    // 重置
-                    Main.reset()
-                }
+                Main.changeNetType(type)
             }
             return divObj;
         }

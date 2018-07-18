@@ -121,16 +121,16 @@ namespace BlackCat {
             return this.common('user.mod_name', {uid: uid, token: token, name: name})
         }
 
-        static async forgetPassByPhone(uid: string, phone: string, code: string, new_pwd: string) {
-            return this.common('user_phone.mod_pwd', {uid: uid, phone: phone, code: code, new_pwd: new_pwd})
+        static async forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string) {
+            return this.common('user_phone.mod_pwd', {uid: uid, phone: phone_raw, code: code, new_pwd: new_pwd})
         }
 
         static async forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string) {
             return this.common('user_email.mod_pwd', {uid: uid, email: email, code: code, new_pwd: new_pwd})
         }
 
-        static async getForgetCodeByPhone(uid: string, phone: string) {
-            return this.common('user_phone.get_forget_code', {uid: uid, phone: phone})
+        static async getForgetCodeByPhone(uid: string, phone_raw: string) {
+            return this.common('user_phone.get_forget_code', {uid: uid, phone: phone_raw})
         }
 
         static async getForgetCodeByEmail(uid: string, email: string) {

@@ -145,7 +145,7 @@ namespace BlackCat {
             //  直接登录
             var doForgetPassword = this.objCreate("button");
             doForgetPassword.classList.add("pc_doLogin")
-            doForgetPassword.textContent = Main.langMgr.get("forgetpass_doDirectLogin"); // "确定"
+            doForgetPassword.textContent = Main.langMgr.get("forgetpass_do"); // "确定"
             doForgetPassword.onclick = () => {
                 this.doForgetPassword();
             }
@@ -174,10 +174,10 @@ namespace BlackCat {
             return false;
         }
 
-        private getPhone() {
-            // 多地区支持，转换手机号码
-            return Main.getPhone(this.selectArea.value, this.inputAccount.value)
-        }
+        // private getPhone() {
+        //     // 多地区支持，转换手机号码
+        //     return Main.getPhone(this.selectArea.value, this.inputAccount.value)
+        // }
 
         private checkUidFormat() {
             var regex = /^[a-zA-Z0-9_]{4,16}$/
@@ -256,7 +256,7 @@ namespace BlackCat {
                     res = await ApiTool.forgetPassByEmail(this.inputUid.value, this.inputAccount.value, this.inputCode.value, this.inputVpass.value);
                     break;
                 case 'phone':
-                    res = await ApiTool.forgetPassByPhone(this.inputUid.value, this.getPhone(), this.inputCode.value, this.inputVpass.value);
+                    res = await ApiTool.forgetPassByPhone(this.inputUid.value, this.inputAccount.value, this.inputCode.value, this.inputVpass.value);
                     break;
                 default:
                     return;
@@ -264,7 +264,7 @@ namespace BlackCat {
 
             if (res.r) {
                 Main.showInfo('forgetpass_do_ok', () => {
-                    this.remove
+                    this.remove()
                     Main.viewMgr.change("LoginView")
                 })
             } else {

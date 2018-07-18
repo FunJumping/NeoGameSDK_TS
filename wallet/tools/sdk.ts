@@ -43,12 +43,12 @@ namespace BlackCat {
             this.main.showIcon()
         }
         // 登录
-        static login() {
+        static login(callback = null) {
             if (SDK.is_init === false) {
                 console.log('[Bla Cat]', '[SDK]', '请先初始化init')
                 return;
             }
-            SDK.main.start();
+            SDK.main.start(callback);
         }
         // 合约读取
         static async invokescript(params, callback = null) {

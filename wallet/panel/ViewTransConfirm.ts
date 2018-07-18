@@ -26,15 +26,15 @@ namespace BlackCat {
 
             var documenth = this.div.clientHeight
             if (documenth < 667) {
-                document.getElementById("pc_confirmbut").style.top = "auto";
-                document.getElementById("pc_confirmbut").style.bottom = "0";
+                document.getElementById("pc_tradeconfirmbut").style.top = "auto";
+                document.getElementById("pc_tradeconfirmbut").style.bottom = "0";
             }
         }
 
         create() {
 
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_listdetail", "pc_confirm")
+            this.div.classList.add("pc_listdetail", "pc_tradeconfirm")
 
             if (ViewTransConfirm.list && ViewTransConfirm.list.hasOwnProperty("wallet")) {
                 // header // header标签创建比较麻烦
@@ -84,15 +84,14 @@ namespace BlackCat {
 
                 //var 
                 var divconfirm = this.objCreate("div")
-                divconfirm.classList.add("pc_confirmbut")
-                divconfirm.id= "pc_confirmbut"
+                divconfirm.classList.add("pc_tradeconfirmbut")
+                divconfirm.id= "pc_tradeconfirmbut"
                 this.ObjAppend(this.div, divconfirm)
 
 
 
                 var cancelObj = this.objCreate("button")
-                cancelObj.style.backgroundColor = "#3b3d4a"
-                cancelObj.style.color = "#b2b2b2"
+                cancelObj.classList.add("pc_cancel")
                 cancelObj.textContent = Main.langMgr.get("cancel") // "取消"
                 cancelObj.onclick = () => {
                     console.log('[Bla Cat]', '[ViewTransConfirm]', 'PayTransfer交易取消..')
@@ -105,8 +104,6 @@ namespace BlackCat {
                 this.ObjAppend(divconfirm, cancelObj)
 
                 var confirmObj = this.objCreate("button")
-                confirmObj.style.backgroundColor = "#c8ab73"
-                confirmObj.style.color = "#5f491f"
                 if (ViewTransConfirm.list.type == "3") {
                     confirmObj.textContent = Main.langMgr.get("pay_makeRecharge") // "充值"
                 }

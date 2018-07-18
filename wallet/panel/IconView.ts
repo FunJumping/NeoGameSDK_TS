@@ -16,15 +16,24 @@ namespace BlackCat {
             this.show()
         }
 
+        reset() {
+            this.doDragMove = false;
+            if (this.div) this.flushProcess(0)
+        }
+
+        update() {
+            // iconView不要使用父类update()
+        }
+
         flushProcess(count) {
             console.log('[Bla Cat]', '[IconView]', 'flushProcess, count => ', count)
             // return
             if (count > 0) {
-                this.processDiv.textContent = count
+                // this.processDiv.textContent = count
                 this.div.classList.add("pc_iconRecord")
             }
             else {
-                this.processDiv.textContent = "";
+                // this.processDiv.textContent = "";
                 this.div.classList.remove("pc_iconRecord")
             }
 
@@ -36,10 +45,10 @@ namespace BlackCat {
             this.div.classList.add("pc_icon")
 
             this.div.onclick = () => {
+                console.log('[Bla Cat]', '[IconView]', 'onclick, this.doDragMove => ', this.doDragMove)
                 if (this.doDragMove == true) {
                     return false;
                 }
-                console.log('[Bla Cat]', '[IconView]', 'onclick ...')
                 this.hidden()
                 Main.viewMgr.mainView.show()
             }
@@ -49,7 +58,6 @@ namespace BlackCat {
             }
 
             this.processDiv = this.objCreate("div") as HTMLDivElement
-            this.processDiv.style.color = "red"
             this.ObjAppend(this.div, this.processDiv)
         }
 
@@ -107,9 +115,23 @@ namespace BlackCat {
                     }
                     
                     if (this.div.style.left != slideLeft + 'px' || this.div.style.top != slideTop + 'px' ) {
+
+                        // 允许几个像素误差，使点击事件更流畅
+                        let curr_left = this.div.style.left
+                        let curr_top = this.div.style.top
+
+                        curr_left = curr_left.replace("px", "")
+                        curr_top = curr_top.replace("px", "")
+
+                        let lefts = Math.abs(Number(curr_left) - slideLeft)
+                        let tops = Math.abs(Number(curr_top) - slideTop)
+
+                        if (lefts + tops > 30) {
+                            this.doDragMove = true;
+                        }
+
                         this.div.style.left = slideLeft + 'px';
                         this.div.style.top = slideTop + 'px';
-                        this.doDragMove = true;
                     }
 
                 };

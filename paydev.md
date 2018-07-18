@@ -18,20 +18,15 @@
     <script src="lib/code.js"></script>
 
 ### 2、回调方式说明
-NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注册回调函数方式
+NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数方式（推荐），一种是函数回调方式。
 
-回调方式1：
-    
-    BlackCat.SDK.functionName(data, function(res){  
-	    //回调结果处理
-	})
-
-回调方式2：
+回调方式一（推荐）：
 
     var listener = function(data)
     {
     	// 回调处理，data是JSON格式String
 		var res = JSON.parse(data)
+		console.log('listener => ', res)
 		switch (res.cmd) {
 			case "loginRes": // 登录回调
 				var loginInfo = res.data;
@@ -42,11 +37,10 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
 				var result = rs.data.res; // 合约调用结果
 				if (result.err == true) {
 					// 执行失败
-					
 				}
 				else {
 					// 执行成功
-					var success = result.info;
+					var success_data = result.info;
 				}
 				break;
 			case "makeRawTransactionRes": // 合约写入请求结果
@@ -90,6 +84,11 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
 		}
     };
 
+回调方式二：
+    
+    BlackCat.SDK.functionName(data, function(res){  
+	    //回调结果处理
+	})
 
 
 ### 3、接口说明
@@ -103,16 +102,21 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
 |:----    |:---|:----- |-----   |
 |appid |是  |string |SDK分配的appid   |
 |appkey |是  |string |SDK分配的appkey   |
-|listener |是  |function |SDK回调函数   |
+|listener |是  |function |应用注册的SDK回调函数   |
 |lang |否  |string |SDK语言，默认cn（中文），可取值cn、en   |
-**回调说明：** 
-无回调
+**返回说明：** 
+无返回值
 
 #### 2、发起充值
 应用客户端调用SDK发起充值接口，发起链上支付交易。以下为支付0.001个sgas代码。
 ``` 
-  var data = { count: "0.001", extString: "extString" };
-  BlackCat.SDK.makeRecharge(data, function(res){
+  var params = { count: "0.001", extString: "makeRecharge" };
+  
+  // 方式一，结果在listener通知
+  BlackCat.SDK.makeRecharge(params)
+  
+  // 方式二
+  BlackCat.SDK.makeRecharge(params, function(res){
     // 接口回调
     if（res.err == false）{
       // 获取支付交易提交成功的txid
@@ -121,7 +125,7 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
     }
   })
 ```
-**data参数：** 
+**params参数：** 
 
 |参数名|必选|类型|说明|
 |:----    |:---|:----- |-----   |
@@ -131,25 +135,54 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
 **返回示例**
 
 ``` 
-  {
-    "err": false,
-    "info":
-    {
-      "txid": "0xccf73255d0efd7fdc329af599378a6589dab38e24783e8b2e376a5336ce6b393"
+// 方式一的回调data：
+{
+    "cmd": "makeRechargeRes",
+    "data": {
+        "params": {
+            "count": "0.001",
+            "extString": "makeRecharge",
+            "nnc": "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54",
+            "sbParamJson": [
+                "(address)AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
+                "(address)ASZzR4Qm7iVbdUnLrRA7vBMEoX1dnmXeQe",
+                "(integer)100000"
+            ],
+            "sbPushString": "transfer"
+        },
+        "res": {
+            "err": false,
+            "info": {
+                "txid": "0x0bc5dddcde95b4de9f81cb39e06d43ab157d62ed6fb4e12b49e1a6aa76e22c93"
+            }
+        }
     }
-  }
+}
+
+// 方式二的函数回调res：
+{
+	"err": false,
+	"info": {
+		"txid": "0xccf73255d0efd7fdc329af599378a6589dab38e24783e8b2e376a5336ce6b393"
+	}
+}
 ```
 
 #### 3、智能合约调用（读取）
 以只读方式读取智能合约信息，该调用不需要钱包用户签名即可调用。
 ``` 
-  var data = {
-      sbParamJson: ["(integer)1"],
-      sbPushString: "isReadyToBreed",
-      nnc: "0xccab4cee886dd58f17b32eff16d5e59961113a4c",
-	  extString: "extString"
+  var params = {
+      sbParamJson: ["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"],
+      sbPushString: "balanceOf",
+      nnc: "0xcfe8f6824365f70d382733a92d8f373ee4faf222",
+	  extString: "invokeScript"
   };
-  BlackCat.SDK.invokescript(data, function(res){
+  
+  // 方式一
+  BlackCat.SDK.invokescript(params)
+  
+  // 方式二
+  BlackCat.SDK.invokescript(params, function(res){
     // 接口回调
     if（res.err == false）{
       // 获取合约调用数据结果
@@ -157,7 +190,7 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
     }
   })
 ```
-**data参数：** 
+**params参数：** 
 
 |参数名|必选|类型|说明|
 |:----    |:---|:----- |-----   |
@@ -169,31 +202,65 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
 **返回示例**
 
 ``` 
-  {
-    "err": false,
-    "info":
-    {
-      "gas_consumed": "0.309",
-      "script":"14ba42009c9f422111ca847526b443467fc6483f3651c10962616c616e63654f66675820a7f951e6154b86921fd5fdee65043f0bd7fc",
-      "stack":
-      [
-        { "type": "ByteArray", "value": "00e1f505" }
-      ],
-      "state": "HALT, BREAK"
+// 方式一
+{
+    "cmd": "invokescriptRes",
+    "data": {
+        "params": {
+            "nnc": "0xcfe8f6824365f70d382733a92d8f373ee4faf222",
+            "sbParamJson": [
+                "(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"
+            ],
+            "sbPushString": "balanceOf",
+            "extString": "invokeScript"
+        },
+        "res": {
+            "err": false,
+            "info": {
+                "script": "14ba42009c9f422111ca847526b443467fc6483f3651c10962616c616e63654f666722f2fae43e378f2da93327380df7654382f6e8cf",
+                "state": "HALT, BREAK",
+                "gas_consumed": "0.326",
+                "stack": [
+                    {
+                        "type": "ByteArray",
+                        "value": ""
+                    }
+                ]
+            }
+        }
     }
-  }
+}
+
+// 方式二
+{
+	"err": false,
+	"info": {
+		"script": "14ba42009c9f422111ca847526b443467fc6483f3651c10962616c616e63654f666722f2fae43e378f2da93327380df7654382f6e8cf",
+		"state": "HALT, BREAK",
+		"gas_consumed": "0.326",
+		"stack": [{
+			"type": "ByteArray",
+			"value": ""
+		}]
+	}
+}
 ```
 
 #### 4、智能合约调用（写入）
 以写方式操作智能合约，该调用需要钱包用户签名。
 ``` 
-  var data = {
-      sbParamJson: ["(address)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT", "(integer)61"],
-      sbPushString: "buyOnAuction",
-      nnc: "0xfcd70b3f0465eefdd51f92864b15e651f9a72058",
-	  extString: "extString"
+  var params = {
+      sbParamJson: ["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a","(integer)100000"],
+      sbPushString: "transfer",
+      nnc: "0x3f7420285874867c30f32e44f304fd62ad1e9573",
+	  extString: "makeRawTransaction"
   };
-  BlackCat.SDK.makeRawTransaction(data, function(res){
+  
+  // 方式一
+  BlackCat.SDK.makeRawTransaction(params)
+  
+  // 方式二
+  BlackCat.SDK.makeRawTransaction(params, function(res){
     // 接口回调
     if（res.err == false）{
       // 获取合约执行结果
@@ -201,7 +268,7 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
     }
   })
 ```
-**data参数：** 
+**params参数：** 
 
 |参数名|必选|类型|说明|
 |:----    |:---|:----- |-----   |
@@ -213,28 +280,56 @@ NEOGAMESDK支持两种回调方式，一种是函数回调方式，一种是注�
 **返回示例**
 
 ``` 
-  {
-    "err": false,
-    "info":
-    {
-      "txid": "a55e30075527c063bd366dffb54fca9fba5a58ff7d1ba835201ef396cbffad7e"
+方式一：
+{
+    "cmd": "makeRawTransactionRes",
+    "data": {
+        "params": {
+            "nnc": "0x3f7420285874867c30f32e44f304fd62ad1e9573",
+            "sbParamJson": [
+                "(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT",
+                "(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a",
+                "(integer)100000"
+            ],
+            "sbPushString": "transfer",
+            "extString": "makeRawTransaction"
+        },
+        "res": {
+            "err": false,
+            "info": {
+                "txid": "0x0478bc0bb5757db60d1a1a6c5f774d1a33be5b493156788043712585e7abb779"
+            }
+        }
     }
-  }
+}
+
+// 方式二
+{
+	"err": false,
+	"info": {
+		"txid": "0x0478bc0bb5757db60d1a1a6c5f774d1a33be5b493156788043712585e7abb779"
+	}
+}
 ```
 
 #### 5、GAS转账
 执行GAS转账操作，该调用需要钱包用户签名。
 ``` 
-var data = {
+var params = {
 	toaddr: "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
 	count: "0.01",
-	extString: "extString"
+	extString: "makeGasTransfer"
 }
-BlackCat.SDK.makeGasTransfer(data, function(res){
+
+// 方式一
+BlackCat.SDK.makeGasTransfer(params)
+
+// 方式二
+BlackCat.SDK.makeGasTransfer(params, function(res){
     console.log("makeGasTransfer.callback.function.res ", res)
 })
 ```
-**data参数：** 
+**params参数：** 
 
 |参数名|必选|类型|说明|
 |:----    |:---|:----- |-----   |
@@ -245,27 +340,69 @@ BlackCat.SDK.makeGasTransfer(data, function(res){
 **返回示例**
 
 ``` 
-  {
-    "err": false,
-    "info":
-    {
-      "txid": "7df725a5f8d700f7705a875b4e701ab244ca1b70ca915e7d4535685896091af6"
+方式一：
+{
+    "cmd": "makeGasTransferRes",
+    "data": {
+        "params": {
+            "toaddr": "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
+            "count": "0.01",
+            "extString": "makeGasTransfer"
+        },
+        "res": {
+            "err": false,
+            "info": "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32"
+        }
     }
-  }
-```
-
-#### 6、交易通知确认
-执行转账、合约写入等需要打开钱包的操作，都应该执行交易通知确认回调。应用客户端收到交易结果通知回调后，必须调用此接口进行回复，否则交易通知数据会一直传回。
-``` 
-var data = {
-	txid: "7df725a5f8d700f7705a875b4e701ab244ca1b70ca915e7d4535685896091af6"
 }
 
-BlackCat.SDK.confirmAppNotify(data, function(res){
+方式二：
+{
+	"res": {
+		"err": false,
+		"info": "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32"
+	}
+}
+```
+
+#### 6、交易完成通知
+执行转账、合约写入等需要打开钱包的操作，会收到交易完成的通知。如果本通知state=1，应用应再判断执行结果，本通知只表示该交易已经在链上执行。
+
+**返回示例**
+
+``` 
+// 方式一（只支持方式一的回调方式）
+{
+    "cmd": "getAppNotifysRes",
+    "data": [
+        {
+            "id": "367",
+            "g_id": "5",
+            "txid": "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32",
+            "state": "1",
+            "params": "{\"sbPushString\":\"transfer\", \"toaddr\":\"undefined\", \"count\": \"0.01\"}"
+        }
+    ]
+}
+```
+
+
+#### 7、交易完成通知确认
+应用客户端收到交易完成通知后，必须调用此接口进行回复，否则交易完成通知数据会一直传回。
+``` 
+var params = {
+	txid: "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32"
+}
+
+// 方式一
+BlackCat.SDK.confirmAppNotify(params)
+
+// 方式二
+BlackCat.SDK.confirmAppNotify(params, function(res){
 	console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
 })
 ```
-**data参数：** 
+**params参数：** 
 
 |参数名|必选|类型|说明|
 |:----    |:---|:----- |-----   |
@@ -274,15 +411,35 @@ BlackCat.SDK.confirmAppNotify(data, function(res){
 **返回示例**
 
 ``` 
-  {
-    "err": false,
-    "info": 1
-  }
+// 方式一
+{
+    "cmd": "confirmAppNotifyRes",
+    "data": {
+        "params": {
+            "txid": "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32"
+        },
+        "res": {
+            "err": false,
+            "info": 1
+        }
+    }
+}
+// 方式二
+{
+	"res": {
+		"err": false,
+		"info": 1
+	}
+}
 ```
 
-#### 7、余额查询
+#### 8、余额查询
 查询gas、sgas余额。
 ``` 
+// 方式一
+BlackCat.SDK.getBalance()
+
+// 方式二
 BlackCat.SDK.getBalance(function(res){
 	console.log("getbalance.callback.function.res ", res)
 })
@@ -291,15 +448,28 @@ BlackCat.SDK.getBalance(function(res){
 **返回示例**
 
 ``` 
-  {
-    "sgas": 0,
-    "gas": 1
-  }
+// 方式一：
+{
+    "cmd": "getBalanceRes",
+    "data": {
+        "sgas": 0.988,
+        "gas": 1230.19491
+    }
+}
+// 方式二：
+{
+	"sgas": 0,
+	"gas": 1
+}
 ```
-#### 8、获取登录用户信息
+#### 9、获取登录用户信息
 获取登录完成的用户信息。
 ``` 
-BlackCat.SDK.getUserInfo(data, function(res){
+// 方式一
+BlackCat.SDK.getUserInfo()
+
+// 方式二
+BlackCat.SDK.getUserInfo(function(res){
 	console.log('[BlackCat]', 'getUserInfo.callback.function.res => ', res)
 })
 ```
@@ -307,6 +477,27 @@ BlackCat.SDK.getUserInfo(data, function(res){
 **返回示例**
 
 ``` 
+// 方式一
+{
+    "cmd": "getUserInfoRes",
+    "data": {
+        "uid": "13661943881",
+        "name": "136****3881",
+        "invitor": "",
+        "phone": "13661943881@86",
+        "ip": "58.247.115.74",
+        "lastlogin": "1531492182",
+        "token": "8b6853ac07f3f30129eeaea498567b25",
+        "jifen": "0",
+        "wallet": "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
+        "region": "CN",
+        "area": "",
+        "email": "",
+        "qq": "",
+        "icon": ""
+    }
+}
+// 方式二
 {
   "uid": "13661943882",
   "name": "136****3882",
@@ -325,9 +516,13 @@ BlackCat.SDK.getUserInfo(data, function(res){
 }
 ```
 
-#### 9、获取当前网络类型
+#### 10、获取当前网络类型
 获取当前网络类型
 ``` 
+// 方式一
+BlackCat.SDK.getNetType()
+
+// 方式二
 BlackCat.SDK.getNetType(function(res){
 	console.log("getNetType.callback.function.res ", res)
 })
@@ -336,22 +531,28 @@ BlackCat.SDK.getNetType(function(res){
 **返回示例**
 
 ``` 
+// 方式一：
+{
+    "cmd": "getNetTypeRes",
+    "data": 2
+}
+方式二：
 2
 ```
 
-#### 9、设置语言
+#### 11、设置语言
 设置当前SDK语言，可选cn、en
 ``` 
 BlackCat.SDK.setLang(lang)
 ```
 
-#### 10、显示SDK界面
+#### 12、显示SDK界面
 显示SDK界面
 ``` 
 BlackCat.SDK.showMain()
 ```
 
-#### 11、最小化SDK界面
+#### 13、最小化SDK界面
 最小化SDK界面
 ``` 
 BlackCat.SDK.showIcon()

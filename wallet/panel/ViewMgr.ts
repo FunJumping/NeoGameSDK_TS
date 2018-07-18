@@ -78,6 +78,7 @@ namespace BlackCat {
                     console.log('[Bla Cat]', '[ViewMgr]', '显示SDK图标(' + type + ') ...')
                     if (!this.iconView) {
                         this.iconView = new IconView();
+                        this.views[type] = this.iconView
                     }
                     this.iconView.start()
                     break;
@@ -225,7 +226,7 @@ namespace BlackCat {
                     console.log('[Bla Cat]', '[ViewMgr]', '忘记密码(' + type + ') ...')
                     if (!this.forgetPasswordView) {
                         this.forgetPasswordView = new ForgetPasswordView()
-                        this.forgetPasswordView[type] = this.forgetPasswordView
+                        this.views[type] = this.forgetPasswordView
                     }
                     this.forgetPasswordView.start()
                     break;
@@ -252,6 +253,9 @@ namespace BlackCat {
                 console.log('[Bla Cat]', '[ViewMgr]', 'removeAll, view => ', v)
 
                 switch (className) {
+                    case "IconView":
+                        v.reset()
+                        break;
                     case "ViewConfirm":
                         if (Main.user.info.uid) {
                             v.remove()
@@ -275,17 +279,11 @@ namespace BlackCat {
                 switch (className) {
                     case "PayView":
                         if (v.isCreated) {
-                            // console.log('[Bla Cat]', '[ViewMgr]', 'update, view => ', v)
-                            // var isHidden = v.isHidden();
-                            // v.WalletListsHashString = null;
-                            // v.WalletListsNeedConfirm = false
                             v.update()
-                            // if (isHidden) v.hidden()
                         }
                         break;
                     default:
                         if (v.isCreated && !v.isHidden()) {
-                            // console.log('[Bla Cat]', '[ViewMgr]', 'update, view => ', v)
                             v.update()
                         }
                         break;

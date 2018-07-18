@@ -10,6 +10,7 @@ namespace BlackCat {
                 this.isCreated = true;
                 this.bodyAppend(this.div)
             }
+            this.changNetType()
         }
 
         create() {
@@ -38,6 +39,18 @@ namespace BlackCat {
                 this.ObjAppend(this.div, this.divMask);
             }
 
+        }
+
+        changNetType() {
+            var type = Main.netMgr.type;
+            switch (type) {
+                case 1: // 主网
+                    this.div.classList.remove("pc_windowtest2")
+                    break;
+                case 2: // 测试网
+                    this.div.classList.add("pc_windowtest2")
+                    break;
+            }
         }
 
         remove() {

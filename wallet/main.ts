@@ -37,9 +37,10 @@ namespace BlackCat {
         static platNotifyTxids: any; // 平台已经通知的txids列表（refund)
 
 
-        private static callback: Function; // 统一sdk调用回调接口
-        private static transCallback: Function; // 接口makeRawTransaction/makeRecharge回调
-        private static transGasCallback: Function; // 接口makeGasTransfer回调
+        private static callback: Function; // 统一sdk调用回调接口，即sdk的listener
+        private static transCallback: Function; // 接口makeRawTransaction/makeRecharge回调函数
+        private static transGasCallback: Function; // 接口makeGasTransfer回调函数
+        private static loginFunctionCallback: Function; // 接口login的回调函数
 
         private static isLoginCallback: boolean;
         private static isCreated: boolean;
@@ -50,11 +51,11 @@ namespace BlackCat {
         private static s_update: any;
 
         constructor() {
+            Main.netMgr = new NetMgr();
             Main.user = new User();
             Main.wallet = new tools.wallet();
             Main.viewMgr = new ViewMgr();
             Main.langMgr = new LangMgr();
-            Main.netMgr = new NetMgr();
 
             Main.reset()
 
@@ -148,7 +149,8 @@ namespace BlackCat {
         }
 
         // SDK登录
-        async start() {
+        async start(callback = null) {
+            Main.loginFunctionCallback = callback;
             // 创建遮罩层
             Main.viewMgr.mainView.createMask()
 
@@ -166,12 +168,16 @@ namespace BlackCat {
             if (!Main.isLoginCallback) {
                 var res = await ApiTool.getEnterParams(Main.user.info.uid, Main.user.info.token, Main.appid);
                 if (res.r) {
+                    Main.setGameInfo(res.data.gameParam);
+                    // listener回调
                     var callback_data = {
                         cmd: "loginRes",
                         data: res.data.loginParam
                     }
-                    Main.setGameInfo(res.data.gameParam);
                     Main.callback(JSON.stringify(callback_data));
+                    // function回调
+                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res.data.loginParam)
+
                     Main.isLoginCallback = true;
                     // 首次登录，获取应用notify
                     Main.needGetAppNotifys = true;
@@ -920,15 +926,22 @@ namespace BlackCat {
         }
 
         static changeNetType(type: number) {
-            if (Main.netMgr.chang(type)) {
-                var callback_data = {
-                    cmd: "changeNetTypeRes",
-                    data: type
-                }
-                Main.callback(JSON.stringify(callback_data));
-                return true;
+            var res = Main.netMgr.chang(type)
+
+            var callback_data = {
+                cmd: "changeNetTypeRes",
+                data: type
             }
-            return false;
+            Main.callback(JSON.stringify(callback_data));
+
+            if (res) {
+                // 替换底色
+                Main.viewMgr.mainView.changNetType()
+                // 刷新视图
+                Main.viewMgr.update()
+                // 重置
+                Main.reset()
+            }
         }
 
         static getUrlParam(name) {

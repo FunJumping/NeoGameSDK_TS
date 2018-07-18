@@ -26,6 +26,7 @@ declare namespace BlackCat {
         private static callback;
         private static transCallback;
         private static transGasCallback;
+        private static loginFunctionCallback;
         private static isLoginCallback;
         private static isCreated;
         private update_timeout_max;
@@ -42,7 +43,7 @@ declare namespace BlackCat {
             sgas: number;
             gas: number;
         }>;
-        start(): Promise<void>;
+        start(callback?: any): Promise<void>;
         static loginCallback(): Promise<void>;
         static setGameInfo(param: any): Promise<void>;
         isLogined(): boolean;
@@ -64,7 +65,7 @@ declare namespace BlackCat {
         private confirmPlatNotifyExt(params, ext);
         getPlatNotifys(): Promise<boolean>;
         getNetType(): Promise<number>;
-        static changeNetType(type: number): boolean;
+        static changeNetType(type: number): void;
         static getUrlParam(name: any): string;
         static validateLogin(): Promise<void>;
         static showErrCode(errCode: number, callback?: any): Promise<void>;
@@ -362,7 +363,7 @@ declare namespace BlackCat {
             forgetpass_getCodecount: string;
             forgetpass_getCodecountRetry: string;
             forgetpass_doLogin: string;
-            forgetpass_doDirectLogin: string;
+            forgetpass_do: string;
             forgetpass_do_ok: string;
             myInfo: string;
             myinfo_headImg: string;
@@ -759,7 +760,7 @@ declare namespace BlackCat {
             forgetpass_getCodecount: string;
             forgetpass_getCodecountRetry: string;
             forgetpass_doLogin: string;
-            forgetpass_doDirectLogin: string;
+            forgetpass_do: string;
             myInfo: string;
             myinfo_headImg: string;
             myinfo_nickname: string;
@@ -950,7 +951,6 @@ declare namespace BlackCat {
         create(): void;
         start(): void;
         private empty(value);
-        private getPhone();
         private checkUidFormat();
         private validateAccount(emptySkip?);
         private validateUid(emptySkip?);
@@ -967,6 +967,8 @@ declare namespace BlackCat {
         private doDragMove;
         private processDiv;
         start(): void;
+        reset(): void;
+        update(): void;
         flushProcess(count: any): void;
         create(): void;
         remove(): void;
@@ -993,11 +995,12 @@ declare namespace BlackCat {
         start(): void;
         create(): void;
         createMask(): void;
+        changNetType(): void;
         remove(): void;
     }
 }
 declare namespace BlackCat {
-    class ModifyName extends ViewBase {
+    class ModifyNameView extends ViewBase {
         inputCount: HTMLInputElement;
         start(): void;
         create(): void;
@@ -1209,7 +1212,7 @@ declare namespace BlackCat {
         payListDetailView: PayListDetailView;
         payListMoreView: PayListMoreView;
         myInfoView: MyInfoView;
-        modifyName: ModifyName;
+        modifyNameView: ModifyNameView;
         payWalletDetailView: PayWalletDetailView;
         payReceivablesView: PayReceivablesView;
         payTransferView: PayTransferView;
@@ -1514,9 +1517,9 @@ declare namespace BlackCat {
         static getEmailCode(email: string): Promise<any>;
         static userLoginPass(uid: string, pwd: string): Promise<any>;
         static modUserName(uid: string, token: string, name: string): Promise<any>;
-        static forgetPassByPhone(uid: string, phone: string, code: string, new_pwd: string): Promise<any>;
+        static forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string): Promise<any>;
         static forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string): Promise<any>;
-        static getForgetCodeByPhone(uid: string, phone: string): Promise<any>;
+        static getForgetCodeByPhone(uid: string, phone_raw: string): Promise<any>;
         static getForgetCodeByEmail(uid: string, email: string): Promise<any>;
     }
     class StorageTool {
@@ -1671,7 +1674,7 @@ declare namespace BlackCat {
         static setLang(type: string): void;
         static showMain(): void;
         static showIcon(): void;
-        static login(): void;
+        static login(callback?: any): void;
         static invokescript(params: any, callback?: any): Promise<void>;
         static makeRawTransaction(params: any, callback?: any): Promise<void>;
         static makeRecharge(params: any, callback?: any): Promise<void>;

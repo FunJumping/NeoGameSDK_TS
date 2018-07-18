@@ -1,4 +1,4 @@
-﻿@import url("../font/iconfont.css");
+﻿@import url(../font/iconfont.css);
 
 
 .pc_window  a{color:#666;text-decoration:none}
@@ -16,17 +16,21 @@
 .pc_text_nowrap2{overflow : hidden;text-overflow:ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical}
 .pc_text_nowrap3{overflow : hidden;text-overflow:ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical}
 
-.pc_icon{position: fixed;top: 0px;right: 0px;width: 64px;height: 64px;background: url(../img/BlackCaticon.png) 0% 0% / cover;cursor: pointer;z-index: 98;}
-.pc_iconRecord{background: url(../img/BlackCaticon.gif) 0% 0% / cover;}
+.pc_icon{position: fixed;top: 0px;right: 0px;width: 64px;height: 64px;background: url(../img/BlackCaticon5.png) 0% 0% / cover;cursor: pointer;z-index: 98;}
+/*动态小图标*/
+.pc_icon::after{content: "";-webkit-animation: pc_gif 0.1s;animation: pc_gif 0.1s;}
+.pc_iconRecord{-webkit-animation: pc_gif 0.3s infinite linear;animation: pc_gif 0.3s infinite linear;}
+@-webkit-keyframes pc_gif{0%{background: url(../img/BlackCaticon1.png)0% 0% / cover}20%{background: url(../img/BlackCaticon2.png)0% 0% / cover}40%{background: url(../img/BlackCaticon3.png)0% 0% / cover}60%{background: url(../img/BlackCaticon4.png)0% 0% / cover}80%{background: url(../img/BlackCaticon5.png)0% 0% / cover}100%{background: url(../img/BlackCaticon6.png)0% 0% / cover}}
+@keyframes pc_gif{0%{background: url(../img/BlackCaticon1.png)0% 0% / cover}20%{background: url(../img/BlackCaticon2.png)0% 0% / cover}40%{background: url(../img/BlackCaticon3.png)0% 0% / cover}60%{background: url(../img/BlackCaticon4.png)0% 0% / cover}80%{background: url(../img/BlackCaticon5.png)0% 0% / cover}100%{background: url(../img/BlackCaticon6.png)0% 0% / cover}}
 .pc_window{position: fixed;right: 0;top: 0;z-index: 99;max-height: 667px;overflow: hidden;background-color: #343643;}
 .pc_window_mask{position: fixed;left: 0;right: 0;top: 0;bottom: 0;z-index: 0;cursor: pointer;}
 .pc_window *{margin: 0;padding: 0;border: 0;word-wrap:break-word;}
 
 /*不同网网络背景*/
-.pc_windowtest2,.pc_windowtest2 .pc_header,.pc_windowtest2 .pc_net,.pc_windowtest2 .pc_netbox{background-color: #344241;}
+.pc_windowtest2,.pc_windowtest2 .pc_header,.pc_windowtest2 .pc_net,.pc_windowtest2 .pc_netbox,.pc_windowtest2 .pc_tradeconfirm,.pc_windowtest2 .pc_tradeconfirmbut{background-color: #344241;}
 .pc_windowtest2 .pc_paylist li,.pc_windowtest2 .pc_paylists li,.pc_windowtest2 .pc_detail li,.pc_windowtest2 .pc_contractAddress div,.pc_windowtest2 .pc_myinfolist li{border-color: #2a3736}
 .pc_windowtest2 .pc_currency>div{border-bottom-color: #424c4b}
-
+.pc_windowtest2 .pc_header h1,.pc_windowtest2 .pc_net,.pc_windowtest2 .pc_netbox,.pc_windowtest2 .pc_netbox>div{color: #fff;border-color: #fff}
 
 
 /*所有页面的宽高及滚动条*/
@@ -86,8 +90,8 @@
 .pc_tel input{width: 80%}
 .pc_popupbox input{width: 70%;margin: 20px auto;height: 25px;background-color: #c3c4c9;color: #000;border: 1px solid #bebebe;display: block;font-size: 14px;text-align: center}
 .pc_popupbutbox{width: 70%;text-align: center;margin: 0 auto;padding: 20px 0;}
-.pc_popupbox button,.pc_alterbox button{width: 70px; height: 30px;font-size: 14px;background-color: #caad76;color: #5f491f;border-radius: 5px;box-shadow: inset 0 -5px 30px rgba(0, 0, 0, 0.45)}
-button.pc_cancel{background-color: #3b3d4a;color: #b2b2b2;margin-right: 40px;}
+.pc_popupbox button,.pc_alterbox button{width: 70px; height: 30px;font-size: 14px;background-color: #caad76;color: #5f491f;border-radius: 5px;box-shadow: inset 0 -5px 30px rgba(50, 0, 0, 0.45)}
+button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;margin-right: 40px;box-shadow: inset 0 -5px 30px rgba(0, 0, 0, 0.45) !important}
 
 /*创建钱包弹窗*/
 .pc_prompt{font-size: 12px;color: #c8ab73;text-align: center}
@@ -154,10 +158,10 @@ button.pc_cancel{background-color: #3b3d4a;color: #b2b2b2;margin-right: 40px;}
 .pc_header a{font-size: 28px;color: #9c9ead;position: absolute;left: 12px;cursor: pointer;}
 .pc_header .icon-fanhui{font-size: 16px;left: 10px;}
 .pc_header h1{font-size: 20px;text-align: center;color: #fed968;font-weight: 500}
-.pc_net,.pc_netbox{position: absolute;right: 16px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #bfbfbf;color: #bfbfbf;line-height: 1.5;padding:1px 3px;font-size: 14px;-webkit-user-select: none;user-select: none; cursor: pointer;}
+.pc_net,.pc_netbox{position: absolute;right: 16px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #fed968;color: #fed968;line-height: 1.5;padding:1px 3px;font-size: 14px;-webkit-user-select: none;user-select: none; cursor: pointer;}
 .pc_net::after{content: "\e606";font-size: 12px}
 .pc_netbox{top: 33px;border-top: none}
-.pc_netbox>div{border-top: 1px solid #bfbfbf;}
+.pc_netbox>div{border-top: 1px solid #fed968;}
 
 .pc_card{position: relative;;width: 320px;height: 204px;padding: 12px; background: url(../img/card.png) no-repeat;background-size: 100% 100%;margin:65px auto 20px auto;border-radius: 5px;box-shadow: 0 7px 14px #000;color: #fff}
 .pc_mywallet{font-size: 14px}
@@ -199,9 +203,11 @@ button.pc_cancel{background-color: #3b3d4a;color: #b2b2b2;margin-right: 40px;}
 .pc_paydetailshow .pc_detailhide{display: block;}
 .pc_walletdetail .pc_walletExport{width: 55%;height: 40px;line-height: 40px;text-align: center; background-color: #c8ab73;font-size: 16px;border-radius: 50px;display: block;margin: 0 auto; color: #343543;padding-right: 12px;}
 .pc_walletExport i{font-size: 28px;position: absolute;}
-.pc_confirm{position: fixed;top: 0;right: 0;z-index: 9;}
-.pc_confirmbut{text-align: center;position: fixed;right: 0;top: 587px;width: 375px;height: 80px; background:#343643;box-shadow: 2px -2px 1px #000}
-.pc_confirmbut button{width: 30%;height: 40px;background-color: #33bc80;font-size: 20px;color: #fff;margin: auto 25px;border-radius: 5px;margin-top: 20px}
+
+/*交易详情*/
+.pc_tradeconfirm{background-color: #343643; position: fixed;top: 0;right: 0;z-index: 9;}
+.pc_tradeconfirmbut{text-align: center;position: fixed;right: 0;top: 587px;width: 375px;height: 80px; background:#343643;box-shadow: 2px -2px 1px #000}
+.pc_tradeconfirmbut button{width: 30%;height: 40px;background-color: #c8ab73;font-size: 20px;color: #5f491f;margin: auto 25px;border-radius: 5px;margin-top: 20px;box-shadow: inset 0 -5px 30px rgba(50, 0, 0, 0.45);}
 
 
 

@@ -6,7 +6,7 @@ namespace BlackCat
         {
             return: "返回",
             copy: "复制",
-            ok: "确认",
+            ok: "确定",
             cancel: "取消",
             more: "更多",
             info: "提示",
@@ -292,7 +292,7 @@ namespace BlackCat
             forgetpass_getCodecountRetry: "重新获取",
 
             forgetpass_doLogin: "<<返回登录",
-            forgetpass_doDirectLogin: "登录",
+            forgetpass_do: "确定",
 
             forgetpass_do_ok: "重置成功，请重新登录！",
 

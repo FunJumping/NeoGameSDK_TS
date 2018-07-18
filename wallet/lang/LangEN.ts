@@ -292,7 +292,7 @@
             forgetpass_getCodecountRetry: "Retry",
 
             forgetpass_doLogin: "<<back",
-            forgetpass_doDirectLogin: "Login",
+            forgetpass_do: "OK",
 
             // MyInfoView
             myInfo: "my information",
