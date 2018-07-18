@@ -81,6 +81,12 @@ namespace BlackCat {
                 return
             }
 
+            var regex = /(?!^0*(\.0{1,2})?$)^\d{1,14}(\.\d{1,8})?$/
+            if (!regex.test(this.inputCount.value)) {
+                Main.showErrMsg('pay_transCount_err')
+                return
+            }
+
             this.remove()
             ViewTransCount.callback();
             ViewTransCount.callback = null;

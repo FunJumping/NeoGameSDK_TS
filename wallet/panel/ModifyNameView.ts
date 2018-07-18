@@ -30,7 +30,7 @@ namespace BlackCat {
             this.inputCount = this.objCreate("input") as HTMLInputElement
             this.inputCount.type = "text"
             this.inputCount.style.marginTop = "40px"
-            this.inputCount.placeholder = Main.langMgr.get("modifyName_inpnt") // "请输入昵称"
+            this.inputCount.placeholder = Main.langMgr.get("modifyName_input") // "请输入昵称"
             this.ObjAppend(popupbox, this.inputCount)
 
 
@@ -44,7 +44,7 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                Main.viewMgr.viewTransCount.div.classList.add("pc_fadeindown")
+                // Main.viewMgr.viewTransCount.div.classList.add("pc_fadeindown")
                 this.remove(300)
             }
             this.ObjAppend(popupbutbox, popupClose)

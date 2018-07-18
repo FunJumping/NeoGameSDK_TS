@@ -116,18 +116,20 @@ namespace BlackCat {
                     
                     if (this.div.style.left != slideLeft + 'px' || this.div.style.top != slideTop + 'px' ) {
 
-                        // 允许几个像素误差，使点击事件更流畅
-                        let curr_left = this.div.style.left
-                        let curr_top = this.div.style.top
+                        if (this.div.style.left != "" && this.div.style.top != "") {
+                            // 允许几个像素误差，使点击事件更流畅
+                            let curr_left = this.div.style.left
+                            let curr_top = this.div.style.top
 
-                        curr_left = curr_left.replace("px", "")
-                        curr_top = curr_top.replace("px", "")
+                            curr_left = curr_left.replace("px", "")
+                            curr_top = curr_top.replace("px", "")
 
-                        let lefts = Math.abs(Number(curr_left) - slideLeft)
-                        let tops = Math.abs(Number(curr_top) - slideTop)
+                            let lefts = Math.abs(Number(curr_left) - slideLeft)
+                            let tops = Math.abs(Number(curr_top) - slideTop)
 
-                        if (lefts + tops > 30) {
-                            this.doDragMove = true;
+                            if (lefts + tops > 30) {
+                                this.doDragMove = true;
+                            }
                         }
 
                         this.div.style.left = slideLeft + 'px';

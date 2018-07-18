@@ -312,9 +312,7 @@ namespace BlackCat
 
             //modifyName
             modifyName:"修改昵称",
-            modifyName_inpnt:"请输入昵称",
-
-
+            modifyName_input:"请输入昵称",
 
             // PayListDetailView
             paylist_txid: "交易单号：",
@@ -347,7 +345,7 @@ namespace BlackCat
             pay_transferToAddr: "转账地址：",
             pay_transferCount: "转账金额：",
             pay_transferToAddrError: "转账地址错误",
-            pay_transferCountError: "转账数量错误",
+            pay_transferCountError: "转账金额错误",
             pay_transferDoSucc: "转账操作成功",
             pay_transferDoFail: "转账失败",
 
@@ -374,11 +372,13 @@ namespace BlackCat
             pay_not_enough_money: "余额不足",
             pay_not_enough_utxo: "请等待上次交易完成再执行！",
 
-            nettype_1: "主网",
-            nettype_2: "测试网",
+            pay_nettype_1: "主网",
+            pay_nettype_2: "测试网",
 
             // PayWalletDetailView
             pay_walletDetail: "钱包详情",
+            pay_walletDetail_addr:"地址：",
+            pay_walletDetail_key:"公钥：",
             pay_walletDetail_hex: "密钥HEX：",
             pay_walletDetail_wif: "密钥WIF：",
             pay_walletDetail_notice: "为避免财产损失，展开密钥时请防止泄露。",
@@ -395,11 +395,12 @@ namespace BlackCat
 
             // ViewTransConfirmGas
             pay_transferGas_toaddr: "转账地址",
-            pay_transferGas_count: "转账数量",
+            pay_transferGas_count: "转账金额",
 
             // ViewTransCount
-            pay_transCount_count: "数量",
-            pay_transCount_inputCount: "请输入数量",
+            pay_transCount_count: "金额",
+            pay_transCount_inputCount: "请输入金额",
+            pay_transCount_err:"请输入正确的金额",
 
             // ViewWalletOpen
             pay_walletOpen_password: "密码",

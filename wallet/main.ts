@@ -498,6 +498,7 @@ namespace BlackCat {
                     catch (e) {
                         var res: Result = new Result();
                         res.err = true;
+                        res.info = 'make trans err'
                     }
 
                     Main.viewMgr.viewLoading.remove()

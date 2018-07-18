@@ -512,7 +512,7 @@ namespace BlackCat {
                                 this.ObjAppend(state_cnts_div, cnts);
 
                                 var cnts_class = this.getListCntsClass(list);
-                                state_cnts_div.classList.add(cnts_class)
+                                if (cnts_class) state_cnts_div.classList.add(cnts_class)
                             }
 
                             var state = this.getListState(list);
@@ -677,7 +677,7 @@ namespace BlackCat {
         }
 
         getListCnts(v) {
-            if (v.cnts) {
+            if (v.cnts && Number(v.cnts) != 0) {
                 var state_cnts_span = this.objCreate("span")
                 state_cnts_span.textContent = v.cnts
                 return state_cnts_span;
@@ -688,7 +688,7 @@ namespace BlackCat {
             if (v.type == "1" || (v.type == "5" && v.type_detail == "2")) {
                 return 'pc_income';
             }
-            else if (v.cnts > '0') {
+            else if (Number(v.cnts) > 0) {
                 return 'pc_expenditure';
             }
             return "";
@@ -1099,7 +1099,7 @@ namespace BlackCat {
         }
 
         private getNetTypeName() {
-            return Main.langMgr.get("nettype_" + Main.netMgr.type);
+            return Main.langMgr.get("pay_nettype_" + Main.netMgr.type);
         }
 
         private showChangeNetType() {
@@ -1116,7 +1116,7 @@ namespace BlackCat {
 
         private getDivNetSelectType(type:number) {
             var divObj = this.objCreate("div")
-            divObj.textContent = Main.langMgr.get("nettype_"+type)
+            divObj.textContent = Main.langMgr.get("pay_nettype_"+type)
             divObj.onclick = () => {
                 Main.changeNetType(type)
             }

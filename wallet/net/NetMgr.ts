@@ -11,6 +11,8 @@ namespace BlackCat {
 
             // 测试网
             this.chang2test()
+
+            ApiTool.base_url = 'http://182.254.139.130/apic_v2/apic_user.php'
         }
 
         getOtherTypes(): Array<number> {
@@ -27,23 +29,20 @@ namespace BlackCat {
             // 测试网
             this.type = 2;
             // --节点地址
-            tools.WWW.api = "http://47.52.159.178:82/api/testnet";
-            tools.WWW.apiaggr = "http://47.52.159.178:82/api/testnet";
-
-            // tools.WWW.api = "https://api.nel.group/api/testnet";
-            // tools.WWW.apiaggr = "https://api.nel.group/api/testnet";
+            tools.WWW.api = "http://nelnode00.blacat.org:82/api/testnet";
+            tools.WWW.apiaggr = "http://nelnode00.blacat.org:82/api/testnet";
+            // sgas合约地址
+            tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
         }
 
         private change2Main() {
             // 主网
             this.type = 1;
             // --节点地址
-            tools.WWW.api = "http://47.52.132.248:82/api/mainnet";
-            tools.WWW.apiaggr = "http://47.52.132.248:82/api/mainnet";
-
-            // nel
-            // tools.WWW.api = "https://api.nel.group/api/mainnet";
-            // tools.WWW.apiaggr = "https://api.nel.group/api/mainnet";
+            tools.WWW.api = "http://nelnode01.blacat.org:82/api/mainnet";
+            tools.WWW.apiaggr = "http://nelnode01.blacat.org:82/api/mainnet";
+            // 主网sgas合约
+            tools.CoinTool.id_SGAS = "";
         }
 
 

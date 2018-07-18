@@ -132,7 +132,8 @@ namespace BlackCat {
                 return;
             }
 
-            if (!this.verify_Amount()) {
+            var regex = /(?!^0*(\.0{1,2})?$)^\d{1,14}(\.\d{1,8})?$/
+            if (!this.verify_Amount()||!regex.test(this.inputGasCount.value)) {
                 Main.showErrMsg("pay_transferCountError", () => {
                     this.inputGasCount.focus()
                 })
@@ -169,7 +170,7 @@ namespace BlackCat {
                     );
 
                     // "转账操作成功"
-                    Main.showInfo(Main.langMgr.get("pay_transferDoSucc"))
+                    Main.showInfo(("pay_transferDoSucc"))
 
                     this.remove();
                     PayTransferView.callback();

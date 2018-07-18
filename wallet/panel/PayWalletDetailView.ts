@@ -40,8 +40,8 @@ namespace BlackCat {
             var content = this.objCreate("div")
             content.classList.add("pc_paydetail")
             content.innerHTML
-                = "<ul><li>地址：<p>" + this.wallet_addr + "</p></li>"
-                + "<li>公钥：<p>" + this.public_key + "</p></li>"
+                = "<ul><li>"+Main.langMgr.get("pay_walletDetail_addr")+"<p>" + this.wallet_addr + "</p></li>"
+                + "<li>"+Main.langMgr.get("pay_walletDetail_key")+"<p>" + this.public_key + "</p></li>"
                 + "<li class='pc_detailhide'>" + Main.langMgr.get("pay_walletDetail_hex") + "<p>" + this.private_hex + "</p></li>"
                 + "<li class='pc_detailhide'>" + Main.langMgr.get("pay_walletDetail_wif") + "<p>" + this.private_wif + "</p></li>"
             this.ObjAppend(this.div, content)

@@ -26,15 +26,64 @@ namespace BlackCat {
 
             var myinfo = this.objCreate("div")
             myinfo.classList.add("pc_myinfolist")
-            myinfo.innerHTML
-                = '<ul>'
-                + '<li class="pc_myinfoimg">' + Main.langMgr.get("myinfo_headImg") + '<span><img src="' + this.getImg() + '"></span></li>'
-                + '<li>' + Main.langMgr.get("myinfo_nickname") + '<span onclick="modifyName()">' + this.getName() + '</span></li>'
-                + '<li>' + Main.langMgr.get("myinfo_sex") + '<span>' + this.getSex() + '</span></li>'
-                + '<li>' + Main.langMgr.get("myinfo_uid") + '<span>' + this.getUid() + '</span></li>'
-                + '<li>' + Main.langMgr.get("myinfo_area") + '<span>' + this.getArea() + '</span></li>'
-                + '</ul>'
+            // myinfo.innerHTML
+            //     = '<ul>'
+            //     + '<li class="pc_myinfoimg">' + Main.langMgr.get("myinfo_headImg") + '<span><img src="' + this.getImg() + '"></span></li>'
+            //     + '<li>' + Main.langMgr.get("myinfo_nickname") + '<span onclick="modifyName()">' + this.getName() + '</span></li>'
+            //     + '<li>' + Main.langMgr.get("myinfo_sex") + '<span>' + this.getSex() + '</span></li>'
+            //     + '<li>' + Main.langMgr.get("myinfo_uid") + '<span>' + this.getUid() + '</span></li>'
+            //     + '<li>' + Main.langMgr.get("myinfo_area") + '<span>' + this.getArea() + '</span></li>'
+            //     + '</ul>'
 
+            var ulMyinfo = this.objCreate("ul")
+            this.ObjAppend(myinfo, ulMyinfo)
+            //头像
+            var liMyinfoImg = this.objCreate("li")
+            liMyinfoImg.classList.add("pc_myinfoimg")
+            liMyinfoImg.textContent = Main.langMgr.get("myinfo_headImg")
+            var spanMyinfoimg = this.objCreate("span")
+            this.ObjAppend(liMyinfoImg, spanMyinfoimg)
+            var imgMyinfoimg = this.objCreate("img")
+            imgMyinfoimg.setAttribute("src", this.getImg())
+            this.ObjAppend(spanMyinfoimg, imgMyinfoimg)
+            this.ObjAppend(ulMyinfo, liMyinfoImg)
+
+            //昵称
+            var liMyinfoName = this.objCreate("li")
+            liMyinfoName.textContent = Main.langMgr.get("myinfo_nickname")
+            var spanMyinfoName = this.objCreate("span")
+            spanMyinfoName.textContent = this.getName()
+            spanMyinfoName.onclick = () => {
+                this.modifyName()
+            }
+            this.ObjAppend(liMyinfoName, spanMyinfoName)
+            this.ObjAppend(ulMyinfo, liMyinfoName)
+
+            //性别
+            var liMyinfoSex = this.objCreate("li")
+            liMyinfoSex.textContent = Main.langMgr.get("myinfo_sex")
+            var spanMyinfoSex = this.objCreate("span")
+            spanMyinfoSex.textContent = this.getSex()
+            this.ObjAppend(liMyinfoSex, spanMyinfoSex)
+            this.ObjAppend(ulMyinfo, liMyinfoSex)
+
+            //账号
+            var liMyinfoUid = this.objCreate("li")
+            liMyinfoUid.textContent = Main.langMgr.get("myinfo_uid")
+            var spanMyinfoUid = this.objCreate("span")
+            spanMyinfoUid.textContent = this.getUid()
+            this.ObjAppend(liMyinfoUid, spanMyinfoUid)
+            this.ObjAppend(ulMyinfo, liMyinfoUid)
+
+            //地区
+            var liMyinfoArea = this.objCreate("li")
+            liMyinfoArea.textContent = Main.langMgr.get("myinfo_area")
+            var spanMyinfoArea = this.objCreate("span")
+            spanMyinfoArea.textContent = this.getArea()
+            this.ObjAppend(liMyinfoArea, spanMyinfoArea)
+            this.ObjAppend(ulMyinfo, liMyinfoArea)
+
+            //退出账号
             var logout = this.objCreate("button")
             logout.textContent = Main.langMgr.get("myinfo_logout") //"退出账号"
             logout.onclick = () => {
@@ -70,7 +119,7 @@ namespace BlackCat {
         }
 
         private getArea() {
-            return Main.langMgr.get("area_code_" + Main.user.info.area)
+            return Main.langMgr.get("area_code_" + Main.user.info.region)
         }
 
         private doLogout() {
@@ -89,9 +138,8 @@ namespace BlackCat {
             Main.logoutCallback()
         }
 
-        private modifyName(){
-            Main.viewMgr.change("ModifyName")
-
+        private modifyName() {
+            Main.viewMgr.change("ModifyNameView")
         }
 
 

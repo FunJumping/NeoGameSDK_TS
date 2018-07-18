@@ -308,6 +308,10 @@
             myinfo_logout: "Logout",
             myinfo_logoutConfirm: "Are you sure to log out?",
 
+            //modifyName
+            modifyName:"Modify Nickname",
+            modifyName_input:"Please input nickname",
+            
             // PayListDetailView
             paylist_txid: "Trading order number:",
             paylist_wallet: "My wallet:",
@@ -337,7 +341,7 @@
             pay_transferType: "Token：GAS",
             pay_transferBalance: "Balance:",
             pay_transferToAddr: "Address:",
-            pay_transferCount: "Amount:",
+            pay_transferCount: "Amounts:",
             pay_transferToAddrError: "The transfer address is incorrect!",
             pay_transferCountError: "The number of transfers is incorrect!",
             pay_transferDoSucc: "Transfer success",
@@ -366,11 +370,13 @@
             pay_not_enough_money: "Insufficient balance",
             pay_not_enough_utxo: "Please wait for the last transaction to complete before executing！",
 
-            nettype_1: "mainnet",
-            nettype_2: "testnet",
+            pay_nettype_1: "mainnet",
+            pay_nettype_2: "testnet",
 
             // PayWalletDetailView
             pay_walletDetail: "wallet details",
+            pay_walletDetail_addr:"Address:",
+            pay_walletDetail_key:"Public Key:",
             pay_walletDetail_hex: "KEY HEX:",
             pay_walletDetail_wif: "KEY WIF:",
             pay_walletDetail_notice: "To avoid property damage, please prevent leakage when you open the key.",
@@ -387,11 +393,12 @@
 
             // ViewTransConfirmGas
             pay_transferGas_toaddr: "transfer address",
-            pay_transferGas_count: "Transfer amount",
+            pay_transferGas_count: "Transfer amounts",
 
             // ViewTransCount
-            pay_transCount_count: "Quantity",
-            pay_transCount_inputCount: "Please enter the quantity",
+            pay_transCount_count: "Amounts",
+            pay_transCount_inputCount: "Please enter the amounts",
+            pay_transCount_err:"Please input correct sums of amounts",
 
             // ViewWalletOpen
             pay_walletOpen_password: "password",

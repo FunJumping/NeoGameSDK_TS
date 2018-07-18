@@ -148,7 +148,7 @@ namespace BlackCat {
                                 this.ObjAppend(state_cnts_div, cnts);
 
                                 var cnts_class = Main.viewMgr.payView.getListCntsClass(list);
-                                state_cnts_div.classList.add(cnts_class)
+                                if (cnts_class) state_cnts_div.classList.add(cnts_class)
                             }
 
                             var state = Main.viewMgr.payView.getListState(list)

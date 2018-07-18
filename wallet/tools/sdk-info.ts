@@ -7,6 +7,7 @@ namespace BlackCat {
         token: string = '';
         wallet: string = '';
         area: string = '';
+        region: string = "";
         email: string = '';
         qq: string = '';
         icon: string = '';

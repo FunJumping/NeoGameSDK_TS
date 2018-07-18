@@ -8,7 +8,7 @@ namespace BlackCat.tools
     {
         static readonly id_GAS: string = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
         static readonly id_NEO: string = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
-        static readonly id_SGAS: string = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
+        static id_SGAS: string = "";
         
         // static readonly id_SGAS_RATE: number = 100000000;
         static assetID2name: { [ id: string ]: string } = {};

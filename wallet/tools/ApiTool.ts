@@ -2,7 +2,7 @@
 namespace BlackCat {
     export class ApiTool {
         // 外网
-        static readonly base_url: string = 'http://182.254.139.130/apic_v2/apic_user.php'
+        static base_url: string = ''
         // static readonly base_url: string = 'http://47.52.60.231/apic/apic_user.php'
 
         // 内网测试
