@@ -127,7 +127,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
     "data": {
         "g_id": "5",
         "time": 1531891115,
-        "uid": "13661943881",
+        "uid": "sj_xxs23",
         "wallet": "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
         "sign": "40d48798189ec210153339d7a1cf71e5"
     }
@@ -137,7 +137,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
 {
 	"g_id": "5",
 	"time": 1531891115,
-	"uid": "13661943881",
+	"uid": "sj_xxs23",
 	"wallet": "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
 	"sign": "40d48798189ec210153339d7a1cf71e5"
 }

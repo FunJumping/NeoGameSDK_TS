@@ -124,7 +124,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
     "data": {
         "g_id": "5",
         "time": 1531891115,
-        "uid": "13661943881",
+        "uid": "sj_xxs23",
         "wallet": "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
         "sign": "40d48798189ec210153339d7a1cf71e5"
     }
@@ -134,7 +134,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
 {
 	"g_id": "5",
 	"time": 1531891115,
-	"uid": "13661943881",
+	"uid": "sj_xxs23",
 	"wallet": "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
 	"sign": "40d48798189ec210153339d7a1cf71e5"
 }
@@ -517,10 +517,9 @@ BlackCat.SDK.getUserInfo(function(res){
 {
     "cmd": "getUserInfoRes",
     "data": {
-        "uid": "13661943881",
+        "uid": "sj_xxs23",
         "name": "136****3881",
         "invitor": "",
-        "phone": "13661943881@86",
         "ip": "58.247.115.74",
         "lastlogin": "1531492182",
         "token": "8b6853ac07f3f30129eeaea498567b25",
@@ -535,10 +534,9 @@ BlackCat.SDK.getUserInfo(function(res){
 }
 // 方式二
 {
-  "uid": "13661943882",
+  "uid": "sj_xxs23",
   "name": "136****3882",
   "invitor": "",
-  "phone": "13661943882@86",
   "ip": "58.247.115.74",
   "lastlogin": "1531492354",
   "token": "6468aed6ea4f2e7add4d11ee84c6fd4a",
