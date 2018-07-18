@@ -9,6 +9,7 @@ tsc
 - wallet是前端sdk代码
 - res是静态css/js/fonts文件
 - lib是执行引用的js库，wallet工程编译成code.js
+- api_panel.html是测试页面，测试调试SDK使用
 
 # 文章传送门
 - [充值上链说明](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/payintro.md "充值上链说明")

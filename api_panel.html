@@ -1,0 +1,233 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>BlackCat SDK</title>
+
+    <link rel="stylesheet" href="res/css/panel.css" type="text/css" />
+
+
+    <script src="lib/rollup/aes.js"></script>
+    <script src="lib/component/aes.js"></script>
+    <script src="lib/component/mode-ecb.js"></script>
+    <script src="lib/component/pad-nopadding.js"></script>
+    <script src="lib/scrypt.js"></script>
+    <script src="lib/jsrsasign.js"></script>
+    <script src="lib/neo-ts.js"></script>
+    <script src="lib/code.js"></script>
+
+</head>
+<body style="background-color: cadetblue">
+    <button onclick="initSDK()">初始化SDK</button>
+    <button onclick="login()" style="margin-left:20px">登录</button>
+
+    <hr>
+    <button onclick="showDiv('invokescriptdiv')" >合约读取</button>
+    <button onclick="showDiv('makerawtransactiondiv')" style="margin-left:20px">合约交易</button>
+    <button onclick="showDiv('makerechargediv')" style="margin-left:20px">充值</button>
+    <button onclick="showDiv('makeGasTransferdiv')" style="margin-left:20px">Gas转账</button>
+    <button onclick="showDiv('confirmNotifydiv')" style="margin-left:20px">确认通知</button>
+
+    <hr>
+    <button onclick="getbalance()">余额</button>
+    <button onclick="getUserInfo()" style="margin-left:20px">用户信息</button>
+    <button onclick="getNetType()" style="margin-left:20px">网络类型</button>
+
+    <hr>
+    <button onclick="setLang('en')">英文</button>
+    <button onclick="setLang('cn')" style="margin-left:20px">中文</button>
+    <button onclick="showMain()" style="margin-left:20px">显示</button>
+    <button onclick="showIcon()" style="margin-left:20px">隐藏</button>
+    <hr>
+<div class="dis" id="invokescriptdiv" style="display:none">
+    nnc:
+    <input style="width: 100%" type="text" id="nnc" name="nnc" value="0xcfe8f6824365f70d382733a92d8f373ee4faf222"><br/>
+    sbParamJson:<br/>
+    <input style="width: 100%" type="text" id="sbParamJson" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"]'/><br/>
+    sbPushString:<br/>
+    <input style="width: 100%" type="text" id="sbPushString" name="sbPushString" value="balanceOf"/><br/>
+    extString:<br/>
+    <input style="width: 100%" type="text" id="extString" name="extString" value="invokeScript"><br/>
+    <br/>
+    <button onclick="invokescript()">读取</button>
+</div>
+
+<div class="dis" id="makerawtransactiondiv" style="display: none">
+    nnc:<br/>
+    <input style="width: 100%" type="text" id="nnc2" name="nnc" value="0x3f7420285874867c30f32e44f304fd62ad1e9573"><br/>
+    sbParamJson:<br/>
+    <input style="width: 100%" type="text" id="sbParamJson2" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a","(integer)100000"]'/><br/>
+    sbPushString:<br/>
+    <input style="width: 100%" type="text" id="sbPushString2" name="sbPushString" value="transfer"/><br/>
+    extString:<br/>
+    <input style="width: 100%" type="text" id="extString2" name="extString2" value="makeRawTransaction"><br/>
+    <br/>
+    <button onclick="makerawtransaction()">交易</button>
+</div>
+
+<div class="dis" id="makerechargediv" style="display: none">
+    count:<br/>
+    <input style="width: 100%" type="text" id="count" name="count" value="0.001"><br/>
+    extString:<br/>
+    <input style="width: 100%" type="text" id="extString3" name="extString3" value="makeRecharge"><br/>
+    <br/>
+    <button onclick="makerecharge()">充值</button>
+</div>
+
+<div class="dis" id="confirmNotifydiv" style="display: none">
+    txid:<br/>
+    <input style="width: 100%" type="text" id="txid" name="txid" value=""><br/>
+    <button onclick="confirmappnotify()">确认</button>
+</div>
+
+
+<div class="dis" id="makeGasTransferdiv" style="display: none">
+    转账地址:<br/>
+    <input style="width: 100%" type="text" id="toaddr" name="toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5"><br/>
+    转账数量:<br/>
+    <input style="width: 100%" type="text" id="gascount" name="gascount" value="0.01"><br/>
+    extString:<br/>
+    <input style="width: 100%" type="text" id="extString4" name="extString4" value="makeGasTransfer"><br/>
+    <button onclick="makeGasTransfer()">确认</button>
+</div>
+
+
+    <hr>
+    <div id="res"></div>
+
+    <script>
+        var appid = "5";
+        var appkey = "";
+        var listener = function(data)
+        {
+            var resObj = document.getElementById('res')
+            resObj.innerHTML = '<pre>' + JSON.stringify(JSON.parse(data), null, 4) + '</pre>'
+        };
+
+
+        function showDiv(id)
+        {
+            document.getElementById("invokescriptdiv").style.display = "none";
+            document.getElementById("makerawtransactiondiv").style.display = "none";
+            document.getElementById("makerechargediv").style.display = "none";
+            document.getElementById("confirmNotifydiv").style.display = "none";
+            document.getElementById("makeGasTransferdiv").style.display = "none";
+            
+
+            document.getElementById(id).style.display = ""
+        }
+
+        function initSDK()
+        {
+            BlackCat.SDK.init(appid, appkey, listener, "cn")
+        }
+
+        function setLang(lang)
+        {
+            BlackCat.SDK.setLang(lang)
+        }
+
+        function login()
+        {
+            BlackCat.SDK.login(function(res) {
+                console.log('[BlackCat]', 'login.callback.function.res => ', res)
+            });
+        }
+
+        function invokescript()
+        {
+            var data = {
+                nnc: document.getElementById('nnc').value,
+                sbParamJson: document.getElementById('sbParamJson').value,
+                sbPushString: document.getElementById('sbPushString').value,
+                extString: document.getElementById('extString').value
+            }
+            data.sbParamJson = JSON.parse(data.sbParamJson)
+            BlackCat.SDK.invokescript(data, function(res){
+                console.log('[BlackCat]', 'invokescript.callback.function.res => ', res)
+            })
+        }
+
+        function makerawtransaction()
+        {
+            var data = {
+                nnc: document.getElementById('nnc2').value,
+                sbParamJson: document.getElementById('sbParamJson2').value,
+                sbPushString: document.getElementById('sbPushString2').value,
+                extString: document.getElementById('extString2').value
+            }
+            data.sbParamJson = JSON.parse(data.sbParamJson)
+            
+            BlackCat.SDK.makeRawTransaction(data, function(res){
+                console.log('[BlackCat]', 'makerawtransaction.callback.function.res => ', res)
+            })
+        }
+
+        function makerecharge()
+        {
+            var data = {
+                count: document.getElementById('count').value,
+                extString: document.getElementById('extString3').value
+            }
+            
+            BlackCat.SDK.makeRecharge(data, function(res){
+                console.log('[BlackCat]', 'makeRecharge.callback.function.res => ', res)
+            })
+        }
+
+        function confirmappnotify()
+        {
+            var data = {
+                txid: document.getElementById('txid').value
+            }
+
+            BlackCat.SDK.confirmAppNotify(data, function(res){
+                console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
+            })
+        }
+
+        function showMain()
+        {
+            BlackCat.SDK.showMain()
+        }
+
+        function showIcon()
+        {
+            BlackCat.SDK.showIcon()
+        }
+
+        function getbalance()
+        {
+            BlackCat.SDK.getBalance(function(res){
+                console.log("getbalance.callback.function.res ", res)
+            })
+        }
+
+        function getUserInfo()
+        {
+            BlackCat.SDK.getUserInfo(function(res){
+                console.log("getUserInfo.callback.function.res ", res)
+            })
+        }
+
+        function makeGasTransfer()
+        {
+            var data = {
+                toaddr: document.getElementById('toaddr').value,
+                count: document.getElementById('gascount').value,
+                extString: document.getElementById('extString4').value
+            }
+            BlackCat.SDK.makeGasTransfer(data, function(res){
+                console.log("makeGasTransfer.callback.function.res ", res)
+            })
+        }
+
+        function getNetType()
+        {
+            BlackCat.SDK.getNetType(function(res){
+                console.log("getNetType.callback.function.res ", res)
+            })
+        }
+    </script>
+</body>
+</html>
