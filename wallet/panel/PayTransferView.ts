@@ -4,6 +4,7 @@
 namespace BlackCat {
     // 转账视图
     export class PayTransferView extends ViewBase {
+
         private inputGasCount: HTMLInputElement;
         private inputTransferAddr: HTMLInputElement;
 
@@ -102,7 +103,6 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                Main.viewMgr.payTransferView.div.classList.add("pc_fadeindown")
                 this.remove(300)
             }
             this.ObjAppend(popupbutbox, popupClose)
@@ -132,8 +132,7 @@ namespace BlackCat {
                 return;
             }
 
-            var regex = /(?!^0*(\.0{1,2})?$)^\d{1,14}(\.\d{1,8})?$/
-            if (!this.verify_Amount()||!regex.test(this.inputGasCount.value)) {
+            if (!Main.viewMgr.payView.checkTransCount(this.inputGasCount.value)) {
                 Main.showErrMsg("pay_transferCountError", () => {
                     this.inputGasCount.focus()
                 })
@@ -148,7 +147,7 @@ namespace BlackCat {
             catch (e) {
                 var res = new Result()
                 res.err = true;
-                res.info = e;
+                res.info = e.toString();
             }
 
 

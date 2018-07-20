@@ -4,13 +4,16 @@
 namespace BlackCat {
     // 收款视图
     export class PayReceivablesView extends ViewBase {
+
         private inputGasCount: HTMLInputElement;
         private inputTransferAddr: HTMLInputElement;
+        private textareaAddress: HTMLElement
 
         private gasBalance: number;
         private toaddress: string;
         private isDomain: boolean;
         private addrerr: string;
+
 
         constructor() {
             super();
@@ -39,12 +42,11 @@ namespace BlackCat {
 
 
             //转账容器
-            var textareaAddress = this.objCreate("textarea")
-            textareaAddress.classList.add("pc_receivables")
-            textareaAddress.id="pc_receivables"
-            textareaAddress.setAttribute("readonly", "readonly")
-            textareaAddress.innerHTML = Main.user.info.wallet
-            this.ObjAppend(popupbox, textareaAddress)
+            this.textareaAddress = this.objCreate("textarea")
+            this.textareaAddress.classList.add("pc_receivables")
+            this.textareaAddress.setAttribute("readonly", "readonly")
+            this.textareaAddress.innerHTML = Main.user.info.wallet
+            this.ObjAppend(popupbox, this.textareaAddress)
 
 
             // 弹窗外框
@@ -57,7 +59,6 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                Main.viewMgr.payReceivablesView.div.classList.add("pc_fadeindown")
                 this.remove(300)
             }
             this.ObjAppend(popupbutbox, popupClose)
@@ -66,7 +67,7 @@ namespace BlackCat {
             var butreceivables = this.objCreate("button")
             butreceivables.textContent = Main.langMgr.get("copy") //"复制"
             butreceivables.onclick = () => {
-                var idcopy = document.getElementById("pc_receivables") as HTMLInputElement;
+                var idcopy = this.textareaAddress as HTMLInputElement;
                 idcopy.select();
                 document.execCommand("Copy");
             }

@@ -4,6 +4,10 @@
 namespace BlackCat {
     // 我的信息
     export class MyInfoView extends ViewBase {
+
+        myName: HTMLElement;
+        mySex: HTMLElement;
+
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_myinfo")
@@ -37,34 +41,54 @@ namespace BlackCat {
 
             var ulMyinfo = this.objCreate("ul")
             this.ObjAppend(myinfo, ulMyinfo)
+
             //头像
             var liMyinfoImg = this.objCreate("li")
             liMyinfoImg.classList.add("pc_myinfoimg")
+            liMyinfoImg.style.cursor = "pointer"
             liMyinfoImg.textContent = Main.langMgr.get("myinfo_headImg")
+
+            var iMyinfoimg = this.objCreate("i")
+            iMyinfoimg.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfoImg, iMyinfoimg)
+
             var spanMyinfoimg = this.objCreate("span")
             this.ObjAppend(liMyinfoImg, spanMyinfoimg)
+
             var imgMyinfoimg = this.objCreate("img")
             imgMyinfoimg.setAttribute("src", this.getImg())
             this.ObjAppend(spanMyinfoimg, imgMyinfoimg)
+
             this.ObjAppend(ulMyinfo, liMyinfoImg)
 
             //昵称
             var liMyinfoName = this.objCreate("li")
+            liMyinfoName.style.cursor = "pointer"
             liMyinfoName.textContent = Main.langMgr.get("myinfo_nickname")
-            var spanMyinfoName = this.objCreate("span")
-            spanMyinfoName.textContent = this.getName()
-            spanMyinfoName.onclick = () => {
+            liMyinfoName.onclick = () => {
                 this.modifyName()
             }
-            this.ObjAppend(liMyinfoName, spanMyinfoName)
+            var iMyinfoName = this.objCreate("i")
+            iMyinfoName.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfoName, iMyinfoName)
+
+            this.myName = this.objCreate("span")
+            this.myName.textContent = this.getName()
+            this.ObjAppend(liMyinfoName, this.myName)
+
             this.ObjAppend(ulMyinfo, liMyinfoName)
+
 
             //性别
             var liMyinfoSex = this.objCreate("li")
+            liMyinfoSex.style.cursor = "pointer"
             liMyinfoSex.textContent = Main.langMgr.get("myinfo_sex")
-            var spanMyinfoSex = this.objCreate("span")
-            spanMyinfoSex.textContent = this.getSex()
-            this.ObjAppend(liMyinfoSex, spanMyinfoSex)
+            liMyinfoSex.onclick = () => {
+                this.modifySex()
+            }
+            this.mySex = this.objCreate("span")
+            this.mySex.textContent = this.getSex()
+            this.ObjAppend(liMyinfoSex, this.mySex)
             this.ObjAppend(ulMyinfo, liMyinfoSex)
 
             //账号
@@ -115,7 +139,7 @@ namespace BlackCat {
         }
 
         private getSex() {
-            return Main.langMgr.get("gender_" + Main.user.info.sex)
+            return Main.langMgr.get("myinfo_" + Main.user.info.sex) ? Main.langMgr.get("myinfo_" + Main.user.info.sex) : Main.langMgr.get("myinfo_sex_0");
         }
 
         private getArea() {
@@ -138,10 +162,19 @@ namespace BlackCat {
             Main.logoutCallback()
         }
 
-        private modifyName() {
+        private async modifyName() {
+            ModifyNameView.callback = () => {
+                this.myName.textContent = this.getName()
+                Main.viewMgr.payView.payMyWallet.textContent = this.getName()
+            }
             Main.viewMgr.change("ModifyNameView")
         }
-
+        private async modifySex() {
+            ModifySexView.callback = () => {
+                this.mySex.textContent = this.getSex()
+            }
+            Main.viewMgr.change("ModifySexView")
+        }
 
 
     }

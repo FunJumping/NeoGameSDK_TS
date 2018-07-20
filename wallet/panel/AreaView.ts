@@ -3,10 +3,6 @@
 
 namespace BlackCat {
 	export class AreaView extends ViewBase {
-		// constructor()
-		// {
-		//     super()
-		// }
 
 		static areaInfo = [
 			{ "area": "中国", "areacode": "86", "codename": "CN" },

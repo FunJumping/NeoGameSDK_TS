@@ -1,5 +1,5 @@
-
 namespace BlackCat {
+
     export class UserInfo {
         uid: string = '';
         name: string = '';

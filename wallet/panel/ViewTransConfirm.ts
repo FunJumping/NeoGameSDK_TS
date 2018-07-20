@@ -7,7 +7,7 @@ namespace BlackCat {
 
         static list: walletLists;
 
-        // static params: any;
+        private divConfirmSelect: HTMLElement; // 确认/取消栏div
 
         constructor() {
             super()
@@ -26,8 +26,8 @@ namespace BlackCat {
 
             var documenth = this.div.clientHeight
             if (documenth < 667) {
-                document.getElementById("pc_tradeconfirmbut").style.top = "auto";
-                document.getElementById("pc_tradeconfirmbut").style.bottom = "0";
+                this.divConfirmSelect.style.top = "auto"
+                this.divConfirmSelect.style.bottom = "0"
             }
         }
 
@@ -82,11 +82,10 @@ namespace BlackCat {
                     + '</ul>'
                 this.ObjAppend(this.div, contentObj)
 
-                //var 
-                var divconfirm = this.objCreate("div")
-                divconfirm.classList.add("pc_tradeconfirmbut")
-                divconfirm.id= "pc_tradeconfirmbut"
-                this.ObjAppend(this.div, divconfirm)
+                // 确认/取消栏div 
+                this.divConfirmSelect = this.objCreate("div")
+                this.divConfirmSelect.classList.add("pc_tradeconfirmbut")
+                this.ObjAppend(this.div, this.divConfirmSelect)
 
 
 
@@ -101,7 +100,7 @@ namespace BlackCat {
                     }
                     this.remove()
                 }
-                this.ObjAppend(divconfirm, cancelObj)
+                this.ObjAppend(this.divConfirmSelect, cancelObj)
 
                 var confirmObj = this.objCreate("button")
                 if (ViewTransConfirm.list.type == "3") {
@@ -116,9 +115,7 @@ namespace BlackCat {
                     ViewTransConfirm.callback = null;
                     this.remove()
                 }
-                this.ObjAppend(divconfirm, confirmObj)
-
-
+                this.ObjAppend(this.divConfirmSelect, confirmObj)
 
             }
         }
@@ -131,60 +128,9 @@ namespace BlackCat {
         }
 
 
-        // private getCntsClass()
-        // {
-        //     if ( ViewTransConfirm.list.type == "1" || (ViewTransConfirm.list.type == "5" && ViewTransConfirm.list.type_detail == "2") ) {
-        //         return 'pc_income';
-        //     }
-        //     else if (ViewTransConfirm.list.cnts > '0') {
-        //         return 'pc_expenditure';
-        //     }
-        //     return "";
-        // }
-
-        // private getImg()
-        // {
-        //     if (ViewTransConfirm.list.g_id == "0") {
-        //         return "res/game" + ViewTransConfirm.list.g_id + ".png";
-        //     }
-        //     return ViewTransConfirm.list.icon;
-        // }
-
-        // private getName()
-        // {
-        //     if (ViewTransConfirm.list.g_id == "0") {
-        //         return Main.platName;
-        //     }
-        //     return ViewTransConfirm.list.name;
-        // }
-
-        // private getDate()
-        // {
-        //     return Main.getDate(ViewTransConfirm.list.ctm)
-        // }
-
         private getCnts() {
             return ViewTransConfirm.list.cnts != '0' ? ViewTransConfirm.list.cnts : ""
         }
-
-        // private getStats()
-        // {
-        //     switch (ViewTransConfirm.list.state)
-        //     {
-        //         case '0':
-        //             return '<button>验证中</button>'
-        //         case '1':
-        //             return '<a class="iconfont icon-gou"></a>'
-        //         case '2':
-        //             return '<a class="iconfont icon-chacha"></a>'
-        //     }
-        //     return "";
-        // }
-
-        // private getTxid()
-        // {
-        //     return ViewTransConfirm.list.txid
-        // }
 
         private getWallet() {
             return ViewTransConfirm.list.wallet

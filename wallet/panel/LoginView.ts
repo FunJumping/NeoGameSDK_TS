@@ -1,10 +1,10 @@
-
 /// <reference path="../main.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace BlackCat {
     // 登录视图
     export class LoginView extends ViewBase {
+
         private selectArea: HTMLSelectElement;
 
         private inputAccount: HTMLInputElement;
@@ -16,7 +16,7 @@ namespace BlackCat {
 
             //登录标题
             var h1Title = this.objCreate("h1")
-            h1Title.classList.add("pc_login_title","iconfont","icon-blacat")
+            h1Title.classList.add("pc_login_title", "iconfont", "icon-blacat")
             // h1Title.innerText = Main.platName;
             this.ObjAppend(this.div, h1Title)
 
@@ -44,7 +44,7 @@ namespace BlackCat {
 
 
             // input 手机号/邮箱
-            var telInput = this.objCreate("div") 
+            var telInput = this.objCreate("div")
             telInput.classList.add("pc_login_inputbox", "pc_tel")
             this.ObjAppend(divInput, telInput)
 
@@ -81,9 +81,9 @@ namespace BlackCat {
             passInput.classList.add("pc_login_forgetpass")
             this.ObjAppend(divInput, passInput)
 
-            var aForgetPass= this.objCreate("a")
-            aForgetPass.textContent=Main.langMgr.get("login_textForgetpass")//"忘记密码"
-            aForgetPass.onclick=()=>{
+            var aForgetPass = this.objCreate("a")
+            aForgetPass.textContent = Main.langMgr.get("login_textForgetpass")//"忘记密码"
+            aForgetPass.onclick = () => {
                 this.remove();
                 Main.viewMgr.change("ForgetPasswordView")
             }

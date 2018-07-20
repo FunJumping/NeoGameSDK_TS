@@ -1,5 +1,6 @@
 namespace BlackCat.tools {
     export class wallet {
+
         private wallet: ThinNeo.nep6wallet;
         private otcgo: WalletOtcgo;
 

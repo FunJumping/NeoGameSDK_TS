@@ -2,8 +2,8 @@
 namespace BlackCat {
 
     export class SDK {
-        private static is_init: boolean = false;
 
+        private static is_init: boolean = false;
         private static main: Main;
 
         // SDK初始化

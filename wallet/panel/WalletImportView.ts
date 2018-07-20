@@ -59,7 +59,7 @@ namespace BlackCat {
 
             // 导入钱包文件名
             this.inputFileText = this.objCreate("input") as HTMLInputElement
-            this.inputFileText.id="pc_filetitle"
+            this.inputFileText.classList.add("pc_filetitle")
             this.inputFileText.type = "text"
             this.inputFileText.placeholder = Main.langMgr.get("walletImport_select_file") // "请选择钱包文件"
             this.ObjAppend(popupbox, this.inputFileText)
@@ -67,7 +67,7 @@ namespace BlackCat {
             // 导入钱包图标
             var inputFileI = this.objCreate("i")
             // inputFileI.type = "text"
-            inputFileI.classList.add("pc_upload", "iconfont", "icon-1")
+            inputFileI.classList.add("pc_upload", "iconfont", "icon-wenjianjia")
             this.ObjAppend(popupbox, inputFileI)
 
             // 导入钱包

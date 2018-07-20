@@ -30,6 +30,7 @@ namespace BlackCat {
 
         myInfoView: MyInfoView; // 我的信息
         modifyNameView: ModifyNameView; //修改昵称
+        modifySexView: ModifySexView; //修改昵称
 
 
         payWalletDetailView: PayWalletDetailView; // 钱包详情
@@ -230,7 +231,7 @@ namespace BlackCat {
                     }
                     this.forgetPasswordView.start()
                     break;
-                    
+
                 case "ModifyNameView":
                     console.log('[Bla Cat]', '[ViewMgr]', '显示修改昵称(' + type + ') ...')
                     if (!this.modifyNameView) {
@@ -238,6 +239,14 @@ namespace BlackCat {
                         this.views[type] = this.modifyNameView
                     }
                     this.modifyNameView.start()
+                    break;
+                case "ModifySexView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示修改性别(' + type + ') ...')
+                    if (!this.modifySexView) {
+                        this.modifySexView = new ModifySexView()
+                        this.views[type] = this.modifySexView
+                    }
+                    this.modifySexView.start()
                     break;
 
             }
@@ -255,11 +264,6 @@ namespace BlackCat {
                 switch (className) {
                     case "IconView":
                         v.reset()
-                        break;
-                    case "ViewConfirm":
-                        if (Main.user.info.uid) {
-                            v.remove()
-                        }
                         break;
                     default:
                         if (v.isCreated) {

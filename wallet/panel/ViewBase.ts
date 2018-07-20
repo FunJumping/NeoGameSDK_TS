@@ -1,7 +1,7 @@
-
 namespace BlackCat {
     // 视图基类
     export class ViewBase {
+
         div: HTMLDivElement;
         isCreated: boolean;
 
@@ -9,6 +9,8 @@ namespace BlackCat {
         static callback: Function; // 确认后回调
         static callback_cancel: Function; // 取消后回调
         static callback_params: any; // 回调参数
+
+        private s_timeout_remove: any; // 销毁定时器
 
         constructor() {
             this.isCreated = false;
@@ -36,9 +38,13 @@ namespace BlackCat {
             this.show()
         }
         // 移除
-        remove(timeout: number = 0) {
+        remove(timeout: number = 0, fadeClass = "pc_fadeindown") {
+            if (this.s_timeout_remove) {
+                return
+            }
             if (timeout) {
-                setTimeout(() => {
+                if (fadeClass) this.div.classList.add("pc_fadeindown")
+                this.s_timeout_remove = setTimeout(() => {
                     this._remove()
                 }, timeout)
             }
@@ -47,6 +53,7 @@ namespace BlackCat {
             }
         }
         private _remove() {
+            this.s_timeout_remove = null
             this.parentRemove(this.div)
             this.isCreated = false;
             this.reset()

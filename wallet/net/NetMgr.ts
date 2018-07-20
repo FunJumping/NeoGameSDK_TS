@@ -1,23 +1,24 @@
 namespace BlackCat {
     export class NetMgr {
-        type: number; // 1：主网；2:测试网
 
-        types: Array<number>;
+        type: number; // 1：主网；2:测试网
+        types: Array<number>; // 网络类型集合
 
         constructor() {
-            this.types = [1,2]
+            this.types = [1, 2]
             // 主网
             // this.change2Main()
 
             // 测试网
             this.chang2test()
 
+            // ApiTool.base_url = "http://site01.blacat.org/apic/apic_user.php"
             ApiTool.base_url = 'http://182.254.139.130/apic_v2/apic_user.php'
         }
 
         getOtherTypes(): Array<number> {
             var res = new Array()
-            for (let k = 0; k<this.types.length; k++) {
+            for (let k = 0; k < this.types.length; k++) {
                 if (this.types[k] !== this.type) {
                     res.push(this.types[k])
                 }
@@ -46,8 +47,7 @@ namespace BlackCat {
         }
 
 
-        chang(type:number)
-        {
+        chang(type: number) {
             if (this.type != type) {
                 console.log('[Bla Cat]', '[NetType]', ' change to type => ', type)
                 switch (type) {

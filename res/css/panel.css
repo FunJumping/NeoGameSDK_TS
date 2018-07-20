@@ -22,9 +22,12 @@
 .pc_iconRecord{-webkit-animation: pc_gif 0.3s infinite linear;animation: pc_gif 0.3s infinite linear;}
 @-webkit-keyframes pc_gif{0%{background: url(../img/BlackCaticon1.png)0% 0% / cover}20%{background: url(../img/BlackCaticon2.png)0% 0% / cover}40%{background: url(../img/BlackCaticon3.png)0% 0% / cover}60%{background: url(../img/BlackCaticon4.png)0% 0% / cover}80%{background: url(../img/BlackCaticon5.png)0% 0% / cover}100%{background: url(../img/BlackCaticon6.png)0% 0% / cover}}
 @keyframes pc_gif{0%{background: url(../img/BlackCaticon1.png)0% 0% / cover}20%{background: url(../img/BlackCaticon2.png)0% 0% / cover}40%{background: url(../img/BlackCaticon3.png)0% 0% / cover}60%{background: url(../img/BlackCaticon4.png)0% 0% / cover}80%{background: url(../img/BlackCaticon5.png)0% 0% / cover}100%{background: url(../img/BlackCaticon6.png)0% 0% / cover}}
-.pc_window{position: fixed;right: 0;top: 0;z-index: 99;max-height: 667px;overflow: hidden;background-color: #343643;}
+.pc_window{position: fixed;right: 0;top: 0;z-index: 99;max-height: 667px;overflow: hidden;background-color: #343643;-webkit-transition: all 0.3s linear;transition: all 0.3s linear;-webkit-animation: pc_window 0.3s linear; animation: pc_window 0.3s linear}
 .pc_window_mask{position: fixed;left: 0;right: 0;top: 0;bottom: 0;z-index: 0;cursor: pointer;}
 .pc_window *{margin: 0;padding: 0;border: 0;word-wrap:break-word;}
+@-webkit-keyframes pc_window{0%{-webkit-transform: translate(375px)}100%{-webkit-transform: translate(0)}}
+@keyframes pc_window{0%{transform: translate(375px)}100%{transform: translate(0)}}
+.pc_windowhide{-webkit-transform: translate(375px);transform: translate(375px)}
 
 /*不同网网络背景*/
 .pc_windowtest2,.pc_windowtest2 .pc_header,.pc_windowtest2 .pc_net,.pc_windowtest2 .pc_netbox,.pc_windowtest2 .pc_tradeconfirm,.pc_windowtest2 .pc_tradeconfirmbut{background-color: #344241;}
@@ -67,7 +70,7 @@
 /* 注册页 */
 .pc_register .pc_login_title{padding: 60px 0 20px;}
 .pc_register .pc_login_inputbox{margin-top: 15px;}
-.pc_loginregion{color: #c8ab73;font-size: 14px;margin: 10px auto;display: block;font-family:黑体}
+.pc_loginregion{color: #c8ab73;font-size: 14px;margin: 10px auto;display: block;}
 
 
 
@@ -96,11 +99,11 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 /*创建钱包弹窗*/
 .pc_prompt{font-size: 12px;color: #c8ab73;text-align: center}
 .pc_popupbox input[type=file],.pc_upload{position: absolute;right: 15%;margin-top: -47px;opacity: 0;cursor: pointer;}
-.pc_upload{opacity: 1;color: #4d4f5a;font-size: 28px;margin-top: -50px;}
-#pc_filetitle{background-color: #1c1e2a;color: #dbdde9;border: 1px solid #1c1e2a}
+.pc_upload{opacity: 1;color: #4d4f5a;margin-top: -41px;right: 16%;}
+.pc_filetitle{background-color: #1c1e2a;color: #dbdde9;border: 1px solid #1c1e2a}
 /* 提示弹窗 */
 .pc_alterbox{width: 70%;text-align: center;}
-.pc_altertext{color: #999;padding: 30px 5px;}
+.pc_altertext{color: #999;padding: 30px 5px 15px;}
 /* 确认弹窗 */
 @-webkit-keyframes fadeIn {0% {opacity: 0}100% {opacity: 1}}
 @keyframes fadeIn {0% {opacity: 0}100% {opacity: 1}}
@@ -158,12 +161,12 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_header a{font-size: 28px;color: #9c9ead;position: absolute;left: 12px;cursor: pointer;}
 .pc_header .icon-fanhui{font-size: 16px;left: 10px;}
 .pc_header h1{font-size: 20px;text-align: center;color: #fed968;font-weight: 500}
-.pc_net,.pc_netbox{position: absolute;right: 16px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #fed968;color: #fed968;line-height: 1.5;padding:1px 3px;font-size: 14px;-webkit-user-select: none;user-select: none; cursor: pointer;}
+.pc_net,.pc_netbox{position: absolute;right: 46px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #fed968;color: #fed968;line-height: 1.5;padding:1px 3px;font-size: 14px;-webkit-user-select: none;user-select: none; cursor: pointer;}
 .pc_net::after{content: "\e606";font-size: 12px}
 .pc_netbox{top: 33px;border-top: none}
 .pc_netbox>div{border-top: 1px solid #fed968;}
-
-.pc_card{position: relative;;width: 320px;height: 204px;padding: 12px; background: url(../img/card.png) no-repeat;background-size: 100% 100%;margin:65px auto 20px auto;border-radius: 5px;box-shadow: 0 7px 14px #000;color: #fff}
+.pc_returngame{position: absolute;left: auto;right: 10px;font-size: 18px;color: #fff;top: 0;padding: 0 8px;cursor: pointer;}
+.pc_card{position: relative;;width: 320px;height: 204px;padding: 12px; background: url(../img/card.png) no-repeat;background-size: 100% 100%;margin:65px auto 20px auto;border-radius: 5px;box-shadow: 0 7px 14px rgba(0, 0, 0, 0.6);color: #fff}
 .pc_mywallet{font-size: 14px}
 .pc_mywallet.icon-qianbao:before{font-size: 18px;margin-right: 5px;}
 .pc_mywallet a{float: right;cursor: pointer;color: #fff;font-size: 14px}
@@ -217,23 +220,24 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_paylist li{height: 40px;padding: 10px 0; border-bottom: 1px solid #424453;margin: 0 20px;cursor: pointer;}
 li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;cursor: auto}
 .pc_listimg{width: 40px;height: 40px;float: left;border-radius:10px;overflow:hidden}
-.pc_liftinfo{float: left;margin-left:10px;font-size: 14px;color: #a7a8ba}
+.pc_liftinfo{float: left;margin-left:10px;font-size: 14px;color: #a7a8ba;max-width: 45%;}
+.pc_listname,.pc_method{line-height: 1.5;overflow: hidden;text-overflow: ellipsis;white-space: nowrap}
 .pc_cnts{line-height: 40px;float: right;font-size: 14px;text-align: right;line-height: 1}
 .pc_cnts a{font-size: 28px;float: right;margin-left: 5px;position: relative;}
-.pc_cnts .icon-gou{color: #33bc80;}
-.pc_cnts .icon-chacha{color: #ff7471;}
+.pc_cnts .icon-gou{color: #309368;}
+.pc_cnts .icon-chacha{color: #93304b;}
 
-.pc_cnts .pc_verification{width: 28px;height: 28px;position: relative;display: inline-block;margin-left: 5px;font-size: 28px;line-height: 1}
-.pc_cnts .icon-gantanhao{font-size: 28px;position: relative;top: -6px;margin-left: 0;color: #fed968}
-.pc_cnts label{font-size: 10px !important;position: absolute;top: 25px;text-align: center;color: #fed968;width: 33px;left: -1.5px;}
-.pc_cnts span{line-height: 2}
+.pc_cnts .pc_verification{width: 28px;height: 28px;position: relative;display: inline-block;margin-left: 5px;font-size: 24px;color: #5676bc; line-height: 1}
+.pc_cnts .icon-jinhangzhong{color: #9c3b98}
+.pc_cnts label{font-size: 10px !important;position: absolute;top: 25px;text-align: center;width: 33px;left: -1.5px;color: #a7a8ba}
+.pc_cnts span{line-height: 2;}
 
-.pc_listdate{color: #a7a8ba;font-size: 12px}
+.pc_listdate{color: #a7a8ba;font-size: 12px;}
 
 
 .pc_income{color: #c8ab73}
 .pc_income span::before{content: "+"}
-.pc_expenditure{color: #2e9ac3}
+.pc_expenditure{color: #a7a8ba}
 .pc_expenditure span::before{content: "-"}
 .pc_listmore{text-align: center;color: #fff;cursor: pointer;margin: 10px auto 30px;clear:both;}
 .pc_verification.icon-dengdai::before{-webkit-animation: pc_turn 1.5s infinite ;animation: pc_turn 1.5s infinite ;display: inline-block}
@@ -256,10 +260,14 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 
 /* 我的信息 */
 .pc_myinfolist{padding-top: 45px;}
-.pc_myinfolist li{height: 60px;line-height: 60px;font-size: 18px;border-bottom: 1px solid #424453;padding:0 15px;color: #dadce8}
-.pc_myinfolist li span{float: right;color: #a7a8bc}
+.pc_myinfolist li{height: 60px;line-height: 60px;font-size: 14px;border-bottom: 1px solid #424453;margin: auto 15px;color: #9a9bac;padding: 0 5px;}
+.pc_myinfolist li span{float: right;color: #ccc;}
+.pc_myinfolist li i{color: #9a9bac;float: right}
 .pc_myinfolist .pc_myinfoimg{height: 75px;line-height: 75px}
 .pc_myinfoimg img{width: 45px;height: 45px;border-radius: 50%}
-.pc_myinfolist button{width: 60%; height: 55px;font-size: 24px;background-color: #9e6d6d;color: #fff;margin: 70px auto 50px;display: block;border-radius:5px }
-.pc_myinfolist button:active{background-color: #f57f7f}
-
+.pc_myinfolist button{width: 50%; height: 50px;font-size: 16px;background-color: #9e6d6d;color: #343543;margin: 70px auto 50px;display: block;}
+.pc_modifysex{text-align: center}
+.pc_modifysex>div{width: 75px;height: 75px;line-height: 75px; border-radius: 50%;border: 1px solid #ccc;color: #ccc;display: inline-block;margin: 20px 15px 10px;position: relative;font-size: 40px}
+.pc_modifysex input{width: 100%;height: 100%;margin: 0;position: absolute;opacity: 0;top: 0;cursor: pointer;}
+.pc_modifysex::after{content: "";clear: both;display: block;}
+div.pc_modifysex_active{background-color: #f3ce87;color: #33353e;border-color: #f3ce87}

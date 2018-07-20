@@ -13,8 +13,6 @@ namespace BlackCat {
 
         constructor() {
             super();
-
-            // Neo.Cryptography.RandomNumberGenerator.startCollectors();
             this.wallet = new ThinNeo.nep6wallet();
         }
 

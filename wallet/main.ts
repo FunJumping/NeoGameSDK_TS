@@ -1,6 +1,7 @@
 ﻿
 namespace BlackCat {
     export class Main {
+
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
 
@@ -45,10 +46,12 @@ namespace BlackCat {
         private static isLoginCallback: boolean;
         private static isCreated: boolean;
 
+        private static s_update: any;
+
+
         private update_timeout_max: number;
         private update_timeout_min: number;
 
-        private static s_update: any;
 
         constructor() {
             Main.netMgr = new NetMgr();
@@ -82,7 +85,7 @@ namespace BlackCat {
         }
 
         static clearTimeout() {
-            if (Main.s_update) Main.s_update = null
+            if (Main.s_update) clearTimeout(Main.s_update)
         }
 
         // SDK初始化
@@ -107,7 +110,6 @@ namespace BlackCat {
                 Main.viewMgr.iconView.hidden();
             }
             Main.viewMgr.mainView.show()
-
         }
         // 显示icon界面
         showIcon() {
@@ -562,7 +564,7 @@ namespace BlackCat {
             console.log('[Bla Cat]', '[main]', 'update ...')
             await this.getAppNotifys();
             await this.getPlatNotifys();
-            
+
             // 更新payView的List时间
             if (Main.viewMgr.payView && Main.viewMgr.payView.isCreated && !Main.viewMgr.payView.isHidden()) {
                 Main.viewMgr.payView.flushListCtm()
@@ -581,12 +583,11 @@ namespace BlackCat {
             var data_res = await ApiTool.walletNotify(Main.user.info.uid, Main.user.info.token, params.txid, Main.netMgr.type);
 
             var res = new Result();
-            
-            if (data_res.r)
-            {
+
+            if (data_res.r) {
                 res.err = false;
                 res.info = data_res.data
-                
+
                 var callback_data = {
                     params: params,
                     res: res
@@ -606,7 +607,7 @@ namespace BlackCat {
 
                 this.listenerCallback("confirmAppNotifyRes", callback_data);
             }
-            
+
             return res;
         }
         // main获取交易确认通知记录
@@ -1003,51 +1004,52 @@ namespace BlackCat {
                 // "未知错误！错误码："
                 msgId = "errCode_default";
                 msg = Main.langMgr.get("errCode_default") + errCode;
-                this.showErrMsg(msgId, callback, {errCode: errCode})
+                this.showErrMsg(msgId, callback, { errCode: errCode })
                 return
             }
             if (errCode == 100701) {
                 // msg = "登录失效，请重新登录";
                 this.showErrMsg(msgId, () => {
-                    Main.user.logout()
                     Main.viewMgr.removeAll();
                     Main.viewMgr.change("LoginView")
-                    Main.logoutCallback()
                 })
+                Main.user.logout()
+                Main.logoutCallback()
+                return
             }
             this.showErrMsg(msgId, callback)
         }
 
-        static async showErrMsg(errMsg: string, callback = null, content_ext = null) {
+        static async showErrMsg(errMsgKey: string, callback = null, content_ext = null) {
             // alert(errMsg)
-            ViewAlert.content = errMsg;
+            ViewAlert.content = errMsgKey;
             ViewAlert.content_ext = content_ext;
             ViewAlert.callback = callback
             Main.viewMgr.change("ViewAlert")
         }
 
-        static async showToast(msg: string, showTime: number = 2500) {
+        static async showToast(msgKey: string, showTime: number = 2500) {
             // alert(msg)
-            ViewToast.content = msg;
+            ViewToast.content = msgKey;
             ViewToast.showTime = showTime;
             Main.viewMgr.change("ViewToast")
         }
 
-        static async showInfo(msg: string, callback = null, content_ext = null) {
+        static async showInfo(msgKey: string, callback = null, content_ext = null) {
             // alert(msg)
-            ViewAlert.content = msg;
+            ViewAlert.content = msgKey;
             ViewAlert.content_ext = content_ext;
             ViewAlert.callback = callback
             Main.viewMgr.change("ViewAlert")
         }
-        static async showConFirm(msg: string) {
+        static async showConFirm(msgKey: string) {
             // alert(errMsg)
-            ViewConfirm.content = msg;
+            ViewConfirm.content = msgKey;
             Main.viewMgr.change("ViewConfirm")
         }
-        static async showLoading(msg: string) {
+        static async showLoading(msgKey: string) {
             // alert(errMsg)
-            ViewLoading.content = msg;
+            ViewLoading.content = msgKey;
             Main.viewMgr.change("ViewLoading")
         }
 

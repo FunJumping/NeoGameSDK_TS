@@ -4,12 +4,11 @@
 namespace BlackCat {
     // 确认视图
     export class ViewConfirm extends ViewBase {
-        static readonly divId: string = "BC_confirm";
+
         static content: string;
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.id = ViewConfirm.divId;
 
             this.div.classList.add("pc_alter", "pc_confirm")
             //提示的框
@@ -26,7 +25,6 @@ namespace BlackCat {
             // 提示内容
             var alterText = this.objCreate("div")
             alterText.classList.add("pc_altertext")
-            alterText.id= "pc_altertext"
             alterText.textContent = Main.langMgr.get(ViewConfirm.content) // "内容"
             this.ObjAppend(alter, alterText)
 
@@ -64,18 +62,12 @@ namespace BlackCat {
         }
 
         private doConfirm() {
-            Main.viewMgr.viewConfirm.div.classList.add("pc_fadeindown")
-
             this.remove(300);
-
             ViewConfirm.callback(ViewConfirm.callback_params)
             ViewConfirm.callback_params = null;
         }
         private doCancel() {
-            Main.viewMgr.viewConfirm.div.classList.add("pc_fadeindown")
-
             this.remove(300)
-
             if (ViewConfirm.callback_cancel) {
                 ViewConfirm.callback_cancel(ViewConfirm.callback_params)
             }

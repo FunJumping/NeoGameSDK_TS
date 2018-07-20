@@ -1,10 +1,10 @@
-
 /// <reference path="../main.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace BlackCat {
     // 注册视图
     export class RegisterView extends ViewBase {
+
         private selectArea: HTMLSelectElement;
         private inputUid: HTMLInputElement;
         private inputAccount: HTMLInputElement;
@@ -12,13 +12,16 @@ namespace BlackCat {
         private inputPass: HTMLInputElement;
         private inputVpass: HTMLInputElement;
 
+        private getCodeCount: HTMLElement;
+        private getCode: HTMLElement
+
         create() {
             this.div = this.objCreate("div") as HTMLDivElement;
             this.div.classList.add("pc_login", "pc_register")
 
             //登录标题
             var h1Title = this.objCreate("h1")
-            h1Title.classList.add("pc_login_title","iconfont","icon-blacat")
+            h1Title.classList.add("pc_login_title", "iconfont", "icon-blacat")
             // h1Title.innerText = Main.platName;
             this.ObjAppend(this.div, h1Title)
 
@@ -123,24 +126,22 @@ namespace BlackCat {
 
 
             // getCode 获取验证码
-            var getCode = this.objCreate("button");
-            getCode.id="pc_getPhoneCode"
-            getCode.textContent = Main.langMgr.get("register_getCode") //"获取验证码"
-            getCode.onclick = () => {
+            this.getCode = this.objCreate("button");
+            this.getCode.textContent = Main.langMgr.get("register_getCode") //"获取验证码"
+            this.getCode.onclick = () => {
                 this.doGetCode();
             }
-            this.ObjAppend(codeInput, getCode)
+            this.ObjAppend(codeInput, this.getCode)
 
 
             // 验证码倒计时
-            var getCodecount = this.objCreate("button");
-            getCodecount.classList.add("pc_getPhoneCodecount");
-            getCodecount.id="pc_getPhoneCodecount"
-            getCodecount.textContent = Main.langMgr.get("register_getCodecount") // "重新获取(60)"
+            this.getCodeCount = this.objCreate("button");
+            this.getCodeCount.classList.add("pc_getPhoneCodecount");
+            this.getCodeCount.textContent = Main.langMgr.get("register_getCodecount") // "重新获取(60)"
             // getCode.onclick = () => {
             //     this.doGetCode();
             // }
-            this.ObjAppend(codeInput, getCodecount)
+            this.ObjAppend(codeInput, this.getCodeCount)
 
             //  立即注册
             var doRegister = this.objCreate("button");
@@ -328,13 +329,13 @@ namespace BlackCat {
             var i = 60;
 
             var time = setInterval(() => {
-                if (i > 0 && document.getElementById("pc_getPhoneCodecount") != null) {
+                if (i > 0 && this.getCodeCount != null) {
                     i--;
-                    document.getElementById("pc_getPhoneCodecount").innerText = Main.langMgr.get("register_getCodecountRetry") + "(" + i + ")"
-                } else if (document.getElementById("pc_getPhoneCodecount") != null) {
+                    this.getCodeCount.innerText = Main.langMgr.get("register_getCodecountRetry") + "(" + i + ")"
+                } else if (this.getCodeCount != null) {
                     clearInterval(time);
-                    document.getElementById("pc_getPhoneCodecount").style.display = "none";
-                    document.getElementById("pc_getPhoneCode").style.display = "block";
+                    this.getCodeCount.style.display = "none";
+                    this.getCode.style.display = "block";
                 } else {
                     clearInterval(time);
                 }
@@ -369,8 +370,8 @@ namespace BlackCat {
                 this.count_down()
                 // "验证码已成功发送"
                 Main.showToast("register_getCodeSucc")
-                document.getElementById("pc_getPhoneCode").style.display = "none";
-                document.getElementById("pc_getPhoneCodecount").style.display = "block";
+                this.getCode.style.display = "none";
+                this.getCodeCount.style.display = "block";
             }
             else {
                 Main.showErrCode(res.errCode)

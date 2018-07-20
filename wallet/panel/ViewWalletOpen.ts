@@ -4,7 +4,7 @@
 namespace BlackCat {
     // 打开钱包视图
     export class ViewWalletOpen extends ViewBase {
-        // static params: any;
+
         static callback_callback: Function;
 
         private static tasks: object;
@@ -53,7 +53,6 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                Main.viewMgr.viewWalletOpen.div.classList.add("pc_fadeindown")
                 this.remove(300)
 
                 if (ViewWalletOpen.callback_cancel) {
@@ -64,7 +63,7 @@ namespace BlackCat {
                         ViewWalletOpen.callback_cancel(ViewWalletOpen.callback_params)
                     }
                 }
-                
+
                 ViewWalletOpen.callback_cancel = null;
                 ViewWalletOpen.callback_params = null;
                 ViewWalletOpen.callback_callback = null;

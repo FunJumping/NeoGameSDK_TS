@@ -1,6 +1,6 @@
-
 namespace BlackCat {
     export class ApiTool {
+
         // 外网
         static base_url: string = ''
         // static readonly base_url: string = 'http://47.52.60.231/apic/apic_user.php'
@@ -62,19 +62,19 @@ namespace BlackCat {
         }
 
         static async walletNotify(uid: string, token: string, txid: string, net_type: number) {
-            return this.common('user_wallet.notify', { uid: uid, token: token, txid: txid, net_type:net_type });
+            return this.common('user_wallet.notify', { uid: uid, token: token, txid: txid, net_type: net_type });
         }
 
         static async getAppWalletNotifys(uid: string, token: string, g_id: string, net_type: number) {
             return this.common('user_wallet.get_notify', { uid: uid, token: token, g_id: g_id, net_type: net_type });
         }
 
-        static async getPlatWalletNotifys(uid: string, token: string, net_type:number) {
-            return this.common('user_wallet.get_notify_plat', { uid: uid, token: token, net_type:net_type })
+        static async getPlatWalletNotifys(uid: string, token: string, net_type: number) {
+            return this.common('user_wallet.get_notify_plat', { uid: uid, token: token, net_type: net_type })
         }
 
-        static async walletNotifyExt(uid: string, token: string, txid: string, ext: string,net_type:number) {
-            return this.common('user_wallet.notify_ext', { uid: uid, token: token, txid: txid, ext: ext, net_type:net_type })
+        static async walletNotifyExt(uid: string, token: string, txid: string, ext: string, net_type: number) {
+            return this.common('user_wallet.notify_ext', { uid: uid, token: token, txid: txid, ext: ext, net_type: net_type })
         }
 
         static async getEnterParams(uid: string, token: string, g_id: string) {
@@ -118,23 +118,23 @@ namespace BlackCat {
         }
 
         static async modUserName(uid: string, token: string, name: string) {
-            return this.common('user.mod_name', {uid: uid, token: token, name: name})
+            return this.common('user.mod_name', { uid: uid, token: token, name: name })
         }
 
         static async forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string) {
-            return this.common('user_phone.mod_pwd', {uid: uid, phone: phone_raw, code: code, new_pwd: new_pwd})
+            return this.common('user_phone.mod_pwd', { uid: uid, phone: phone_raw, code: code, new_pwd: new_pwd })
         }
 
         static async forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string) {
-            return this.common('user_email.mod_pwd', {uid: uid, email: email, code: code, new_pwd: new_pwd})
+            return this.common('user_email.mod_pwd', { uid: uid, email: email, code: code, new_pwd: new_pwd })
         }
 
         static async getForgetCodeByPhone(uid: string, phone_raw: string) {
-            return this.common('user_phone.get_forget_code', {uid: uid, phone: phone_raw})
+            return this.common('user_phone.get_forget_code', { uid: uid, phone: phone_raw })
         }
 
         static async getForgetCodeByEmail(uid: string, email: string) {
-            return this.common('user_email.get_forget_code', {uid: uid, email: email})
+            return this.common('user_email.get_forget_code', { uid: uid, email: email })
         }
     }
 

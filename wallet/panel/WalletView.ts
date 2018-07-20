@@ -19,7 +19,7 @@ namespace BlackCat {
             this.ObjAppend(this.div, walletTitle)
 
             var walletTitleH1 = this.objCreate("h1")
-            walletTitleH1.classList.add("iconfont","icon-blacat")
+            walletTitleH1.classList.add("iconfont", "icon-blacat")
             // walletTitleH1.innerText = Main.platName
             this.ObjAppend(walletTitle, walletTitleH1)
 
@@ -31,20 +31,20 @@ namespace BlackCat {
 
 
             var createWallet = this.objCreate("button");
-            createWallet.textContent = "创建钱包"
+            createWallet.textContent = Main.langMgr.get("walletView_create")//"创建钱包"
             createWallet.classList.add("pc_createWallet")
             createWallet.onclick = () => {
                 Main.viewMgr.change("WalletCreateView")
             }
             this.ObjAppend(this.div, createWallet)
 
-            var iCreateWallet=this.objCreate("i")
-            iCreateWallet.classList.add("iconfont","icon-chuangjian1")
+            var iCreateWallet = this.objCreate("i")
+            iCreateWallet.classList.add("iconfont", "icon-chuangjian1")
             this.ObjAppend(createWallet, iCreateWallet)
 
 
             var importWallet = this.objCreate("button");
-            importWallet.textContent = "导入钱包"
+            importWallet.textContent = Main.langMgr.get("walletView_import")// "导入钱包"
             importWallet.classList.add("pc_importWallet")
 
             importWallet.onclick = () => {
@@ -52,8 +52,8 @@ namespace BlackCat {
             }
             this.ObjAppend(this.div, importWallet)
 
-            var iImportWallet=this.objCreate("i")
-            iImportWallet.classList.add("iconfont","icon-daoru1")
+            var iImportWallet = this.objCreate("i")
+            iImportWallet.classList.add("iconfont", "icon-daoru1")
             this.ObjAppend(importWallet, iImportWallet)
         }
 

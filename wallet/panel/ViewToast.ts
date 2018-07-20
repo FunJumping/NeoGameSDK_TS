@@ -4,16 +4,14 @@
 namespace BlackCat {
     // toast视图
     export class ViewToast extends ViewBase {
-        showMsg: HTMLDivElement;
 
-        static readonly divId: string = "BC_toast";
+        showMsg: HTMLDivElement;
 
         static showTime: number = 2000;
         static content: string;
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.id = ViewToast.divId;
 
             this.div.classList.add("pc_alter", "pc_toast")
 
@@ -36,7 +34,7 @@ namespace BlackCat {
 
         show() {
             super.show()
-            this.remove(ViewToast.showTime)
+            this.remove(ViewToast.showTime, null)
         }
     }
 }

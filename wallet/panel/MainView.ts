@@ -1,8 +1,10 @@
 namespace BlackCat {
     // 主视图（不包含iconView）
     export class MainView extends ViewBase {
+
         private divMask: HTMLDivElement;
-        static readonly divMaskId: string = "BC_mask";
+
+        private s_timeout_hidden: any; // 隐藏定时器
 
         start() {
             if (this.isCreated === false) {
@@ -29,12 +31,12 @@ namespace BlackCat {
                 Main.viewMgr.change("IconView")
 
                 this.divMask = this.objCreate("div") as HTMLDivElement;
-                this.divMask.id = MainView.divMaskId;
 
                 this.divMask.classList.add("pc_window_mask")
                 this.divMask.onclick = () => {
-                    this.hidden()
-                    Main.viewMgr.change("IconView")
+                    // this.hidden()
+                    // Main.viewMgr.change("IconView")
+                    BlackCat.SDK.showIcon()
                 }
                 this.ObjAppend(this.div, this.divMask);
             }
@@ -55,6 +57,20 @@ namespace BlackCat {
 
         remove() {
             this.bodyRemove(this.div)
+        }
+
+        // 隐藏
+        hidden() {
+            this.div.classList.add("pc_windowhide")
+            this.s_timeout_hidden = setTimeout(() => {
+                this.div.style.display = "none"
+            }, 300)
+        }
+        // 显示
+        show() {
+            if (this.s_timeout_hidden) clearTimeout(this.s_timeout_hidden)
+            this.div.classList.remove("pc_windowhide")
+            this.div.style.display = "";
         }
     }
 }

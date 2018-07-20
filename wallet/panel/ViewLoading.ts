@@ -4,6 +4,7 @@
 namespace BlackCat {
     // 加载视图
     export class ViewLoading extends ViewBase {
+
         static content: string = "";
 
         create() {

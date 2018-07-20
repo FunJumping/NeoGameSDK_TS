@@ -1,16 +1,18 @@
-
 /// <reference path="../main.ts" />
 /// <reference path="./ViewBase.ts" />
 
 namespace BlackCat {
     // 钱包视图
     export class PayView extends ViewBase {
+
         // 钱包
         wallet_addr: string
         // 余额
         gas: number;
         sgas: number;
         listPageNum: number;
+        payMyWallet: HTMLElement;
+
 
         private spanGas: HTMLElement;
         private spanSgas: HTMLElement;
@@ -37,7 +39,7 @@ namespace BlackCat {
             this.getWalletListsTimeout = 3000;
             this.WalletListsNeedConfirm = false;
             this.WalletListsHashString = "";
-            
+
             this.walletListsNeedConfirmCounts = 0;
 
             this.clearTimeout()
@@ -90,16 +92,25 @@ namespace BlackCat {
             this.divNetSelect.classList.add("pc_netbox")
             this.ObjAppend(headerTitle, this.divNetSelect)
 
+            //返回游戏
+            var aReturnGame = this.objCreate("i")
+            aReturnGame.classList.add("pc_returngame", "iconfont", "icon-fanhui1")
+            aReturnGame.onclick = () => {
+                BlackCat.SDK.showIcon()
+            }
+            this.ObjAppend(headerTitle, aReturnGame)
+
+
             // 钱包卡片
             var paycard = this.objCreate("div")
             paycard.classList.add("pc_card")
             this.ObjAppend(this.div, paycard)
 
             //我的钱包
-            var payMyWallet = this.objCreate("div")
-            payMyWallet.classList.add("pc_mywallet","iconfont","icon-qianbao")
-            payMyWallet.textContent =  Main.user.info.name // "昵称"
-            this.ObjAppend(paycard, payMyWallet)
+            this.payMyWallet = this.objCreate("div")
+            this.payMyWallet.classList.add("pc_mywallet", "iconfont", "icon-qianbao")
+            this.payMyWallet.textContent = Main.user.info.name // "昵称"
+            this.ObjAppend(paycard, this.payMyWallet)
 
             //刷新
             var payRefresh = this.objCreate("a")
@@ -109,7 +120,7 @@ namespace BlackCat {
                 this.doGetBalances()
                 this.doGetWalletLists()
             }
-            this.ObjAppend(payMyWallet, payRefresh)
+            this.ObjAppend(this.payMyWallet, payRefresh)
 
             // 我的(缩略)钱包地址
             var divWallet = this.objCreate("div")
@@ -120,7 +131,7 @@ namespace BlackCat {
 
 
             // 详情
-            var divWalletDetail=this.objCreate("div")
+            var divWalletDetail = this.objCreate("div")
             divWalletDetail.classList.add("pc_carddetail")
             this.ObjAppend(paycard, divWalletDetail)
 
@@ -132,7 +143,7 @@ namespace BlackCat {
             }
             this.ObjAppend(divWalletDetail, spanWalletDetail)
 
-            
+
             //收款及转账
             var divWalletUser = this.objCreate("div")
             divWalletUser.classList.add("pc_cardtransaction")
@@ -166,7 +177,7 @@ namespace BlackCat {
             var divCurrencyNumber = this.objCreate("div")
             divCurrencyNumber.classList.add("pc_currencynumber")
             this.ObjAppend(divCurrency, divCurrencyNumber)
-            var spanCurrencyNumber= this.objCreate("span")
+            var spanCurrencyNumber = this.objCreate("span")
             spanCurrencyNumber.innerText = Main.langMgr.get("pay_coin_name") //"代币"
             this.ObjAppend(divCurrencyNumber, spanCurrencyNumber)
 
@@ -176,7 +187,7 @@ namespace BlackCat {
             divGas.innerHTML = Main.langMgr.get("pay_gas")//"Gas"
             this.ObjAppend(divCurrency, divGas)
 
-            var labelGas = this.objCreate("label") 
+            var labelGas = this.objCreate("label")
             labelGas.classList.add("iconfont", "icon-help")
             this.ObjAppend(divGas, labelGas)
 
@@ -185,7 +196,7 @@ namespace BlackCat {
             this.spanGas.textContent = "0"
             this.ObjAppend(divGas, this.spanGas)
 
-            var divSGascon = this.objCreate("div") 
+            var divSGascon = this.objCreate("div")
             divSGascon.classList.add("pc_sgascon")
             divSGascon.textContent = Main.langMgr.get("pay_gas_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
             this.ObjAppend(labelGas, divSGascon)
@@ -301,14 +312,12 @@ namespace BlackCat {
                 // 打开钱包了
 
                 // 打开输入数量
+                ViewTransCount.transType = "gas2sgas"
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
                     this.makeMintTokenTransaction()
                 }
                 Main.viewMgr.change("ViewTransCount")
-                // this.hidden()
-                document.getElementById("pc_transfertype").innerHTML = "Gas  &#xe6a8; SGas"
-
 
             } else {
                 // 未打开钱包
@@ -326,14 +335,12 @@ namespace BlackCat {
                 // 打开钱包了
 
                 // 打开输入数量
+                ViewTransCount.transType = "sgas2gas"
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
                     this.makeRefundTransaction()
                 }
                 Main.viewMgr.change("ViewTransCount")
-                // this.hidden()
-                document.getElementById("pc_transfertype").innerHTML = "SGas &#xe6a8; Gas"
-
 
             } else {
                 // 未打开钱包
@@ -352,8 +359,8 @@ namespace BlackCat {
             liRecord.classList.add("pc_payrecord")
             // liRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
             this.ObjAppend(this.divLists, liRecord)
-            
-            var spanRecord=this.objCreate("span")
+
+            var spanRecord = this.objCreate("span")
             spanRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
             this.ObjAppend(liRecord, spanRecord)
 
@@ -589,7 +596,7 @@ namespace BlackCat {
                         return nameObj.cn;
                     }
                 }
-                catch(e) {
+                catch (e) {
                     // return v.name;
                 }
             }
@@ -738,7 +745,6 @@ namespace BlackCat {
                             Main.continueRefund()
                             event.stopPropagation();
                         }
-                        //state_button0.innerHTML = "<a class='iconfont icon-gantanhao'><label>"+pct+"</label></a>"
                         this.ObjAppend(state_button0, obja);
                     }
 
@@ -859,7 +865,6 @@ namespace BlackCat {
 
                     // TODO: 更新记录状态
                     //this.makeMintTokenTransaction_confirm(txid);
-                    // mui.toast('充值成功！请稍候查询交易状态！')
                 } else {
                     // 失败
                     Main.viewMgr.viewLoading.remove()
@@ -1085,11 +1090,10 @@ namespace BlackCat {
             }
         }
 
-        flushListCtm()
-        {
+        flushListCtm() {
             var ctms = document.getElementsByClassName("listCtm")
             if (ctms && ctms.length > 0) {
-                for (let k=0; k<ctms.length; k++) {
+                for (let k = 0; k < ctms.length; k++) {
                     var list = {
                         ctm: ctms[k].getAttribute("ctm")
                     }
@@ -1108,19 +1112,30 @@ namespace BlackCat {
             }
             else {
                 var other = Main.netMgr.getOtherTypes()
-                for (let i = 0; i<other.length; i++) {
+                for (let i = 0; i < other.length; i++) {
                     this.ObjAppend(this.divNetSelect, this.getDivNetSelectType(other[i]))
                 }
             }
         }
 
-        private getDivNetSelectType(type:number) {
+        private getDivNetSelectType(type: number) {
             var divObj = this.objCreate("div")
-            divObj.textContent = Main.langMgr.get("pay_nettype_"+type)
+            divObj.textContent = Main.langMgr.get("pay_nettype_" + type)
             divObj.onclick = () => {
                 Main.changeNetType(type)
             }
             return divObj;
+        }
+
+        checkTransCount(count: string): boolean {
+            var regex = /(?!^0*(\.0{1,2})?$)^\d{1,14}(\.\d{1,8})?$/
+            if (!regex.test(count)) {
+                return false
+            }
+            if (Number(count) <= 0) {
+                return false
+            }
+            return true
         }
 
     }

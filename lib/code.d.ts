@@ -29,9 +29,9 @@ declare namespace BlackCat {
         private static loginFunctionCallback;
         private static isLoginCallback;
         private static isCreated;
+        private static s_update;
         private update_timeout_max;
         private update_timeout_min;
-        private static s_update;
         constructor();
         static reset(): void;
         static clearTimeout(): void;
@@ -69,11 +69,11 @@ declare namespace BlackCat {
         static getUrlParam(name: any): string;
         static validateLogin(): Promise<void>;
         static showErrCode(errCode: number, callback?: any): Promise<void>;
-        static showErrMsg(errMsg: string, callback?: any, content_ext?: any): Promise<void>;
-        static showToast(msg: string, showTime?: number): Promise<void>;
-        static showInfo(msg: string, callback?: any, content_ext?: any): Promise<void>;
-        static showConFirm(msg: string): Promise<void>;
-        static showLoading(msg: string): Promise<void>;
+        static showErrMsg(errMsgKey: string, callback?: any, content_ext?: any): Promise<void>;
+        static showToast(msgKey: string, showTime?: number): Promise<void>;
+        static showInfo(msgKey: string, callback?: any, content_ext?: any): Promise<void>;
+        static showConFirm(msgKey: string): Promise<void>;
+        static showLoading(msgKey: string): Promise<void>;
         static isWalletOpen(): boolean;
         static checkAccountTypeLogin(account: string): string;
         static checkAccountTypeRegister(account: string): string;
@@ -377,7 +377,10 @@ declare namespace BlackCat {
             myinfo_logout: string;
             myinfo_logoutConfirm: string;
             modifyName: string;
-            modifyName_inpnt: string;
+            modifyName_input: string;
+            modifyName_succ: string;
+            modifySex: string;
+            modifySex_succ: string;
             paylist_txid: string;
             paylist_wallet: string;
             paylist_nnc: string;
@@ -423,9 +426,11 @@ declare namespace BlackCat {
             pay_makeRefundGetScriptFail: string;
             pay_not_enough_money: string;
             pay_not_enough_utxo: string;
-            nettype_1: string;
-            nettype_2: string;
+            pay_nettype_1: string;
+            pay_nettype_2: string;
             pay_walletDetail: string;
+            pay_walletDetail_addr: string;
+            pay_walletDetail_key: string;
             pay_walletDetail_hex: string;
             pay_walletDetail_wif: string;
             pay_walletDetail_notice: string;
@@ -435,6 +440,9 @@ declare namespace BlackCat {
             pay_transferGas_count: string;
             pay_transCount_count: string;
             pay_transCount_inputCount: string;
+            pay_transCount_err: string;
+            pay_sgas2gas: string;
+            pay_gas2sgas: string;
             pay_walletOpen_password: string;
             pay_walletOpen_inputPassword: string;
             pay_walletOpen_inputPassword_err: string;
@@ -454,6 +462,8 @@ declare namespace BlackCat {
             walletImport_doImport: string;
             walletImport_bind_succ: string;
             walletView_info: string;
+            walletView_create: string;
+            walletView_import: string;
             main_wait_for_last_tran: string;
             main_no_app_wallet: string;
             main_need_open_wallet_confirm: string;
@@ -462,6 +472,7 @@ declare namespace BlackCat {
             main_refund_sendRequest_err: string;
             main_refund_doFail: string;
             errCode_1101: string;
+            errCode_1005: string;
             errCode_100602: string;
             errCode_100605: string;
             errCode_100606: string;
@@ -761,6 +772,7 @@ declare namespace BlackCat {
             forgetpass_getCodecountRetry: string;
             forgetpass_doLogin: string;
             forgetpass_do: string;
+            forgetpass_do_ok: string;
             myInfo: string;
             myinfo_headImg: string;
             myinfo_nickname: string;
@@ -772,6 +784,11 @@ declare namespace BlackCat {
             myinfo_area: string;
             myinfo_logout: string;
             myinfo_logoutConfirm: string;
+            modifyName: string;
+            modifyName_input: string;
+            modifyName_succ: string;
+            modifySex: string;
+            modifySex_succ: string;
             paylist_txid: string;
             paylist_wallet: string;
             paylist_nnc: string;
@@ -817,9 +834,11 @@ declare namespace BlackCat {
             pay_makeRefundGetScriptFail: string;
             pay_not_enough_money: string;
             pay_not_enough_utxo: string;
-            nettype_1: string;
-            nettype_2: string;
+            pay_nettype_1: string;
+            pay_nettype_2: string;
             pay_walletDetail: string;
+            pay_walletDetail_addr: string;
+            pay_walletDetail_key: string;
             pay_walletDetail_hex: string;
             pay_walletDetail_wif: string;
             pay_walletDetail_notice: string;
@@ -829,6 +848,9 @@ declare namespace BlackCat {
             pay_transferGas_count: string;
             pay_transCount_count: string;
             pay_transCount_inputCount: string;
+            pay_transCount_err: string;
+            pay_sgas2gas: string;
+            pay_gas2sgas: string;
             pay_walletOpen_password: string;
             pay_walletOpen_inputPassword: string;
             pay_walletOpen_inputPassword_err: string;
@@ -837,6 +859,7 @@ declare namespace BlackCat {
             walletCreate_create: string;
             walletCreate_password: string;
             walletCreate_vpass: string;
+            walletCreate_password_notice: string;
             walletCreate_doCreate: string;
             walletCreate_check_pass: string;
             walletCreate_check_vpass: string;
@@ -847,6 +870,8 @@ declare namespace BlackCat {
             walletImport_doImport: string;
             walletImport_bind_succ: string;
             walletView_info: string;
+            walletView_create: string;
+            walletView_import: string;
             main_wait_for_last_tran: string;
             main_no_app_wallet: string;
             main_need_open_wallet_confirm: string;
@@ -855,13 +880,12 @@ declare namespace BlackCat {
             main_refund_sendRequest_err: string;
             main_refund_doFail: string;
             errCode_1101: string;
+            errCode_1005: string;
             errCode_100602: string;
-            errCode_100604: string;
             errCode_100605: string;
             errCode_100606: string;
             errCode_100607: string;
             errcode_100802: string;
-            errCode_100804: string;
             errCode_100805: string;
             errCode_100806: string;
             errCode_100807: string;
@@ -908,12 +932,13 @@ declare namespace BlackCat {
         static callback: Function;
         static callback_cancel: Function;
         static callback_params: any;
+        private s_timeout_remove;
         constructor();
         create(): void;
         toRefer(): void;
         reset(): void;
         start(): void;
-        remove(timeout?: number): void;
+        remove(timeout?: number, fadeClass?: string): void;
         private _remove();
         return(timeout?: number): void;
         hidden(): void;
@@ -948,6 +973,8 @@ declare namespace BlackCat {
         private inputCode;
         private inputPass;
         private inputVpass;
+        private getCodeCount;
+        private getCode;
         create(): void;
         start(): void;
         private empty(value);
@@ -969,10 +996,12 @@ declare namespace BlackCat {
         start(): void;
         reset(): void;
         update(): void;
-        flushProcess(count: any): void;
         create(): void;
         remove(): void;
+        flushProcess(count: any): void;
+        dragTouch(ev: any): void;
         drag(): void;
+        private onResize();
     }
 }
 declare namespace BlackCat {
@@ -991,17 +1020,30 @@ declare namespace BlackCat {
 declare namespace BlackCat {
     class MainView extends ViewBase {
         private divMask;
-        static readonly divMaskId: string;
+        private s_timeout_hidden;
         start(): void;
         create(): void;
         createMask(): void;
         changNetType(): void;
         remove(): void;
+        hidden(): void;
+        show(): void;
     }
 }
 declare namespace BlackCat {
     class ModifyNameView extends ViewBase {
-        inputCount: HTMLInputElement;
+        inputName: HTMLInputElement;
+        start(): void;
+        create(): void;
+        toRefer(): void;
+        private doConfirm();
+    }
+}
+declare namespace BlackCat {
+    class ModifySexView extends ViewBase {
+        divSex: HTMLDivElement;
+        inputSex1Obj: HTMLDivElement;
+        inputSex2Obj: HTMLDivElement;
         start(): void;
         create(): void;
         toRefer(): void;
@@ -1010,6 +1052,8 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class MyInfoView extends ViewBase {
+        myName: HTMLElement;
+        mySex: HTMLElement;
         create(): void;
         toRefer(): void;
         private getImg();
@@ -1020,6 +1064,7 @@ declare namespace BlackCat {
         private doLogout();
         private makeLogout();
         private modifyName();
+        private modifySex();
     }
 }
 declare namespace BlackCat {
@@ -1054,6 +1099,7 @@ declare namespace BlackCat {
     class PayReceivablesView extends ViewBase {
         private inputGasCount;
         private inputTransferAddr;
+        private textareaAddress;
         private gasBalance;
         private toaddress;
         private isDomain;
@@ -1086,6 +1132,7 @@ declare namespace BlackCat {
         gas: number;
         sgas: number;
         listPageNum: number;
+        payMyWallet: HTMLElement;
         private spanGas;
         private spanSgas;
         private walletLists;
@@ -1124,6 +1171,7 @@ declare namespace BlackCat {
         private getNetTypeName();
         private showChangeNetType();
         private getDivNetSelectType(type);
+        checkTransCount(count: string): boolean;
     }
 }
 declare namespace BlackCat {
@@ -1147,6 +1195,8 @@ declare namespace BlackCat {
         private inputCode;
         private inputPass;
         private inputVpass;
+        private getCodeCount;
+        private getCode;
         create(): void;
         start(): void;
         private empty(value);
@@ -1175,7 +1225,6 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class ViewConfirm extends ViewBase {
-        static readonly divId: string;
         static content: string;
         create(): void;
         toRefer(): void;
@@ -1213,6 +1262,7 @@ declare namespace BlackCat {
         payListMoreView: PayListMoreView;
         myInfoView: MyInfoView;
         modifyNameView: ModifyNameView;
+        modifySexView: ModifySexView;
         payWalletDetailView: PayWalletDetailView;
         payReceivablesView: PayReceivablesView;
         payTransferView: PayTransferView;
@@ -1225,7 +1275,6 @@ declare namespace BlackCat {
 declare namespace BlackCat {
     class ViewToast extends ViewBase {
         showMsg: HTMLDivElement;
-        static readonly divId: string;
         static showTime: number;
         static content: string;
         create(): void;
@@ -1235,6 +1284,7 @@ declare namespace BlackCat {
 declare namespace BlackCat {
     class ViewTransConfirm extends ViewBase {
         static list: walletLists;
+        private divConfirmSelect;
         constructor();
         start(): void;
         create(): void;
@@ -1247,6 +1297,7 @@ declare namespace BlackCat {
 declare namespace BlackCat {
     class ViewTransConfirmGas extends ViewBase {
         static list: walletLists;
+        private divConfirmSelect;
         constructor();
         start(): void;
         create(): void;
@@ -1258,6 +1309,7 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class ViewTransCount extends ViewBase {
+        static transType: string;
         inputCount: HTMLInputElement;
         start(): void;
         create(): void;
@@ -1490,7 +1542,7 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class ApiTool {
-        static readonly base_url: string;
+        static base_url: string;
         static makeUrl(cmd: string): string;
         static common(cmd: string, post: object): Promise<any>;
         static isLogined(uid: string, token: string): Promise<any>;
@@ -1544,7 +1596,7 @@ declare namespace BlackCat.tools {
     class CoinTool {
         static readonly id_GAS: string;
         static readonly id_NEO: string;
-        static readonly id_SGAS: string;
+        static id_SGAS: string;
         static assetID2name: {
             [id: string]: string;
         };
@@ -1614,6 +1666,7 @@ declare namespace BlackCat {
         token: string;
         wallet: string;
         area: string;
+        region: string;
         email: string;
         qq: string;
         icon: string;

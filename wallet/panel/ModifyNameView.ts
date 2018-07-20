@@ -5,11 +5,11 @@ namespace BlackCat {
     // 修改昵称
     export class ModifyNameView extends ViewBase {
 
-        inputCount: HTMLInputElement
+        inputName: HTMLInputElement
 
         start() {
             super.start()
-            this.inputCount.focus()
+            this.inputName.focus()
         }
 
         create() {
@@ -27,11 +27,11 @@ namespace BlackCat {
             this.ObjAppend(popupbox, popupTitle)
 
 
-            this.inputCount = this.objCreate("input") as HTMLInputElement
-            this.inputCount.type = "text"
-            this.inputCount.style.marginTop = "40px"
-            this.inputCount.placeholder = Main.langMgr.get("modifyName_input") // "请输入昵称"
-            this.ObjAppend(popupbox, this.inputCount)
+            this.inputName = this.objCreate("input") as HTMLInputElement
+            this.inputName.type = "text"
+            this.inputName.style.marginTop = "40px"
+            this.inputName.placeholder = Main.langMgr.get("modifyName_input") // "请输入昵称"
+            this.ObjAppend(popupbox, this.inputName)
 
 
             // 弹窗按钮外框
@@ -44,7 +44,6 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                // Main.viewMgr.viewTransCount.div.classList.add("pc_fadeindown")
                 this.remove(300)
             }
             this.ObjAppend(popupbutbox, popupClose)
@@ -60,22 +59,36 @@ namespace BlackCat {
         }
 
         toRefer() {
-            if (ViewTransCount.refer) {
-                Main.viewMgr.change(ViewTransCount.refer);
-                ViewTransCount.refer = null;
+            if (ModifyNameView.refer) {
+                Main.viewMgr.change(ModifyNameView.refer);
+                ModifyNameView.refer = null;
             }
         }
 
 
-        private doConfirm() {
-            if (!this.inputCount.value) {
-                this.inputCount.focus()
+        private async doConfirm() {
+            if (!this.inputName.value) {
+                this.inputName.focus()
                 return
             }
 
-            this.remove()
-            ViewTransCount.callback();
-            ViewTransCount.callback = null;
+            var res = await ApiTool.modUserName(Main.user.info.uid, Main.user.info.token, this.inputName.value)
+            if (res.r) {
+
+                Main.showToast("modifyName_succ")
+
+                // 修改用户信息
+                Main.user.setInfo('name', this.inputName.value)
+
+                this.remove()
+                if (ModifyNameView.callback) {
+                    ModifyNameView.callback();
+                    ModifyNameView.callback = null;
+                }
+            }
+            else {
+                Main.showErrCode(res.errCode)
+            }
         }
     }
 }

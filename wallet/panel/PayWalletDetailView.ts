@@ -4,6 +4,7 @@
 namespace BlackCat {
     // 钱包详情
     export class PayWalletDetailView extends ViewBase {
+
         private wallet_addr: string;
         private public_key: string;
         private private_wif: string;
@@ -40,14 +41,14 @@ namespace BlackCat {
             var content = this.objCreate("div")
             content.classList.add("pc_paydetail")
             content.innerHTML
-                = "<ul><li>"+Main.langMgr.get("pay_walletDetail_addr")+"<p>" + this.wallet_addr + "</p></li>"
-                + "<li>"+Main.langMgr.get("pay_walletDetail_key")+"<p>" + this.public_key + "</p></li>"
+                = "<ul><li>" + Main.langMgr.get("pay_walletDetail_addr") + "<p>" + this.wallet_addr + "</p></li>"
+                + "<li>" + Main.langMgr.get("pay_walletDetail_key") + "<p>" + this.public_key + "</p></li>"
                 + "<li class='pc_detailhide'>" + Main.langMgr.get("pay_walletDetail_hex") + "<p>" + this.private_hex + "</p></li>"
                 + "<li class='pc_detailhide'>" + Main.langMgr.get("pay_walletDetail_wif") + "<p>" + this.private_wif + "</p></li>"
             this.ObjAppend(this.div, content)
 
             //提示
-            var divNotes = this.objCreate("div") 
+            var divNotes = this.objCreate("div")
             divNotes.classList.add("pc_paydetailnotes")
             divNotes.innerText = Main.langMgr.get("pay_walletDetail_notice") //"为避免财产损失，展开密钥时请防止泄露。"
             this.ObjAppend(content, divNotes)
@@ -79,8 +80,8 @@ namespace BlackCat {
             this.ObjAppend(this.div, this.walletExport)
             this.exportWallet();
 
-            var iWalletExport=this.objCreate("i")
-            iWalletExport.classList.add("iconfont","icon-daochuqianbao")
+            var iWalletExport = this.objCreate("i")
+            iWalletExport.classList.add("iconfont", "icon-daochuqianbao")
             this.ObjAppend(this.walletExport, iWalletExport)
 
         }

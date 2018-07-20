@@ -25,7 +25,6 @@ namespace BlackCat {
             // 提示内容
             var alterText = this.objCreate("div")
             alterText.classList.add("pc_altertext")
-            alterText.id= "pc_altertext"
             alterText.textContent = Main.langMgr.get(ViewAlert.content, ViewAlert.content_ext) //"内容"
             this.ObjAppend(alter, alterText)
 
@@ -54,7 +53,6 @@ namespace BlackCat {
 
 
         private doConfirm() {
-            Main.viewMgr.viewAlert.div.classList.add("pc_fadeindown")
             this.remove(300)
             if (ViewAlert.callback) {
                 ViewAlert.callback()
