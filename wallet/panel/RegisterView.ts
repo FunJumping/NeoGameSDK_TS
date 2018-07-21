@@ -352,6 +352,10 @@ namespace BlackCat {
                 return;
             }
 
+            if (!( await this.checkAccountFromApi())) {
+                return
+            }
+
             var accountType = Main.checkAccountTypeRegister(this.inputAccount.value)
 
             var res;

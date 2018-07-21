@@ -435,6 +435,7 @@ declare namespace BlackCat {
             pay_walletDetail_wif: string;
             pay_walletDetail_notice: string;
             pay_walletDetail_export: string;
+            pay_makerawtrans_err: string;
             pay_makeRecharge: string;
             pay_transferGas_toaddr: string;
             pay_transferGas_count: string;
@@ -843,6 +844,7 @@ declare namespace BlackCat {
             pay_walletDetail_wif: string;
             pay_walletDetail_notice: string;
             pay_walletDetail_export: string;
+            pay_makerawtrans_err: string;
             pay_makeRecharge: string;
             pay_transferGas_toaddr: string;
             pay_transferGas_count: string;
@@ -1153,7 +1155,7 @@ declare namespace BlackCat {
         private doMakeMintToken();
         private doMakeRefund();
         private divLists_recreate();
-        doGetWalletLists(isFromTimeout?: number): Promise<void>;
+        doGetWalletLists(force?: number): Promise<void>;
         getListImg(v: any): any;
         getListName(v: any): any;
         getListCtm(v: any): string;
@@ -1569,6 +1571,7 @@ declare namespace BlackCat {
         static getEmailCode(email: string): Promise<any>;
         static userLoginPass(uid: string, pwd: string): Promise<any>;
         static modUserName(uid: string, token: string, name: string): Promise<any>;
+        static modUserSex(uid: string, token: string, sex: string): Promise<any>;
         static forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string): Promise<any>;
         static forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string): Promise<any>;
         static getForgetCodeByPhone(uid: string, phone_raw: string): Promise<any>;

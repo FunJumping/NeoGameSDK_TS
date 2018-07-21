@@ -113,7 +113,7 @@ namespace BlackCat {
                     console.log('[Bla Cat]', '[ViewTransConfirmGas]', 'PayTransfer交易确认..')
                     ViewTransConfirmGas.callback(ViewTransConfirmGas.callback_params)
                     ViewTransConfirmGas.callback = null;
-                    this.remove()
+                    this.remove(300)
                 }
                 this.ObjAppend(this.divConfirmSelect, confirmObj)
 

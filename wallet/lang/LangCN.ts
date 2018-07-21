@@ -385,6 +385,8 @@ namespace BlackCat {
             pay_walletDetail_notice: "为避免财产损失，展开密钥时请防止泄露。",
             pay_walletDetail_export: "导出钱包",
 
+            pay_makerawtrans_err: "交易发起失败",
+
             // ViewAlert
 
             // ViewConfirm

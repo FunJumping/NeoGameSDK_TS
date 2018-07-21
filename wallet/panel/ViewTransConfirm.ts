@@ -93,7 +93,7 @@ namespace BlackCat {
                 cancelObj.classList.add("pc_cancel")
                 cancelObj.textContent = Main.langMgr.get("cancel") // "取消"
                 cancelObj.onclick = () => {
-                    console.log('[Bla Cat]', '[ViewTransConfirm]', 'PayTransfer交易取消..')
+                    console.log('[Bla Cat]', '[ViewTransConfirm]', '交易取消..')
                     if (ViewTransConfirm.callback_cancel) {
                         ViewTransConfirm.callback_cancel(ViewTransConfirm.callback_params)
                         ViewTransConfirm.callback_cancel = null;
@@ -110,10 +110,10 @@ namespace BlackCat {
                     confirmObj.textContent = Main.langMgr.get("ok") // "确认"
                 }
                 confirmObj.onclick = () => {
-                    console.log('[Bla Cat]', '[ViewTransConfirm]', 'PayTransfer交易确认..')
+                    console.log('[Bla Cat]', '[ViewTransConfirm]', '交易确认..')
                     ViewTransConfirm.callback(ViewTransConfirm.callback_params)
                     ViewTransConfirm.callback = null;
-                    this.remove()
+                    this.remove(300)
                 }
                 this.ObjAppend(this.divConfirmSelect, confirmObj)
 

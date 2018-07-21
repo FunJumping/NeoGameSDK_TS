@@ -385,6 +385,8 @@
             pay_walletDetail_notice: "To avoid property damage, please prevent leakage when you open the key.",
             pay_walletDetail_export: "Export wallet",
 
+            pay_makerawtrans_err: "Transaction failed!",
+
             // ViewAlert
 
             // ViewConfirm

@@ -107,10 +107,13 @@ namespace BlackCat {
             this.ObjAppend(this.div, paycard)
 
             //我的钱包
-            this.payMyWallet = this.objCreate("div")
-            this.payMyWallet.classList.add("pc_mywallet", "iconfont", "icon-qianbao")
+            var divMyWallet=this.objCreate("div")
+            divMyWallet.classList.add("pc_mywallet","iconfont", "icon-qianbao")
+            this.ObjAppend(paycard, divMyWallet)
+
+            this.payMyWallet = this.objCreate("label")
             this.payMyWallet.textContent = Main.user.info.name // "昵称"
-            this.ObjAppend(paycard, this.payMyWallet)
+            this.ObjAppend(divMyWallet, this.payMyWallet)
 
             //刷新
             var payRefresh = this.objCreate("a")
@@ -120,7 +123,7 @@ namespace BlackCat {
                 this.doGetBalances()
                 this.doGetWalletLists()
             }
-            this.ObjAppend(this.payMyWallet, payRefresh)
+            this.ObjAppend(divMyWallet, payRefresh)
 
             // 我的(缩略)钱包地址
             var divWallet = this.objCreate("div")
@@ -378,17 +381,22 @@ namespace BlackCat {
 
         }
 
-        async doGetWalletLists(isFromTimeout = 0) {
-            console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, isFromTimeout => ', isFromTimeout)
+        async doGetWalletLists(force = 0) {
+            console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, force => ', force)
             if (!Main.user.info.token) {
                 console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 已退出登录，本次请求取消')
                 return;
             }
 
-            if (isFromTimeout == 0 && this.WalletListsNeedConfirm) {
+            if (force == 0 && this.WalletListsNeedConfirm) {
                 // 外部调用获取交易列表，当前又有待确认交易，取消本次查询，等待定时器自动刷新交易列表
                 console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 有定时刷新，本次请求取消')
                 return;
+            }
+
+            if (this.s_doGetWalletLists) {
+                clearTimeout(this.s_doGetWalletLists)
+                this.s_doGetWalletLists = null
             }
 
             var res = await ApiTool.getWalletListss(Main.user.info.uid, Main.user.info.token, 1, this.listPageNum, Main.netMgr.type);

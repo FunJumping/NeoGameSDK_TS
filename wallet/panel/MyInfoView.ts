@@ -139,7 +139,7 @@ namespace BlackCat {
         }
 
         private getSex() {
-            return Main.langMgr.get("myinfo_" + Main.user.info.sex) ? Main.langMgr.get("myinfo_" + Main.user.info.sex) : Main.langMgr.get("myinfo_sex_0");
+            return Main.langMgr.get("myinfo_sex_" + Main.user.info.sex);
         }
 
         private getArea() {

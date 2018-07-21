@@ -13,14 +13,12 @@ namespace BlackCat {
             super.start()
             var selectSexObj = this.divSex.getElementsByTagName("input")
             var selectSex = Main.user.info.sex
-            if (selectSex == "sex_1") {
+            if (selectSex == "1") {
                 selectSexObj[0].checked = true
                 this.inputSex1Obj.classList.add("pc_modifysex_active")
-            } else {
+            } else if(selectSex == "2"){
                 selectSexObj[1].checked = true
                 this.inputSex2Obj.classList.add("pc_modifysex_active")
-
-
             }
         }
 
@@ -48,7 +46,7 @@ namespace BlackCat {
             this.ObjAppend(this.divSex, this.inputSex1Obj)
             var inputSex1 = this.objCreate("input")
             inputSex1.setAttribute("type", "radio")
-            inputSex1.setAttribute("value", "sex_1")
+            inputSex1.setAttribute("value", "1")
             inputSex1.setAttribute("name", "pc_sex")
             inputSex1.onclick = () => {
                 this.inputSex1Obj.classList.add("pc_modifysex_active")
@@ -61,7 +59,7 @@ namespace BlackCat {
             this.ObjAppend(this.divSex, this.inputSex2Obj)
             var inputSex2 = this.objCreate("input")
             inputSex2.setAttribute("type", "radio")
-            inputSex2.setAttribute("value", "sex_2")
+            inputSex2.setAttribute("value", "2")
             inputSex2.setAttribute("name", "pc_sex")
             inputSex2.onclick = () => {
                 this.inputSex2Obj.classList.add("pc_modifysex_active")
@@ -97,9 +95,9 @@ namespace BlackCat {
         }
 
         toRefer() {
-            if (ModifyNameView.refer) {
-                Main.viewMgr.change(ModifyNameView.refer);
-                ModifyNameView.refer = null;
+            if (ModifySexView.refer) {
+                Main.viewMgr.change(ModifySexView.refer);
+                ModifySexView.refer = null;
             }
         }
 
@@ -116,7 +114,7 @@ namespace BlackCat {
                 if (sexInputObj[i].checked) {
                     var sexValue = sexInputObj[i].value;
 
-                    var res = await ApiTool.modUserName(Main.user.info.uid, Main.user.info.token, sexValue)
+                    var res = await ApiTool.modUserSex(Main.user.info.uid, Main.user.info.token, sexValue)
                     if (res.r) {
 
                         Main.showToast("modifySex_succ")

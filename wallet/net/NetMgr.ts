@@ -12,7 +12,7 @@ namespace BlackCat {
             // 测试网
             this.chang2test()
 
-            // ApiTool.base_url = "http://site01.blacat.org/apic/apic_user.php"
+            // ApiTool.base_url = "http://api01.blacat.org/apic/apic_user.php"
             ApiTool.base_url = 'http://182.254.139.130/apic_v2/apic_user.php'
         }
 
@@ -30,8 +30,11 @@ namespace BlackCat {
             // 测试网
             this.type = 2;
             // --节点地址
-            tools.WWW.api = "http://nelnode00.blacat.org:82/api/testnet";
-            tools.WWW.apiaggr = "http://nelnode00.blacat.org:82/api/testnet";
+            // tools.WWW.api = "http://nelnode00.blacat.org:82/api/testnet";
+            // tools.WWW.apiaggr = "http://nelnode00.blacat.org:82/api/testnet";
+
+            tools.WWW.api = "https://api.nel.group/api/testnet"
+            tools.WWW.apiaggr = "https://api.nel.group/api/testnet"
             // sgas合约地址
             tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
         }
@@ -40,8 +43,12 @@ namespace BlackCat {
             // 主网
             this.type = 1;
             // --节点地址
-            tools.WWW.api = "http://nelnode01.blacat.org:82/api/mainnet";
-            tools.WWW.apiaggr = "http://nelnode01.blacat.org:82/api/mainnet";
+            // tools.WWW.api = "http://nelnode01.blacat.org:82/api/mainnet";
+            // tools.WWW.apiaggr = "http://nelnode01.blacat.org:82/api/mainnet";
+
+            tools.WWW.api = "https://api.nel.group/api/mainnet"
+            tools.WWW.apiaggr = "https://api.nel.group/api/mainnet"
+
             // 主网sgas合约
             tools.CoinTool.id_SGAS = "";
         }

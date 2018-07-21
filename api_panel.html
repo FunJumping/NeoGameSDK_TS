@@ -102,6 +102,19 @@
         {
             var resObj = document.getElementById('res')
             resObj.innerHTML = '<pre>' + JSON.stringify(JSON.parse(data), null, 4) + '</pre>'
+            var res = JSON.parse(data)
+            switch (res.cmd) {
+                case "getAppNotifysRes":
+                    for (let i = 0 ; i<res.data.length; i++) {
+                        var datas = {
+                            txid: res.data[i].txid
+                        }
+                        BlackCat.SDK.confirmAppNotify(datas, function(res){
+                            console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
+                        })
+                    }
+                    break;
+            }
         };
 
 

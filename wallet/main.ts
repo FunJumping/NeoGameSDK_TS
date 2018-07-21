@@ -278,18 +278,33 @@ namespace BlackCat {
 
                 ViewTransConfirm.callback = async (params) => {
                     console.log('[Bla Cat]', '[main]', 'makeRawTransaction交易确认..')
-                    var res = await Main.wallet.makeRawTransaction(params);
-                    // function回调
-                    if (Main.transCallback) Main.transCallback(res);
-                    Main.transCallback = null;
-                    // listener回调
-                    var callback_data = {
-                        params: params,
-                        res: res
-                    }
-                    this.listenerCallback("makeRawTransactionRes", callback_data);
-                    // 重新获取钱包记录
-                    Main.viewMgr.payView.doGetWalletLists()
+
+                    Main.viewMgr.change("ViewLoading")
+
+                    setTimeout(async () => {
+                        try {
+                            var res = await Main.wallet.makeRawTransaction(params);
+                        }
+                        catch (e) {
+                            var res = new Result()
+                            res.err = true
+                            res.info = e.toString()
+                         }
+
+                        // function回调
+                        if (Main.transCallback) Main.transCallback(res);
+                        Main.transCallback = null;
+                        // listener回调
+                        var callback_data = {
+                            params: params,
+                            res: res
+                        }
+                        this.listenerCallback("makeRawTransactionRes", callback_data);
+                        // 重新获取钱包记录
+                        await Main.viewMgr.payView.doGetWalletLists(1)
+                        Main.viewMgr.viewLoading.remove()
+
+                    }, 300);
                 }
                 ViewTransConfirm.callback_cancel = () => {
                     console.log('[Bla Cat]', '[main]', 'makeRawTransaction交易取消..')
@@ -381,18 +396,35 @@ namespace BlackCat {
 
                 ViewTransConfirm.callback = async (params) => {
                     console.log('[Bla Cat]', '[main]', 'makeRecharge交易确认..')
-                    var res = await Main.wallet.makeRecharge(params);
-                    // function回调
-                    if (Main.transCallback) Main.transCallback(res);
-                    Main.transCallback = null;
-                    // listener回调
-                    var callback_data = {
-                        params: params,
-                        res: res
-                    }
-                    this.listenerCallback("makeRechargeRes", callback_data);
-                    // 重新获取钱包记录
-                    Main.viewMgr.payView.doGetWalletLists()
+
+                    Main.viewMgr.change("ViewLoading")
+
+                    setTimeout(async () => {
+                        try {
+                            var res = await Main.wallet.makeRecharge(params);
+                        }
+                        catch(e) {
+                            var res = new Result()
+                            res.err = true
+                            res.info = e.toString()
+                        }
+                        
+                        // function回调
+                        if (Main.transCallback) Main.transCallback(res);
+                        Main.transCallback = null;
+                        // listener回调
+                        var callback_data = {
+                            params: params,
+                            res: res
+                        }
+                        this.listenerCallback("makeRechargeRes", callback_data);
+                        // 重新获取钱包记录
+                        await Main.viewMgr.payView.doGetWalletLists(1)
+
+                        Main.viewMgr.viewLoading.remove()
+
+                    }, 300);
+                    
                 }
                 ViewTransConfirm.callback_cancel = () => {
                     console.log('[Bla Cat]', '[main]', 'makeRecharge交易取消..')
@@ -479,41 +511,43 @@ namespace BlackCat {
 
                     Main.viewMgr.change("ViewLoading")
 
-                    try {
-                        var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool.id_GAS, params.count);
-                        if (res.err == false) {
-                            // 成功，上报
-                            await ApiTool.addUserWalletLogs(
-                                Main.user.info.uid,
-                                Main.user.info.token,
-                                res.info,
-                                Main.appid,
-                                params.count.toString(),
-                                "6",
-                                '{"sbPushString":"transfer", "toaddr":"' + params.toaddress + '", "count": "' + params.count + '"}',
-                                Main.netMgr.type
-                            );
-                            // 重新获取钱包记录
-                            Main.viewMgr.payView.doGetWalletLists()
+                    setTimeout(async () => {
+                        try {
+                            var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool.id_GAS, params.count);
+                            if (res.err == false) {
+                                // 成功，上报
+                                await ApiTool.addUserWalletLogs(
+                                    Main.user.info.uid,
+                                    Main.user.info.token,
+                                    res.info,
+                                    Main.appid,
+                                    params.count.toString(),
+                                    "6",
+                                    '{"sbPushString":"transfer", "toaddr":"' + params.toaddress + '", "count": "' + params.count + '"}',
+                                    Main.netMgr.type
+                                );
+                                // 重新获取钱包记录
+                                await Main.viewMgr.payView.doGetWalletLists(1)
+                            }
                         }
-                    }
-                    catch (e) {
-                        var res: Result = new Result();
-                        res.err = true;
-                        res.info = 'make trans err'
-                    }
-
-                    Main.viewMgr.viewLoading.remove()
-
-                    // function回调
-                    if (Main.transGasCallback) Main.transGasCallback(res);
-                    Main.transGasCallback = null;
-                    // listener回调
-                    var callback_data = {
-                        params: params,
-                        res: res
-                    }
-                    this.listenerCallback("makeGasTransferRes", callback_data);
+                        catch (e) {
+                            var res: Result = new Result();
+                            res.err = true;
+                            res.info = 'make trans err'
+                        }
+    
+                        // function回调
+                        if (Main.transGasCallback) Main.transGasCallback(res);
+                        Main.transGasCallback = null;
+                        // listener回调
+                        var callback_data = {
+                            params: params,
+                            res: res
+                        }
+                        this.listenerCallback("makeGasTransferRes", callback_data);
+    
+                        Main.viewMgr.viewLoading.remove()
+                    }, 300);
                 }
                 ViewTransConfirmGas.callback_cancel = () => {
                     console.log('[Bla Cat]', '[main]', 'makeGasTransfer交易取消..')
@@ -561,7 +595,8 @@ namespace BlackCat {
 
 
         async update() {
-            console.log('[Bla Cat]', '[main]', 'update ...')
+            // console.log('[Bla Cat]', '[main]', 'update ...')
+
             await this.getAppNotifys();
             await this.getPlatNotifys();
 

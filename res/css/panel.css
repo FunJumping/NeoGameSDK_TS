@@ -168,6 +168,7 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_returngame{position: absolute;left: auto;right: 10px;font-size: 18px;color: #fff;top: 0;padding: 0 8px;cursor: pointer;}
 .pc_card{position: relative;;width: 320px;height: 204px;padding: 12px; background: url(../img/card.png) no-repeat;background-size: 100% 100%;margin:65px auto 20px auto;border-radius: 5px;box-shadow: 0 7px 14px rgba(0, 0, 0, 0.6);color: #fff}
 .pc_mywallet{font-size: 14px}
+.pc_mywallet label{font-family: none}
 .pc_mywallet.icon-qianbao:before{font-size: 18px;margin-right: 5px;}
 .pc_mywallet a{float: right;cursor: pointer;color: #fff;font-size: 14px}
 .pc_cardcon{color: #c8ab73;font-size: 40px;line-height: 1; position: absolute;top: 60px;left: 0;right: 0; margin:auto;text-align: center}
@@ -192,7 +193,7 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_paymore{float: right;margin-top: 10px;border: 1px solid #dbdce8;color:#dbdce8;padding: 1px 5px;border-radius: 3px;}
 
 .pc_paylists{padding-bottom: 10px;}
-.pc_paylists li{height: 40px;padding: 10px 0;margin: 0 20px; border-bottom: 1px solid #424453;cursor: pointer}
+.pc_paylists li{height: 40px;padding: 10px 0;margin: 0 20px; border-bottom: 1px solid #424453;position: relative; cursor: pointer}
 .pc_paylists li:last-child{border-bottom: none}
 /* 钱包详情 */
 .pc_paydetail{padding: 45px 20px;}
@@ -217,12 +218,12 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 
 /*钱包交易列表*/
 .pc_paylist ul{margin-top: 45px;}
-.pc_paylist li{height: 40px;padding: 10px 0; border-bottom: 1px solid #424453;margin: 0 20px;cursor: pointer;}
+.pc_paylist li{height: 40px;padding: 10px 0; border-bottom: 1px solid #424453;margin: 0 20px;position: relative; cursor: pointer;}
 li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;cursor: auto}
 .pc_listimg{width: 40px;height: 40px;float: left;border-radius:10px;overflow:hidden}
-.pc_liftinfo{float: left;margin-left:10px;font-size: 14px;color: #a7a8ba;max-width: 45%;}
+.pc_liftinfo{float: left;margin-left:10px;font-size: 14px;color: #a7a8ba;max-width: 40%;}
 .pc_listname,.pc_method{line-height: 1.5;overflow: hidden;text-overflow: ellipsis;white-space: nowrap}
-.pc_cnts{line-height: 40px;float: right;font-size: 14px;text-align: right;line-height: 1}
+.pc_cnts{float: right;font-size: 14px;text-align: right;line-height: 1}
 .pc_cnts a{font-size: 28px;float: right;margin-left: 5px;position: relative;}
 .pc_cnts .icon-gou{color: #309368;}
 .pc_cnts .icon-chacha{color: #93304b;}
@@ -230,7 +231,7 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_cnts .pc_verification{width: 28px;height: 28px;position: relative;display: inline-block;margin-left: 5px;font-size: 24px;color: #5676bc; line-height: 1}
 .pc_cnts .icon-jinhangzhong{color: #9c3b98}
 .pc_cnts label{font-size: 10px !important;position: absolute;top: 25px;text-align: center;width: 33px;left: -1.5px;color: #a7a8ba}
-.pc_cnts span{line-height: 2;}
+.pc_cnts span{line-height: 2;position: absolute;top: 24px; right: 30px; width: 35%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
 
 .pc_listdate{color: #a7a8ba;font-size: 12px;}
 
@@ -247,7 +248,7 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 
 /* 交易表单详情 */
 .pc_detail{padding:45px 0;}
-.pc_detail li{clear: both;padding: 10px 20px;border-bottom: 1px solid #424453;color: #a7a8ba}
+.pc_detail li{clear: both;padding: 10px 20px;border-bottom: 1px solid #424453;position: relative; color: #a7a8ba}
 .pc_detail li:first-child{height: 40px;}
 .pc_detail li label{font-size: 16px}
 .pc_detail li p{padding-left: 5em;}
@@ -257,7 +258,7 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_contractAddress div:last-child{border-bottom: none}
 .pc_detail li .pc_listimg{width: 40px;height: 40px;}
 .pc_detail li .pc_cnts{line-height: 40px}
-
+.pc_detail li .pc_cnts span{top: 17px;right: 45px;}
 /* 我的信息 */
 .pc_myinfolist{padding-top: 45px;}
 .pc_myinfolist li{height: 60px;line-height: 60px;font-size: 14px;border-bottom: 1px solid #424453;margin: auto 15px;color: #9a9bac;padding: 0 5px;}

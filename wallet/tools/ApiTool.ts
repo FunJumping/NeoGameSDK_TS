@@ -121,6 +121,10 @@ namespace BlackCat {
             return this.common('user.mod_name', { uid: uid, token: token, name: name })
         }
 
+        static async modUserSex(uid: string, token: string, sex: string) {
+            return this.common('user.mod_sex', { uid: uid, token: token, sex: sex })
+        }
+
         static async forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string) {
             return this.common('user_phone.mod_pwd', { uid: uid, phone: phone_raw, code: code, new_pwd: new_pwd })
         }

@@ -96,7 +96,7 @@ namespace BlackCat {
             return true;
         }
 
-        private async doCreate() {
+        private doCreate() {
             if (!this.createVerifyPwd()) {
                 // "请检查输入密码"
                 Main.showErrMsg(("walletCreate_check_pass"), () => {
@@ -114,48 +114,51 @@ namespace BlackCat {
             }
 
             Main.viewMgr.change("ViewLoading")
+            
+            setTimeout(() => {
+    
+                var array = new Uint8Array(32);
+                var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(array)
+                var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
+                var addr = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
 
-            var array = new Uint8Array(32);
-            var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(array)
-            var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
-            var addr = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+                this.wallet.scrypt = new ThinNeo.nep6ScryptParameters();
+                this.wallet.scrypt.N = 16384;
+                this.wallet.scrypt.r = 8;
+                this.wallet.scrypt.p = 1;
+                this.wallet.accounts = [];
+                this.wallet.accounts[0] = new ThinNeo.nep6account();
+                this.wallet.accounts[0].address = addr;
 
-            this.wallet.scrypt = new ThinNeo.nep6ScryptParameters();
-            this.wallet.scrypt.N = 16384;
-            this.wallet.scrypt.r = 8;
-            this.wallet.scrypt.p = 1;
-            this.wallet.accounts = [];
-            this.wallet.accounts[0] = new ThinNeo.nep6account();
-            this.wallet.accounts[0].address = addr;
+                try {
+                    ThinNeo.Helper.GetNep2FromPrivateKey(
+                        key,
+                        this.inputPwd.value,
+                        this.wallet.scrypt.N,
+                        this.wallet.scrypt.r,
+                        this.wallet.scrypt.p,
+                        async (info, result) => {
+                            if (info == "finish") {
 
-            try {
-                ThinNeo.Helper.GetNep2FromPrivateKey(
-                    key,
-                    this.inputPwd.value,
-                    this.wallet.scrypt.N,
-                    this.wallet.scrypt.r,
-                    this.wallet.scrypt.p,
-                    (info, result) => {
-                        if (info == "finish") {
+                                this.wallet.accounts[0].nep2key = result;
+                                this.wallet.accounts[0].contract = new ThinNeo.contract();
+                                var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
+                                this.wallet.accounts[0].contract.script = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(pubkey).toHexString();
+                                var jsonstr = JSON.stringify(this.wallet.toJson());
 
+                                // 绑定钱包
+                                await this.doBindWallet();
+                            }
                             Main.viewMgr.viewLoading.remove()
-
-                            this.wallet.accounts[0].nep2key = result;
-                            this.wallet.accounts[0].contract = new ThinNeo.contract();
-                            var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
-                            this.wallet.accounts[0].contract.script = ThinNeo.Helper.GetAddressCheckScriptFromPublicKey(pubkey).toHexString();
-                            var jsonstr = JSON.stringify(this.wallet.toJson());
-
-                            // 绑定钱包
-                            this.doBindWallet();
                         }
-                    }
-                );
-            }
-            catch (e) {
-                Main.viewMgr.viewLoading.remove()
-            }
+                    );
+                }
+                catch (e) {
+                    Main.viewMgr.viewLoading.remove()
+                }
 
+            }, 300);
+            
         }
 
         private async doBindWallet() {
@@ -166,9 +169,9 @@ namespace BlackCat {
             );
 
             if (wallet_bind_res.r) {
-                Main.viewMgr.walletView.remove();
-                this.remove();
                 Main.validateLogin();
+                this.remove();
+                Main.viewMgr.walletView.remove();
             } else {
                 Main.showErrCode(wallet_bind_res.errCode);
             }
