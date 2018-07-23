@@ -35,8 +35,10 @@ namespace BlackCat {
 
             tools.WWW.api = "https://api.nel.group/api/testnet"
             tools.WWW.apiaggr = "https://api.nel.group/api/testnet"
-            // sgas合约地址
+            // --sgas合约地址
             tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
+            // --资源访问地址
+            Main.resHost = "http://182.254.139.130/sdk/"
         }
 
         private change2Main() {
@@ -49,8 +51,10 @@ namespace BlackCat {
             tools.WWW.api = "https://api.nel.group/api/mainnet"
             tools.WWW.apiaggr = "https://api.nel.group/api/mainnet"
 
-            // 主网sgas合约
+            // --主网sgas合约
             tools.CoinTool.id_SGAS = "";
+            // --资源访问地址
+            Main.resHost = "http://182.254.139.130/sdk/"
         }
 
 

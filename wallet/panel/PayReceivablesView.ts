@@ -49,7 +49,7 @@ namespace BlackCat {
             this.ObjAppend(popupbox, this.textareaAddress)
 
 
-            // 弹窗外框
+            // 弹窗按钮的框
             var popupbutbox = this.objCreate('div')
             popupbutbox.classList.add("pc_popupbutbox")
             this.ObjAppend(popupbox, popupbutbox)

@@ -26,6 +26,7 @@
     <button onclick="showDiv('makerawtransactiondiv')" style="margin-left:20px">合约交易</button>
     <button onclick="showDiv('makerechargediv')" style="margin-left:20px">充值</button>
     <button onclick="showDiv('makeGasTransferdiv')" style="margin-left:20px">Gas转账</button>
+    <button onclick="showDiv('makeGasTransferMultidiv')" style="margin-left:20px">Gas批量转账</button>
     <button onclick="showDiv('confirmNotifydiv')" style="margin-left:20px">确认通知</button>
 
     <hr>
@@ -91,6 +92,26 @@
     <button onclick="makeGasTransfer()">确认</button>
 </div>
 
+<div class="dis" id="makeGasTransferMultidiv" style="display: none">
+    转账地址1:<br/>
+    <input style="width: 100%" type="text" id="toaddrMulti1" name="toaddrMulti1" value="AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf"><br/>
+    转账数量1:<br/>
+    <input style="width: 100%" type="text" id="gascountMulti1" name="gascountMulti1" value="0.001"><br/>
+    extString1:<br/>
+    <input style="width: 100%" type="text" id="extStringMulti1" name="extStringMulti1" value="makeGasTransferMulti1"><br/>
+
+    <br/>
+
+    转账地址2:<br/>
+    <input style="width: 100%" type="text" id="toaddrMulti2" name="toaddrMulti2" value="AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"><br/>
+    转账数量2:<br/>
+    <input style="width: 100%" type="text" id="gascountMulti2" name="gascountMulti2" value="0.002"><br/>
+    extString2:<br/>
+    <input style="width: 100%" type="text" id="extStringMulti2" name="extStringMulti2" value="makeGasTransferMulti2"><br/>
+    <button onclick="makeGasTransferMulti()">确认</button>
+</div>
+
+
 
     <hr>
     <div id="res"></div>
@@ -105,14 +126,14 @@
             var res = JSON.parse(data)
             switch (res.cmd) {
                 case "getAppNotifysRes":
-                    for (let i = 0 ; i<res.data.length; i++) {
-                        var datas = {
-                            txid: res.data[i].txid
-                        }
-                        BlackCat.SDK.confirmAppNotify(datas, function(res){
-                            console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
-                        })
-                    }
+                    // for (let i = 0 ; i<res.data.length; i++) {
+                    //     var datas = {
+                    //         txid: res.data[i].txid
+                    //     }
+                    //     BlackCat.SDK.confirmAppNotify(datas, function(res){
+                    //         console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
+                    //     })
+                    // }
                     break;
             }
         };
@@ -125,7 +146,7 @@
             document.getElementById("makerechargediv").style.display = "none";
             document.getElementById("confirmNotifydiv").style.display = "none";
             document.getElementById("makeGasTransferdiv").style.display = "none";
-            
+            document.getElementById("makeGasTransferMultidiv").style.display = "none";
 
             document.getElementById(id).style.display = ""
         }
@@ -232,6 +253,25 @@
             }
             BlackCat.SDK.makeGasTransfer(data, function(res){
                 console.log("makeGasTransfer.callback.function.res ", res)
+            })
+        }
+
+        function makeGasTransferMulti()
+        {
+            var data = [
+                {
+                    toaddr: document.getElementById('toaddrMulti1').value,
+                    count: document.getElementById('gascountMulti1').value,
+                    extString: document.getElementById('extStringMulti1').value
+                },
+                {
+                    toaddr: document.getElementById('toaddrMulti2').value,
+                    count: document.getElementById('gascountMulti2').value,
+                    extString: document.getElementById('extStringMulti2').value
+                }
+            ]
+            BlackCat.SDK.makeGasTransferMulti(data, function(res){
+                console.log("makeGasTransfeMultir.callback.function.res ", res)
             })
         }
 

@@ -3,7 +3,7 @@ declare namespace BlackCat {
     class Main {
         static readonly platName: string;
         static platLoginType: number;
-        static readonly resHost: string;
+        static resHost: string;
         static appid: string;
         static appkey: string;
         static appname: string;
@@ -26,6 +26,7 @@ declare namespace BlackCat {
         private static callback;
         private static transCallback;
         private static transGasCallback;
+        private static transGasMultiCallback;
         private static loginFunctionCallback;
         private static isLoginCallback;
         private static isCreated;
@@ -54,6 +55,7 @@ declare namespace BlackCat {
         makeRawTransaction(params: any, callback: any): Promise<void>;
         makeRecharge(params: any, callback: any): Promise<void>;
         makeGasTransfer(params: any, callback?: any): Promise<void>;
+        makeGasTransferMulti(params: any, callback?: any): Promise<void>;
         update(): Promise<void>;
         confirmAppNotify(params: any): Promise<Result>;
         getAppNotifys(): Promise<boolean>;
@@ -1613,7 +1615,14 @@ declare namespace BlackCat.tools {
         static makeTran(utxos: {
             [id: string]: UTXO[];
         }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): Result;
+        static makeTranMulti(utxos: {
+            [id: string]: UTXO[];
+        }, targets: Array<{
+            toaddr: string;
+            count: string;
+        }>, assetid: string): Result;
         static rawTransaction(targetaddr: string, asset: string, count: string): Promise<Result>;
+        static rawTransactionMulti(targets: Array<any>, asset: string): Promise<Result>;
         static claimgas(): Promise<boolean>;
         static claimGas(): Promise<boolean>;
         static contractInvokeTrans_attributes(script: Uint8Array): Promise<Result>;
@@ -1738,6 +1747,7 @@ declare namespace BlackCat {
         static getBalance(callback?: any): Promise<void>;
         static getUserInfo(callback?: any): Promise<void>;
         static makeGasTransfer(params: any, callback?: any): Promise<void>;
+        static makeGasTransferMulti(params: any, callback?: any): Promise<void>;
         static getNetType(callback?: any): Promise<void>;
     }
     class NEOGAMESDK {

@@ -5,11 +5,8 @@ namespace BlackCat {
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
 
-        // 内网测试
-        // static readonly resHost = 'http://10.1.8.132/sdk/'
-
-        // 外网测试
-        static readonly resHost = 'http://182.254.139.130/sdk/'
+        // 资源图标前缀路径
+        static resHost = ''
 
         // SDK相关
         static appid: string;
@@ -41,6 +38,7 @@ namespace BlackCat {
         private static callback: Function; // 统一sdk调用回调接口，即sdk的listener
         private static transCallback: Function; // 接口makeRawTransaction/makeRecharge回调函数
         private static transGasCallback: Function; // 接口makeGasTransfer回调函数
+        private static transGasMultiCallback: Function; // 接口makeGasTransferMulti回调函数
         private static loginFunctionCallback: Function; // 接口login的回调函数
 
         private static isLoginCallback: boolean;
@@ -515,6 +513,7 @@ namespace BlackCat {
                         try {
                             var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool.id_GAS, params.count);
                             if (res.err == false) {
+                                params.sbPushString = "transfer"
                                 // 成功，上报
                                 await ApiTool.addUserWalletLogs(
                                     Main.user.info.uid,
@@ -523,7 +522,7 @@ namespace BlackCat {
                                     Main.appid,
                                     params.count.toString(),
                                     "6",
-                                    '{"sbPushString":"transfer", "toaddr":"' + params.toaddress + '", "count": "' + params.count + '"}',
+                                    JSON.stringify(params),
                                     Main.netMgr.type
                                 );
                                 // 重新获取钱包记录
@@ -534,6 +533,7 @@ namespace BlackCat {
                             var res: Result = new Result();
                             res.err = true;
                             res.info = 'make trans err'
+                            res['ext'] = e.toString()
                         }
     
                         // function回调
@@ -593,6 +593,139 @@ namespace BlackCat {
             }
         }
 
+        // gas转账（批量）
+        async makeGasTransferMulti(params, callback = null) {
+            if (Main.viewMgr.mainView.isHidden()) {
+                // 如果mainView隐藏，显示出来
+                Main.viewMgr.mainView.show()
+                Main.viewMgr.iconView.hidden()
+            }
+
+            if (Main.isWalletOpen()) {
+                // 打开钱包了
+                // 记录回调，锁定状态，当前不接收makeGasTransferMulti请求了
+                if (Main.transGasMultiCallback) {
+                    // 已经有请求在处理，返回
+                    // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
+                    Main.showErrMsg(("main_wait_for_last_tran"))
+                    return;
+                }
+                Main.transGasMultiCallback = callback;
+
+                // 打开确认页
+
+                // 计算交易金额
+                var _count:number = 0;
+                for (let i=0; i< params.length; i++) {
+                    _count += Number(params[i].count)
+                }
+
+                var list = new walletLists();
+
+                // if (!params.hasOwnProperty("nnc")) params['nnc'] = tools.CoinTool.id_SGAS;
+                // if (!params.hasOwnProperty("sbParamJson")) params['sbParamJson'] = [ "(address)" + Main.user.info.wallet, "(address)" + Main.app_recharge_addr, "(integer)" + params.count * 100000000 ]
+                // if (!params.hasOwnProperty("sbPushString")) params['sbPushString'] = "transfer"
+
+                list.params = JSON.stringify(params);
+                list.wallet = Main.user.info.wallet;
+                list.icon = Main.appicon;
+                list.name = Main.appname;
+                list.ctm = Math.round(new Date().getTime() / 1000).toString();
+                list.cnts = _count.toString(); // params.count.toString();
+                list.type = "6";
+
+                ViewTransConfirmGas.list = list;
+                ViewTransConfirmGas.refer = ""
+                ViewTransConfirmGas.callback_params = params;
+
+                ViewTransConfirmGas.callback = async (params) => {
+                    console.log('[Bla Cat]', '[main]', 'makeGasTransferMulti交易确认..')
+
+                    Main.viewMgr.change("ViewLoading")
+
+                    setTimeout(async () => {
+                        try {
+                            var res: Result = await tools.CoinTool.rawTransactionMulti(params, tools.CoinTool.id_GAS);
+                            if (res.err == false) {
+                                params.map(item => (item.sbPushString = "transfer"))
+                                // 成功，上报
+                                await ApiTool.addUserWalletLogs(
+                                    Main.user.info.uid,
+                                    Main.user.info.token,
+                                    res.info,
+                                    Main.appid,
+                                    _count.toString(),
+                                    "6",
+                                    JSON.stringify(params),
+                                    Main.netMgr.type
+                                );
+                                // 重新获取钱包记录
+                                await Main.viewMgr.payView.doGetWalletLists(1)
+                            }
+                        }
+                        catch (e) {
+                            var res: Result = new Result();
+                            res.err = true;
+                            res.info = 'make trans err'
+                            res['ext'] = e.toString()
+                        }
+    
+                        // function回调
+                        if (Main.transGasMultiCallback) Main.transGasMultiCallback(res);
+                        Main.transGasMultiCallback = null;
+                        // listener回调
+                        var callback_data = {
+                            params: params,
+                            res: res
+                        }
+                        this.listenerCallback("makeGasTransferMultiRes", callback_data);
+    
+                        Main.viewMgr.viewLoading.remove()
+                    }, 300);
+                }
+                ViewTransConfirmGas.callback_cancel = () => {
+                    console.log('[Bla Cat]', '[main]', 'makeGasTransfer交易取消..')
+
+                    var res = new Result();
+                    res.err = true;
+                    res.info = 'cancel';
+
+                    if (Main.transGasMultiCallback) {
+                        Main.transGasMultiCallback(res);
+                        Main.transGasMultiCallback = null;
+                    }
+                    // listener回调
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    this.listenerCallback("makeRechargeRes", callback_data);
+                }
+                Main.viewMgr.change("ViewTransConfirmGas")
+
+            } else {
+                // 未打开钱包
+                ViewWalletOpen.refer = ""
+                ViewWalletOpen.callback_params = params;
+                ViewWalletOpen.callback_callback = callback;
+                ViewWalletOpen.callback = (params, callback) => {
+                    this.makeGasTransferMulti(params, callback)
+                }
+                ViewWalletOpen.callback_cancel = (params, callback) => {
+                    var res: Result = new Result();
+                    res.err = true;
+                    res.info = 'cancel'
+
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    this.listenerCallback("makeGasTransferMultiRes", callback_data);
+                    callback(res)
+                }
+                Main.viewMgr.change("ViewWalletOpen")
+            }
+        }
 
         async update() {
             // console.log('[Bla Cat]', '[main]', 'update ...')

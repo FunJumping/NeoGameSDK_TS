@@ -24,8 +24,7 @@ namespace BlackCat {
             }
             super.start()
 
-            var documenth = this.div.clientHeight
-            if (documenth < 667) {
+            if (this.div.clientHeight < 667) {
                 this.divConfirmSelect.style.top = "auto"
                 this.divConfirmSelect.style.bottom = "0"
             }

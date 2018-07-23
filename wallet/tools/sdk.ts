@@ -140,6 +140,19 @@ namespace BlackCat {
             }
             var res = await SDK.main.makeGasTransfer(params, callback);
         }
+        // gas转账（批量）
+        static async makeGasTransferMulti(params, callback = null) {
+            if (SDK.is_init === false) {
+                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                return;
+            }
+            if (!SDK.main.isLogined()) {
+                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                this.showMain()
+                return;
+            }
+            var res = await SDK.main.makeGasTransferMulti(params, callback);
+        }
         // 查询网络类型
         static async getNetType(callback = null) {
             if (SDK.is_init === false) {

@@ -180,17 +180,19 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_cardtransaction button:last-child{margin-left: 30px;}
 .pc_currency{padding: 0 20px;}
 .pc_currency>div{border-bottom: 1px solid #3a3c4a;height: 40px;line-height: 40px;color: #a7a8ba;}
-.pc_currency .pc_currencynumber{color: #dbdde9}
+.pc_currency .pc_currencynumber{color: #dbdde9;border-bottom: none}
 .pc_currency .pc_currencynumber span,.pc_payrecord span{border-left: 3px solid #fff;padding-left: 10px;color: #fff;float: none ;}
 .pc_currency label{cursor: pointer;margin-left: 10px;color: #ff4242}
 .pc_currency label:hover .pc_sgascon{display: block;}
 .pc_sgascon{position: absolute;max-width: 85%; background-color: rgba(0, 0, 0, 0.8);color: #c8ab73;font-size: 12px;font-family: none; line-height: 1.5; padding:10px; border-radius: 5px;display: none;margin-top: -70px;z-index: 1;}
 
 .pc_currency span{float: right}
-.pc_currency button{border: 1px solid #dbdce8;color:#dbdce8;padding: 1px 5px;width: 70px; border-radius: 3px;position: absolute;left: 7em;margin-top: 9px}
-.pc_currency button:active,.pc_paymore:active{background-color: #6393dd;border-color: #6393dd}
+.pc_currency button{border: 1px solid #dbdce8;color:#dbdce8;padding: 1px 5px;width: 75px;font-weight: bold; border-radius: 3px;position: absolute;left: 7em;margin-top: 9px}
+.pc_currency button:active{background-color: #f3ce87;border-color: #f3ce87;color: #5c544c}
 .pc_currency span{color: #c8ab73}
-.pc_paymore{float: right;margin-top: 10px;border: 1px solid #dbdce8;color:#dbdce8;padding: 1px 5px;border-radius: 3px;}
+.pc_paymore{float: right;margin-top: 10px;color:#dbdce8;}
+.pc_paymore:active{color: #c8ab73}
+.pc_paymore i{font-size: 12px}
 
 .pc_paylists{padding-bottom: 10px;}
 .pc_paylists li{height: 40px;padding: 10px 0;margin: 0 20px; border-bottom: 1px solid #424453;position: relative; cursor: pointer}
@@ -219,7 +221,7 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 /*钱包交易列表*/
 .pc_paylist ul{margin-top: 45px;}
 .pc_paylist li{height: 40px;padding: 10px 0; border-bottom: 1px solid #424453;margin: 0 20px;position: relative; cursor: pointer;}
-li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;cursor: auto}
+li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;cursor: auto;}
 .pc_listimg{width: 40px;height: 40px;float: left;border-radius:10px;overflow:hidden}
 .pc_liftinfo{float: left;margin-left:10px;font-size: 14px;color: #a7a8ba;max-width: 40%;}
 .pc_listname,.pc_method{line-height: 1.5;overflow: hidden;text-overflow: ellipsis;white-space: nowrap}

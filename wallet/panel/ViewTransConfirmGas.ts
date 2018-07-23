@@ -24,8 +24,7 @@ namespace BlackCat {
             }
             super.start()
 
-            var documenth = this.div.clientHeight
-            if (documenth < 667) {
+            if (this.div.clientHeight < 667) {
                 this.divConfirmSelect.style.top = "auto"
                 this.divConfirmSelect.style.bottom = "0"
             }
@@ -144,6 +143,8 @@ namespace BlackCat {
                     params = JSON.parse(params)
                     if (params.hasOwnProperty("toaddr")) {
                         params = [params]
+                    }
+                    if (params instanceof Array) {
                         for (let k in params) {
                             html += '<li class="pc_contractAddress">'
                                 + '<div><label>' + Main.langMgr.get("pay_transferGas_toaddr") + '</label><p>' + params[k].toaddr + '</p></div>'

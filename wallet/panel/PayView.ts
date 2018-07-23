@@ -170,7 +170,7 @@ namespace BlackCat {
             this.ObjAppend(divWalletUser, makeTransferObj)
 
 
-            //
+            //代币
             var divCurrency = this.objCreate("div")
             divCurrency.classList.add("pc_currency")
             this.ObjAppend(this.div, divCurrency)
@@ -371,13 +371,17 @@ namespace BlackCat {
             this.divListsMore = this.objCreate("button")
             this.divListsMore.classList.add("pc_paymore")
             this.divListsMore.textContent = Main.langMgr.get("more") // "更多"
-
             this.divListsMore.onclick = () => {
                 this.hidden()
                 Main.viewMgr.change("PayListMoreView")
             }
             this.divListsMore.style.display = "none"
             this.ObjAppend(liRecord, this.divListsMore)
+
+            var iListsMore = this.objCreate("i")
+            iListsMore.classList.add("iconfont","icon-sanjiaoxing")
+            this.ObjAppend(this.divListsMore, iListsMore)
+
 
         }
 

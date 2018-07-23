@@ -95,12 +95,23 @@ namespace BlackCat {
                         params = [params]
                     }
                     if (params instanceof Array) {
-                        for (let k in params) {
-                            html += '<li class="pc_contractAddress">'
-                                + '<div><label>' + Main.langMgr.get("paylist_nnc") + '</label><p>' + params[k].nnc + '</p></div>'
-                                + '<div><label>' + Main.langMgr.get("paylist_sbParamJson") + '</label><p>' + params[k].sbParamJson + '</p></div>'
-                                + '<div><label>' + Main.langMgr.get("paylist_sbPushString") + '</label><p>' + params[k].sbPushString + '</p></div>'
-                                + '</li>';
+                        if (PayListDetailView.list.type == "6") {
+                            // gas转账
+                            for (let k in params) {
+                                html += '<li class="pc_contractAddress">'
+                                    + '<div><label>' + Main.langMgr.get("pay_transferGas_toaddr") + '</label><p>' + params[k].toaddr + '</p></div>'
+                                    + '<div><label>' + Main.langMgr.get("pay_transferGas_count") + '</label><p>' + params[k].count + '</p></div>'
+                                    + '</li>';
+                            }
+                        }
+                        else {
+                            for (let k in params) {
+                                html += '<li class="pc_contractAddress">'
+                                    + '<div><label>' + Main.langMgr.get("paylist_nnc") + '</label><p>' + params[k].nnc + '</p></div>'
+                                    + '<div><label>' + Main.langMgr.get("paylist_sbParamJson") + '</label><p>' + params[k].sbParamJson + '</p></div>'
+                                    + '<div><label>' + Main.langMgr.get("paylist_sbPushString") + '</label><p>' + params[k].sbPushString + '</p></div>'
+                                    + '</li>';
+                            }
                         }
                     }
 

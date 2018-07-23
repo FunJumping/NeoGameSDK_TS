@@ -401,7 +401,76 @@ BlackCat.SDK.makeGasTransfer(params, function(res){
 }
 ```
 
-### 7、交易完成通知
+### 7、GAS批量转账
+执行GAS批量转账操作，该调用需要钱包用户签名。
+``` 
+var params = [
+	{
+		toaddr: "AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf",
+		count: "0.001",
+		extString: "makeGasTransferMulti1"
+	},
+	{
+		toaddr: "AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT",
+		count: "0.002",
+		extString: "makeGasTransferMulti2"
+	}
+]
+
+// 方式一
+BlackCat.SDK.makeGasTransferMulti(params)
+
+// 方式二
+BlackCat.SDK.makeGasTransferMulti(params, function(res){
+    console.log("makeGasTransferMulti.callback.function.res ", res)
+})
+```
+**params参数：** 
+
+|参数名|必选|类型|说明|
+|:----    |:---|:----- |-----   |
+|toaddr |是  |String |转账收款地址   |
+|count |是  |string |转账数量   |
+|extString |是  |string |透传参数  |
+
+**返回示例**
+
+``` 
+方式一：
+{
+    "cmd": "makeGasTransferMultiRes",
+    "data": {
+        "params": [
+            {
+                "toaddr": "AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf",
+                "count": "0.001",
+                "extString": "makeGasTransferMulti1",
+                "sbPushString": "transfer"
+            },
+            {
+                "toaddr": "AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT",
+                "count": "0.002",
+                "extString": "makeGasTransferMulti2",
+                "sbPushString": "transfer"
+            }
+        ],
+        "res": {
+            "err": false,
+            "info": "c23537c41751e5a96621a1bf1c077d854ef522087b5fc9b245bf22e97f9e4451"
+        }
+    }
+}
+
+方式二：
+{
+	"res": {
+		"err": false,
+		"info": "c23537c41751e5a96621a1bf1c077d854ef522087b5fc9b245bf22e97f9e4451"
+	}
+}
+```
+
+### 8、交易完成通知
 执行转账、合约写入等需要打开钱包的操作，会收到交易完成的通知。如果本通知state=1，应用应再判断执行结果，本通知只表示该交易已经在链上执行。
 
 **返回示例**
@@ -423,7 +492,7 @@ BlackCat.SDK.makeGasTransfer(params, function(res){
 ```
 
 
-### 8、交易完成通知确认
+### 9、交易完成通知确认
 应用客户端收到交易完成通知后，必须调用此接口进行回复，否则交易完成通知数据会一直传回。
 ``` 
 var params = {
@@ -469,7 +538,7 @@ BlackCat.SDK.confirmAppNotify(params, function(res){
 }
 ```
 
-### 9、余额查询
+### 10、余额查询
 查询gas、sgas余额。
 ``` 
 // 方式一
@@ -498,7 +567,7 @@ BlackCat.SDK.getBalance(function(res){
 	"gas": 1
 }
 ```
-### 10、获取登录用户信息
+### 11、获取登录用户信息
 获取登录完成的用户信息。
 ``` 
 // 方式一
@@ -550,7 +619,7 @@ BlackCat.SDK.getUserInfo(function(res){
 }
 ```
 
-### 11、获取当前网络类型
+### 12、获取当前网络类型
 获取当前网络类型
 ``` 
 // 方式一
@@ -574,19 +643,19 @@ BlackCat.SDK.getNetType(function(res){
 2
 ```
 
-### 12、设置语言
+### 13、设置语言
 设置当前SDK语言，可选cn、en
 ``` 
 BlackCat.SDK.setLang(lang)
 ```
 
-### 13、显示SDK界面
+### 14、显示SDK界面
 显示SDK界面
 ``` 
 BlackCat.SDK.showMain()
 ```
 
-### 14、最小化SDK界面
+### 15、最小化SDK界面
 最小化SDK界面
 ``` 
 BlackCat.SDK.showIcon()
