@@ -46,9 +46,8 @@ namespace BlackCat {
 
         private static s_update: any;
 
-
-        private update_timeout_max: number;
-        private update_timeout_min: number;
+        private static update_timeout_max: number;
+        private static update_timeout_min: number;
 
 
         constructor() {
@@ -58,32 +57,42 @@ namespace BlackCat {
             Main.viewMgr = new ViewMgr();
             Main.langMgr = new LangMgr();
 
-            Main.reset()
+            Main.reset(0)
 
-            this.update_timeout_max = 5000;
-            this.update_timeout_min = 300;
+            Main.update_timeout_max = 5000;
+            Main.update_timeout_min = 300;
 
             Main.isCreated = false;
 
             Neo.Cryptography.RandomNumberGenerator.startCollectors();
         }
 
-        static reset() {
+        static reset(type = 0) {
             Main.appWalletLogId = 0;
             Main.appWalletNotifyId = 0;
-            Main.needGetAppNotifys = false;
             Main.appNotifyTxids = {};
 
             Main.platWalletLogId = 0;
             Main.platWalletNotifyId = 0;
-            Main.needGetPlatNotifys = false;
             Main.platNotifyTxids = {};
 
             Main.clearTimeout()
+
+            if (type == 0) {
+                Main.needGetAppNotifys = false;
+                Main.needGetPlatNotifys = false;
+            }
+            else {
+                Main.needGetAppNotifys = true;
+                Main.needGetPlatNotifys = true;
+            }
         }
 
         static clearTimeout() {
-            if (Main.s_update) clearTimeout(Main.s_update)
+            if (Main.s_update) {
+                clearTimeout(Main.s_update)
+                Main.update()
+            }
         }
 
         // SDK初始化
@@ -144,7 +153,7 @@ namespace BlackCat {
                 sgas: sgas,
                 gas: gas
             }
-            this.listenerCallback("getBalanceRes", callback_data);
+            Main.listenerCallback("getBalanceRes", callback_data);
             return callback_data;
         }
 
@@ -155,8 +164,47 @@ namespace BlackCat {
             Main.viewMgr.mainView.createMask()
 
             if (Main.isCreated == false) {
+
+                // 选择BlaCat节点
+                var res_api = await Main.netMgr.selectApi()
+                if (!res_api) {
+                    var res = new Result();
+                    var callback_data = {
+                        cmd: "loginRes",
+                        data: res
+                    }
+                    res.err = true
+                    res.info = "select api server err"
+                    Main.callback(JSON.stringify(callback_data));
+                    // function回调
+                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res)
+
+                    Main.showErrMsg("BlaCat通讯异常！")
+                    return
+                }
+
+                // 选择默认网络
+                var res_net = Main.netMgr.change()
+                if (!res_net) {
+                    var res = new Result();
+                    var callback_data = {
+                        cmd: "loginRes",
+                        data: res
+                    }
+                    res.err = true
+                    res.info = "select nelnode server err"
+                    Main.callback(JSON.stringify(callback_data));
+                    // function回调
+                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res)
+
+                    Main.showErrMsg("链上通讯异常！")
+                    return
+                }
+
+                Main.viewMgr.mainView.changNetType()
+
                 // 创建定时器
-                this.update();
+                Main.update();
 
                 Main.isCreated = true;
             }
@@ -202,7 +250,7 @@ namespace BlackCat {
         }
         // SDK获取用户信息
         getUserInfo() {
-            this.listenerCallback("getUserInfoRes", Main.user.info)
+            Main.listenerCallback("getUserInfoRes", Main.user.info)
             return Main.user.info;
         }
         // SDK登出回调
@@ -222,7 +270,7 @@ namespace BlackCat {
             }
         }
         // SDK回调
-        async listenerCallback(cmd, data) {
+        static async listenerCallback(cmd, data) {
             var callback_data = {
                 cmd: cmd,
                 data: data
@@ -236,7 +284,7 @@ namespace BlackCat {
                 params: params,
                 res: res
             }
-            this.listenerCallback("invokescriptRes", callback_data);
+            Main.listenerCallback("invokescriptRes", callback_data);
             return res;
         }
         // SDK合约交易
@@ -287,7 +335,7 @@ namespace BlackCat {
                             var res = new Result()
                             res.err = true
                             res.info = e.toString()
-                         }
+                        }
 
                         // function回调
                         if (Main.transCallback) Main.transCallback(res);
@@ -297,7 +345,7 @@ namespace BlackCat {
                             params: params,
                             res: res
                         }
-                        this.listenerCallback("makeRawTransactionRes", callback_data);
+                        Main.listenerCallback("makeRawTransactionRes", callback_data);
                         // 重新获取钱包记录
                         await Main.viewMgr.payView.doGetWalletLists(1)
                         Main.viewMgr.viewLoading.remove()
@@ -317,7 +365,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeRawTransactionRes", callback_data);
+                    Main.listenerCallback("makeRawTransactionRes", callback_data);
                     Main.transCallback = null;
                 }
                 Main.viewMgr.change("ViewTransConfirm")
@@ -339,7 +387,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeRawTransactionRes", callback_data);
+                    Main.listenerCallback("makeRawTransactionRes", callback_data);
                     callback(res)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
@@ -401,12 +449,12 @@ namespace BlackCat {
                         try {
                             var res = await Main.wallet.makeRecharge(params);
                         }
-                        catch(e) {
+                        catch (e) {
                             var res = new Result()
                             res.err = true
                             res.info = e.toString()
                         }
-                        
+
                         // function回调
                         if (Main.transCallback) Main.transCallback(res);
                         Main.transCallback = null;
@@ -415,14 +463,14 @@ namespace BlackCat {
                             params: params,
                             res: res
                         }
-                        this.listenerCallback("makeRechargeRes", callback_data);
+                        Main.listenerCallback("makeRechargeRes", callback_data);
                         // 重新获取钱包记录
                         await Main.viewMgr.payView.doGetWalletLists(1)
 
                         Main.viewMgr.viewLoading.remove()
 
                     }, 300);
-                    
+
                 }
                 ViewTransConfirm.callback_cancel = () => {
                     console.log('[Bla Cat]', '[main]', 'makeRecharge交易取消..')
@@ -437,7 +485,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeRechargeRes", callback_data);
+                    Main.listenerCallback("makeRechargeRes", callback_data);
                     Main.transCallback = null;
                 }
                 Main.viewMgr.change("ViewTransConfirm")
@@ -459,7 +507,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeRechargeRes", callback_data);
+                    Main.listenerCallback("makeRechargeRes", callback_data);
                     callback(res)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
@@ -515,7 +563,7 @@ namespace BlackCat {
                             if (res.err == false) {
                                 params.sbPushString = "transfer"
                                 // 成功，上报
-                                await ApiTool.addUserWalletLogs(
+                                var logRes = await ApiTool.addUserWalletLogs(
                                     Main.user.info.uid,
                                     Main.user.info.token,
                                     res.info,
@@ -525,6 +573,7 @@ namespace BlackCat {
                                     JSON.stringify(params),
                                     Main.netMgr.type
                                 );
+                                Main.appWalletLogId = logRes.data;
                                 // 重新获取钱包记录
                                 await Main.viewMgr.payView.doGetWalletLists(1)
                             }
@@ -535,7 +584,7 @@ namespace BlackCat {
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
                         }
-    
+
                         // function回调
                         if (Main.transGasCallback) Main.transGasCallback(res);
                         Main.transGasCallback = null;
@@ -544,8 +593,8 @@ namespace BlackCat {
                             params: params,
                             res: res
                         }
-                        this.listenerCallback("makeGasTransferRes", callback_data);
-    
+                        Main.listenerCallback("makeGasTransferRes", callback_data);
+
                         Main.viewMgr.viewLoading.remove()
                     }, 300);
                 }
@@ -565,7 +614,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeRechargeRes", callback_data);
+                    Main.listenerCallback("makeGasTransferRes", callback_data);
                 }
                 Main.viewMgr.change("ViewTransConfirmGas")
 
@@ -586,7 +635,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeGasTransferRes", callback_data);
+                    Main.listenerCallback("makeGasTransferRes", callback_data);
                     callback(res)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
@@ -615,8 +664,8 @@ namespace BlackCat {
                 // 打开确认页
 
                 // 计算交易金额
-                var _count:number = 0;
-                for (let i=0; i< params.length; i++) {
+                var _count: number = 0;
+                for (let i = 0; i < params.length; i++) {
                     _count += Number(params[i].count)
                 }
 
@@ -669,7 +718,7 @@ namespace BlackCat {
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
                         }
-    
+
                         // function回调
                         if (Main.transGasMultiCallback) Main.transGasMultiCallback(res);
                         Main.transGasMultiCallback = null;
@@ -678,8 +727,8 @@ namespace BlackCat {
                             params: params,
                             res: res
                         }
-                        this.listenerCallback("makeGasTransferMultiRes", callback_data);
-    
+                        Main.listenerCallback("makeGasTransferMultiRes", callback_data);
+
                         Main.viewMgr.viewLoading.remove()
                     }, 300);
                 }
@@ -699,7 +748,7 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeRechargeRes", callback_data);
+                    Main.listenerCallback("makeRechargeRes", callback_data);
                 }
                 Main.viewMgr.change("ViewTransConfirmGas")
 
@@ -720,27 +769,27 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    this.listenerCallback("makeGasTransferMultiRes", callback_data);
+                    Main.listenerCallback("makeGasTransferMultiRes", callback_data);
                     callback(res)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
 
-        async update() {
+        static async update() {
             // console.log('[Bla Cat]', '[main]', 'update ...')
 
-            await this.getAppNotifys();
-            await this.getPlatNotifys();
+            await Main.getAppNotifys();
+            await Main.getPlatNotifys();
 
             // 更新payView的List时间
             if (Main.viewMgr.payView && Main.viewMgr.payView.isCreated && !Main.viewMgr.payView.isHidden()) {
                 Main.viewMgr.payView.flushListCtm()
             }
 
-            var timeout = this.update_timeout_min;
-            if (this.isLogined()) {
-                timeout = this.update_timeout_max;
+            var timeout = Main.update_timeout_min;
+            if (Main.isLoginCallback) {
+                timeout = Main.update_timeout_max;
             }
             Main.s_update = setTimeout(() => { this.update() }, timeout);
         }
@@ -760,7 +809,7 @@ namespace BlackCat {
                     params: params,
                     res: res
                 }
-                this.listenerCallback("confirmAppNotifyRes", callback_data);
+                Main.listenerCallback("confirmAppNotifyRes", callback_data);
                 // 删除notiyTxids里面的记录
                 delete Main.appNotifyTxids[params.txid];
             }
@@ -773,13 +822,13 @@ namespace BlackCat {
                     res: res
                 }
 
-                this.listenerCallback("confirmAppNotifyRes", callback_data);
+                Main.listenerCallback("confirmAppNotifyRes", callback_data);
             }
 
             return res;
         }
         // main获取交易确认通知记录
-        async getAppNotifys(): Promise<boolean> {
+        static async getAppNotifys(): Promise<boolean> {
             // 开启获取、已经有上报记录，并且没有获取到notify时开启
             if (Main.needGetAppNotifys == true || (Main.appWalletLogId && Main.appWalletLogId > Main.appWalletNotifyId)) {
                 console.log('[Bla Cat]', '[main]', 'getAppNotifys, 执行前，是否获取: ' + Main.needGetAppNotifys
@@ -829,7 +878,7 @@ namespace BlackCat {
                         if (new_app_notifys.length > 0) {
                             console.log('[Bla Cat]', '[main]', 'getAppNotifys, 需要回调数据 => ', new_app_notifys)
                             // 有新数据
-                            this.listenerCallback("getAppNotifysRes", new_app_notifys);
+                            Main.listenerCallback("getAppNotifysRes", new_app_notifys);
                         }
                     }
                 }
@@ -843,7 +892,7 @@ namespace BlackCat {
             return false;
         }
 
-        private async doPlatNotify(params: Array<any>) {
+        private static async doPlatNotify(params: Array<any>) {
             console.log('[Bla Cat]', '[main]', 'doPlatNotify, params => ', params)
             var openTask = null; // 打开钱包任务
             for (let k in params) {
@@ -852,7 +901,7 @@ namespace BlackCat {
                         if (params[k].state == "1") {
                             if (params[k].ext) {
                                 // utxo->gas提交成功，循环获取结果，不需要开钱包
-                                this.doPlatNotifyRefundRes(params[k], params[k].ext)
+                                Main.doPlatNotifyRefundRes(params[k], params[k].ext)
                             }
                             else {
                                 if (!Main.isWalletOpen()) {
@@ -865,7 +914,7 @@ namespace BlackCat {
                                     break;
                                 }
                                 // sgas->utxo确定，发起utxo->gas请求，需要打开钱包
-                                this.doPlatNotiyRefund(params[k])
+                                Main.doPlatNotiyRefund(params[k])
                             }
                         }
                         else {
@@ -911,7 +960,7 @@ namespace BlackCat {
             Main.showConFirm("main_need_open_wallet_confirm")
         }
 
-        private async doPlatNotiyRefund(params) {
+        private static async doPlatNotiyRefund(params) {
             //tx的第一个utxo就是给自己的
             var utxo: tools.UTXO = new tools.UTXO();
             utxo.addr = Main.user.info.wallet;
@@ -972,7 +1021,7 @@ namespace BlackCat {
                         console.log('[Bla Cat]', '[main]', 'doPlatNotiyRefund, txid => ', r.txid);
                         // 确认转换请求
                         // this.confirmPlatNotifyExt(params)
-                        var res = await this.confirmPlatNotifyExt(params, r.txid);
+                        var res = await Main.confirmPlatNotifyExt(params, r.txid);
                         // 轮询请求r.txid的交易状态
                         this.doPlatNotifyRefundRes(params, r.txid)
                         // 记录使用的utxo，后面不再使用，需要记录高度
@@ -997,11 +1046,11 @@ namespace BlackCat {
                 Main.showErrMsg(("main_refund_getScript_err"))
             }
         }
-        private async doPlatNotifyRefundRes(params, txid) {
+        private static async doPlatNotifyRefundRes(params, txid) {
             var r = await tools.WWW.getrawtransaction(txid)
             if (r) {
                 console.log('[Bla Cat]', '[main]', 'doPlatNotifyRefundRes, txid: ' + txid + ", r => ", r)
-                await this.confirmPlatNotify(params)
+                await Main.confirmPlatNotify(params)
                 // 刷新payview交易状态
                 Main.viewMgr.payView.doGetWalletLists()
             }
@@ -1012,19 +1061,19 @@ namespace BlackCat {
             }
         }
         // 确认回调
-        private async confirmPlatNotify(params) {
+        private static async confirmPlatNotify(params) {
             var res = await ApiTool.walletNotify(Main.user.info.uid, Main.user.info.token, params.txid, Main.netMgr.type);
             // 删除notiyTxids里面的记录
             delete Main.platNotifyTxids[params.txid];
             return res;
         }
         // 退款状态
-        private async confirmPlatNotifyExt(params, ext) {
+        private static async confirmPlatNotifyExt(params, ext) {
             var res = await ApiTool.walletNotifyExt(Main.user.info.uid, Main.user.info.token, params.txid, ext, Main.netMgr.type)
             return res;
         }
         // 获取平台notifys
-        async getPlatNotifys(): Promise<boolean> {
+        static async getPlatNotifys(): Promise<boolean> {
             // 开启获取、已经有上报记录，并且没有获取到notify时开启
             if (Main.needGetPlatNotifys == true || (Main.platWalletLogId && Main.platWalletLogId > Main.platWalletNotifyId)) {
                 console.log('[Bla Cat]', '[main]', '***getPlatNotifys, 执行前，是否获取: ' + Main.needGetPlatNotifys
@@ -1071,7 +1120,7 @@ namespace BlackCat {
                         if (new_plat_notifys.length > 0) {
                             console.log('[Bla Cat]', '[main]', '***getPlatNotifys, 有新数据 => ', new_plat_notifys)
                             // 有新数据
-                            this.doPlatNotify(new_plat_notifys)
+                            Main.doPlatNotify(new_plat_notifys)
 
                             // 更新PayView
                             // if (isFirst == false) Main.viewMgr.payView.doGetWalletLists()
@@ -1091,26 +1140,26 @@ namespace BlackCat {
         // 获取网络类型
         async getNetType() {
             let type = Main.netMgr.type;
-            this.listenerCallback("getNetTypeRes", type)
+            Main.listenerCallback("getNetTypeRes", type)
             return type;
         }
 
-        static changeNetType(type: number) {
-            var res = Main.netMgr.chang(type)
-
-            var callback_data = {
-                cmd: "changeNetTypeRes",
-                data: type
-            }
-            Main.callback(JSON.stringify(callback_data));
+        static async changeNetType(type: number) {
+            var res = await Main.netMgr.change(type)
 
             if (res) {
+                var callback_data = {
+                    cmd: "changeNetTypeRes",
+                    data: type
+                }
+                Main.callback(JSON.stringify(callback_data));
+
                 // 替换底色
                 Main.viewMgr.mainView.changNetType()
                 // 刷新视图
                 Main.viewMgr.update()
                 // 重置
-                Main.reset()
+                Main.reset(1)
             }
         }
 

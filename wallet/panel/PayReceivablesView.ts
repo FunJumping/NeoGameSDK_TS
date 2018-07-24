@@ -70,6 +70,9 @@ namespace BlackCat {
                 var idcopy = this.textareaAddress as HTMLInputElement;
                 idcopy.select();
                 document.execCommand("Copy");
+                Main.showToast("pc_receivables_copy",1500)
+                this.remove(300)
+
             }
             this.ObjAppend(popupbutbox, butreceivables)
         }

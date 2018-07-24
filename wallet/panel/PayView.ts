@@ -190,15 +190,18 @@ namespace BlackCat {
             divGas.innerHTML = Main.langMgr.get("pay_gas")//"Gas"
             this.ObjAppend(divCurrency, divGas)
 
+            //Gas的问号
             var labelGas = this.objCreate("label")
             labelGas.classList.add("iconfont", "icon-help")
             this.ObjAppend(divGas, labelGas)
 
 
+            //Gas余额
             this.spanGas = this.objCreate("span")
             this.spanGas.textContent = "0"
             this.ObjAppend(divGas, this.spanGas)
 
+            //什么是Gas
             var divSGascon = this.objCreate("div")
             divSGascon.classList.add("pc_sgascon")
             divSGascon.textContent = Main.langMgr.get("pay_gas_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
@@ -209,15 +212,18 @@ namespace BlackCat {
             divSGas.innerHTML = Main.langMgr.get("pay_sgas") // "SGas"
             this.ObjAppend(divCurrency, divSGas)
 
+            //SGas的问号
             var labelSGas = this.objCreate("label")
             labelSGas.classList.add("iconfont", "icon-help")
             this.ObjAppend(divSGas, labelSGas)
 
 
+            //SGas余额
             this.spanSgas = this.objCreate("span")
             this.spanSgas.textContent = "0"
             this.ObjAppend(divSGas, this.spanSgas)
 
+            //什么是SGas
             var divSGascon = this.objCreate("div")
             divSGascon.classList.add("pc_sgascon")
             divSGascon.textContent = Main.langMgr.get("pay_sgas_desc") //"SGas是Bla Cat提供给玩家消费用的通用筹码"

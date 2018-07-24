@@ -43,14 +43,15 @@ namespace BlackCat {
             // this.ObjAppend(areaSelect, this.selectArea)
 
 
-            // input 手机号/邮箱
+            // input 请输入用户名/邮箱
             var telInput = this.objCreate("div")
             telInput.classList.add("pc_login_inputbox", "pc_tel")
             this.ObjAppend(divInput, telInput)
 
             this.inputAccount = this.objCreate("input") as HTMLInputElement;
             this.inputAccount.type = "text"
-            this.inputAccount.placeholder = Main.langMgr.get("login_inputAccount"); //"请输入手机号码/邮箱"
+            this.inputAccount.autocomplete="off"
+            this.inputAccount.placeholder = Main.langMgr.get("login_inputAccount"); //"请输入用户名/邮箱"
             this.ObjAppend(telInput, this.inputAccount)
 
             // input 密码
@@ -60,6 +61,7 @@ namespace BlackCat {
 
             this.inputPass = this.objCreate("input") as HTMLInputElement
             this.inputPass.type = "password"
+            this.inputPass.autocomplete="off"
             this.inputPass.placeholder = Main.langMgr.get("login_inputPass"); // "请输入密码"
             this.ObjAppend(passInput, this.inputPass)
 

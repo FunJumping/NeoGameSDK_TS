@@ -337,7 +337,8 @@
 
 
             // PayReceivablesView
-            pay_received: "Receipt",
+            pay_received: "Receive",
+            pc_receivables_copy:"Copy success",
 
             // PayTransferView
             pay_transfer: "Transfer",

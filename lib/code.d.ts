@@ -31,10 +31,10 @@ declare namespace BlackCat {
         private static isLoginCallback;
         private static isCreated;
         private static s_update;
-        private update_timeout_max;
-        private update_timeout_min;
+        private static update_timeout_max;
+        private static update_timeout_min;
         constructor();
-        static reset(): void;
+        static reset(type?: number): void;
         static clearTimeout(): void;
         init(appid: any, appkey: any, callback: any, lang: any): void;
         setLang(type: any): void;
@@ -50,24 +50,24 @@ declare namespace BlackCat {
         isLogined(): boolean;
         getUserInfo(): UserInfo;
         static logoutCallback(): Promise<void>;
-        listenerCallback(cmd: any, data: any): Promise<void>;
+        static listenerCallback(cmd: any, data: any): Promise<void>;
         invokescript(params: any): Promise<tools.Result>;
         makeRawTransaction(params: any, callback: any): Promise<void>;
         makeRecharge(params: any, callback: any): Promise<void>;
         makeGasTransfer(params: any, callback?: any): Promise<void>;
         makeGasTransferMulti(params: any, callback?: any): Promise<void>;
-        update(): Promise<void>;
+        static update(): Promise<void>;
         confirmAppNotify(params: any): Promise<Result>;
-        getAppNotifys(): Promise<boolean>;
-        private doPlatNotify(params);
+        static getAppNotifys(): Promise<boolean>;
+        private static doPlatNotify(params);
         static continueRefund(): Promise<void>;
-        private doPlatNotiyRefund(params);
-        private doPlatNotifyRefundRes(params, txid);
-        private confirmPlatNotify(params);
-        private confirmPlatNotifyExt(params, ext);
-        getPlatNotifys(): Promise<boolean>;
+        private static doPlatNotiyRefund(params);
+        private static doPlatNotifyRefundRes(params, txid);
+        private static confirmPlatNotify(params);
+        private static confirmPlatNotifyExt(params, ext);
+        static getPlatNotifys(): Promise<boolean>;
         getNetType(): Promise<number>;
-        static changeNetType(type: number): void;
+        static changeNetType(type: number): Promise<void>;
         static getUrlParam(name: any): string;
         static validateLogin(): Promise<void>;
         static showErrCode(errCode: number, callback?: any): Promise<void>;
@@ -399,6 +399,7 @@ declare namespace BlackCat {
             paylist_getMore: string;
             paylist_noRecord: string;
             pay_received: string;
+            pc_receivables_copy: string;
             pay_transfer: string;
             pay_transferType: string;
             pay_transferBalance: string;
@@ -808,6 +809,7 @@ declare namespace BlackCat {
             paylist_getMore: string;
             paylist_noRecord: string;
             pay_received: string;
+            pc_receivables_copy: string;
             pay_transfer: string;
             pay_transferType: string;
             pay_transferBalance: string;
@@ -918,14 +920,28 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class Connector {
+        private hosts;
+        private first_host;
+        private check_params;
+        constructor(hosts: Array<string>, check_params: string);
+        getOne(): Promise<string>;
+        checkFirst(count: any): Promise<string>;
+    }
+}
+declare namespace BlackCat {
     class NetMgr {
-        type: number;
         types: Array<number>;
+        nodes: any;
+        apis: any;
+        type: number;
         constructor();
-        getOtherTypes(): Array<number>;
-        private chang2test();
+        selectApi(): Promise<boolean>;
+        private selectNode();
+        change(type?: number): Promise<boolean>;
+        private change2test();
         private change2Main();
-        chang(type: number): boolean;
+        getOtherTypes(): Array<number>;
     }
 }
 declare namespace BlackCat {
@@ -1278,7 +1294,6 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class ViewToast extends ViewBase {
-        showMsg: HTMLDivElement;
         static showTime: number;
         static content: string;
         create(): void;

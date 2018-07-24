@@ -338,6 +338,7 @@ namespace BlackCat {
 
             // PayReceivablesView
             pay_received: "收款",
+            pc_receivables_copy:"复制成功",
 
             // PayTransferView
             pay_transfer: "转账",

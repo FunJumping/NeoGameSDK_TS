@@ -12,7 +12,6 @@ namespace BlackCat {
                 this.isCreated = true;
                 this.bodyAppend(this.div)
             }
-            this.changNetType()
         }
 
         create() {

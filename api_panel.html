@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <title>BlackCat SDK</title>
@@ -17,12 +18,13 @@
     <script src="lib/code.js"></script>
 
 </head>
+
 <body style="background-color: cadetblue">
     <button onclick="initSDK()">初始化SDK</button>
     <button onclick="login()" style="margin-left:20px">登录</button>
 
     <hr>
-    <button onclick="showDiv('invokescriptdiv')" >合约读取</button>
+    <button onclick="showDiv('invokescriptdiv')">合约读取</button>
     <button onclick="showDiv('makerawtransactiondiv')" style="margin-left:20px">合约交易</button>
     <button onclick="showDiv('makerechargediv')" style="margin-left:20px">充值</button>
     <button onclick="showDiv('makeGasTransferdiv')" style="margin-left:20px">Gas转账</button>
@@ -40,76 +42,103 @@
     <button onclick="showMain()" style="margin-left:20px">显示</button>
     <button onclick="showIcon()" style="margin-left:20px">隐藏</button>
     <hr>
-<div class="dis" id="invokescriptdiv" style="display:none">
-    nnc:
-    <input style="width: 100%" type="text" id="nnc" name="nnc" value="0xcfe8f6824365f70d382733a92d8f373ee4faf222"><br/>
-    sbParamJson:<br/>
-    <input style="width: 100%" type="text" id="sbParamJson" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"]'/><br/>
-    sbPushString:<br/>
-    <input style="width: 100%" type="text" id="sbPushString" name="sbPushString" value="balanceOf"/><br/>
-    extString:<br/>
-    <input style="width: 100%" type="text" id="extString" name="extString" value="invokeScript"><br/>
-    <br/>
-    <button onclick="invokescript()">读取</button>
-</div>
+    <div class="dis" id="invokescriptdiv" style="display:none">
+        nnc:
+        <input style="width: 100%" type="text" id="nnc" name="nnc" value="0xcfe8f6824365f70d382733a92d8f373ee4faf222">
+        <br/> sbParamJson:
+        <br/>
+        <input style="width: 100%" type="text" id="sbParamJson" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"]'
+        />
+        <br/> sbPushString:
+        <br/>
+        <input style="width: 100%" type="text" id="sbPushString" name="sbPushString" value="balanceOf" />
+        <br/> extString:
+        <br/>
+        <input style="width: 100%" type="text" id="extString" name="extString" value="invokeScript">
+        <br/>
+        <br/>
+        <button onclick="invokescript()">读取</button>
+    </div>
 
-<div class="dis" id="makerawtransactiondiv" style="display: none">
-    nnc:<br/>
-    <input style="width: 100%" type="text" id="nnc2" name="nnc" value="0x3f7420285874867c30f32e44f304fd62ad1e9573"><br/>
-    sbParamJson:<br/>
-    <input style="width: 100%" type="text" id="sbParamJson2" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a","(integer)100000"]'/><br/>
-    sbPushString:<br/>
-    <input style="width: 100%" type="text" id="sbPushString2" name="sbPushString" value="transfer"/><br/>
-    extString:<br/>
-    <input style="width: 100%" type="text" id="extString2" name="extString2" value="makeRawTransaction"><br/>
-    <br/>
-    <button onclick="makerawtransaction()">交易</button>
-</div>
+    <div class="dis" id="makerawtransactiondiv" style="display: none">
+        nnc:
+        <br/>
+        <input style="width: 100%" type="text" id="nnc2" name="nnc" value="0x3f7420285874867c30f32e44f304fd62ad1e9573">
+        <br/> sbParamJson:
+        <br/>
+        <input style="width: 100%" type="text" id="sbParamJson2" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a","(integer)100000"]'
+        />
+        <br/> sbPushString:
+        <br/>
+        <input style="width: 100%" type="text" id="sbPushString2" name="sbPushString" value="transfer" />
+        <br/> extString:
+        <br/>
+        <input style="width: 100%" type="text" id="extString2" name="extString2" value="makeRawTransaction">
+        <br/>
+        <br/>
+        <button onclick="makerawtransaction()">交易</button>
+    </div>
 
-<div class="dis" id="makerechargediv" style="display: none">
-    count:<br/>
-    <input style="width: 100%" type="text" id="count" name="count" value="0.001"><br/>
-    extString:<br/>
-    <input style="width: 100%" type="text" id="extString3" name="extString3" value="makeRecharge"><br/>
-    <br/>
-    <button onclick="makerecharge()">充值</button>
-</div>
+    <div class="dis" id="makerechargediv" style="display: none">
+        count:
+        <br/>
+        <input style="width: 100%" type="text" id="count" name="count" value="0.001">
+        <br/> extString:
+        <br/>
+        <input style="width: 100%" type="text" id="extString3" name="extString3" value="makeRecharge">
+        <br/>
+        <br/>
+        <button onclick="makerecharge()">充值</button>
+    </div>
 
-<div class="dis" id="confirmNotifydiv" style="display: none">
-    txid:<br/>
-    <input style="width: 100%" type="text" id="txid" name="txid" value=""><br/>
-    <button onclick="confirmappnotify()">确认</button>
-</div>
+    <div class="dis" id="confirmNotifydiv" style="display: none">
+        txid:
+        <br/>
+        <input style="width: 100%" type="text" id="txid" name="txid" value="">
+        <br/>
+        <button onclick="confirmappnotify()">确认</button>
+    </div>
 
 
-<div class="dis" id="makeGasTransferdiv" style="display: none">
-    转账地址:<br/>
-    <input style="width: 100%" type="text" id="toaddr" name="toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5"><br/>
-    转账数量:<br/>
-    <input style="width: 100%" type="text" id="gascount" name="gascount" value="0.01"><br/>
-    extString:<br/>
-    <input style="width: 100%" type="text" id="extString4" name="extString4" value="makeGasTransfer"><br/>
-    <button onclick="makeGasTransfer()">确认</button>
-</div>
+    <div class="dis" id="makeGasTransferdiv" style="display: none">
+        转账地址:
+        <br/>
+        <input style="width: 100%" type="text" id="toaddr" name="toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5">
+        <br/> 转账数量:
+        <br/>
+        <input style="width: 100%" type="text" id="gascount" name="gascount" value="0.01">
+        <br/> extString:
+        <br/>
+        <input style="width: 100%" type="text" id="extString4" name="extString4" value="makeGasTransfer">
+        <br/>
+        <button onclick="makeGasTransfer()">确认</button>
+    </div>
 
-<div class="dis" id="makeGasTransferMultidiv" style="display: none">
-    转账地址1:<br/>
-    <input style="width: 100%" type="text" id="toaddrMulti1" name="toaddrMulti1" value="AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf"><br/>
-    转账数量1:<br/>
-    <input style="width: 100%" type="text" id="gascountMulti1" name="gascountMulti1" value="0.001"><br/>
-    extString1:<br/>
-    <input style="width: 100%" type="text" id="extStringMulti1" name="extStringMulti1" value="makeGasTransferMulti1"><br/>
+    <div class="dis" id="makeGasTransferMultidiv" style="display: none">
+        转账地址1:
+        <br/>
+        <input style="width: 100%" type="text" id="toaddrMulti1" name="toaddrMulti1" value="AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf">
+        <br/> 转账数量1:
+        <br/>
+        <input style="width: 100%" type="text" id="gascountMulti1" name="gascountMulti1" value="0.001">
+        <br/> extString1:
+        <br/>
+        <input style="width: 100%" type="text" id="extStringMulti1" name="extStringMulti1" value="makeGasTransferMulti1">
+        <br/>
 
-    <br/>
+        <br/> 转账地址2:
 
-    转账地址2:<br/>
-    <input style="width: 100%" type="text" id="toaddrMulti2" name="toaddrMulti2" value="AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"><br/>
-    转账数量2:<br/>
-    <input style="width: 100%" type="text" id="gascountMulti2" name="gascountMulti2" value="0.002"><br/>
-    extString2:<br/>
-    <input style="width: 100%" type="text" id="extStringMulti2" name="extStringMulti2" value="makeGasTransferMulti2"><br/>
-    <button onclick="makeGasTransferMulti()">确认</button>
-</div>
+        <br/>
+        <input style="width: 100%" type="text" id="toaddrMulti2" name="toaddrMulti2" value="AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT">
+        <br/> 转账数量2:
+        <br/>
+        <input style="width: 100%" type="text" id="gascountMulti2" name="gascountMulti2" value="0.002">
+        <br/> extString2:
+        <br/>
+        <input style="width: 100%" type="text" id="extStringMulti2" name="extStringMulti2" value="makeGasTransferMulti2">
+        <br/>
+        <button onclick="makeGasTransferMulti()">确认</button>
+    </div>
 
 
 
@@ -119,28 +148,77 @@
     <script>
         var appid = "5";
         var appkey = "";
-        var listener = function(data)
-        {
+        
+        var listener = function (data) {
+            // 页面显示
             var resObj = document.getElementById('res')
             resObj.innerHTML = '<pre>' + JSON.stringify(JSON.parse(data), null, 4) + '</pre>'
+
+            // 回调处理，data是JSON格式String
             var res = JSON.parse(data)
+            console.log('listener => ', res)
             switch (res.cmd) {
-                case "getAppNotifysRes":
-                    // for (let i = 0 ; i<res.data.length; i++) {
-                    //     var datas = {
-                    //         txid: res.data[i].txid
-                    //     }
-                    //     BlackCat.SDK.confirmAppNotify(datas, function(res){
-                    //         console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
-                    //     })
-                    // }
+                case "loginRes": // 登录回调
+                    var loginInfo = res.data;
+                    // 此处需要发送接收到的数据到服务端验证后再登录应用
+                    break;
+                case "invokescriptRes": // 合约读取调用
+                    var params = res.data.params; // 合约调用参数
+                    var result = res.data.res; // 合约调用结果
+                    if (result.err == true) {
+                        // 执行失败
+                    }
+                    else {
+                        // 执行成功
+                        var success_data = result.info;
+                    }
+                    break;
+                case "makeRawTransactionRes": // 合约写入请求结果
+                    // 回调数据格式参考invokescriptRes
+                    break;
+                case "makeRechargeRes": // 充值回调
+                    // 回调数据格式参考invokescriptRes
+                    break;
+                case "makeGasTransferRes": // GAS转账回调
+                    // 回调数据格式参考invokescriptRes
+                    break;
+                case "confirmAppNotifyRes": // 交易通知接收确认回调
+                    // 回调数据格式参考invokescriptRes
+                    break;
+                case "getBalanceRes": // 获取余额
+                    var result = res.data;
+                    var sgas = result.sgas;
+                    var gas = result.gas;
+                    break;
+                case "getUserInfoRes": // 获取登录用户信息
+                    var userInfo = res.data;
+                    break;
+                case "getNetTypeRes": // 获取网络类型
+                    var net_type = res.data;
+                    if (net_type == 1) {
+                        // 主网
+                    }
+                    else if (net_type == 2) {
+                        // 测试网
+                    }
+                    break;
+                case "changeNetTypeRes": // 网络切换回调
+                    var net_type = res.data;
+                    if (net_type == 1) {
+                        // 主网
+                    }
+                    else if (net_type == 2) {
+                        // 测试网
+                    }
                     break;
             }
         };
 
+        // initSDK()
+        // login()
 
-        function showDiv(id)
-        {
+
+        function showDiv(id) {
             document.getElementById("invokescriptdiv").style.display = "none";
             document.getElementById("makerawtransactiondiv").style.display = "none";
             document.getElementById("makerechargediv").style.display = "none";
@@ -151,25 +229,21 @@
             document.getElementById(id).style.display = ""
         }
 
-        function initSDK()
-        {
+        function initSDK() {
             BlackCat.SDK.init(appid, appkey, listener, "cn")
         }
 
-        function setLang(lang)
-        {
+        function setLang(lang) {
             BlackCat.SDK.setLang(lang)
         }
 
-        function login()
-        {
-            BlackCat.SDK.login(function(res) {
+        function login() {
+            BlackCat.SDK.login(function (res) {
                 console.log('[BlackCat]', 'login.callback.function.res => ', res)
             });
         }
 
-        function invokescript()
-        {
+        function invokescript() {
             var data = {
                 nnc: document.getElementById('nnc').value,
                 sbParamJson: document.getElementById('sbParamJson').value,
@@ -177,13 +251,12 @@
                 extString: document.getElementById('extString').value
             }
             data.sbParamJson = JSON.parse(data.sbParamJson)
-            BlackCat.SDK.invokescript(data, function(res){
+            BlackCat.SDK.invokescript(data, function (res) {
                 console.log('[BlackCat]', 'invokescript.callback.function.res => ', res)
             })
         }
 
-        function makerawtransaction()
-        {
+        function makerawtransaction() {
             var data = {
                 nnc: document.getElementById('nnc2').value,
                 sbParamJson: document.getElementById('sbParamJson2').value,
@@ -191,73 +264,65 @@
                 extString: document.getElementById('extString2').value
             }
             data.sbParamJson = JSON.parse(data.sbParamJson)
-            
-            BlackCat.SDK.makeRawTransaction(data, function(res){
+
+            BlackCat.SDK.makeRawTransaction(data, function (res) {
                 console.log('[BlackCat]', 'makerawtransaction.callback.function.res => ', res)
             })
         }
 
-        function makerecharge()
-        {
+        function makerecharge() {
             var data = {
                 count: document.getElementById('count').value,
                 extString: document.getElementById('extString3').value
             }
-            
-            BlackCat.SDK.makeRecharge(data, function(res){
+
+            BlackCat.SDK.makeRecharge(data, function (res) {
                 console.log('[BlackCat]', 'makeRecharge.callback.function.res => ', res)
             })
         }
 
-        function confirmappnotify()
-        {
+        function confirmappnotify() {
             var data = {
                 txid: document.getElementById('txid').value
             }
 
-            BlackCat.SDK.confirmAppNotify(data, function(res){
+            BlackCat.SDK.confirmAppNotify(data, function (res) {
                 console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
             })
         }
 
-        function showMain()
-        {
+        function showMain() {
             BlackCat.SDK.showMain()
         }
 
-        function showIcon()
-        {
+        function showIcon() {
             BlackCat.SDK.showIcon()
         }
 
-        function getbalance()
-        {
-            BlackCat.SDK.getBalance(function(res){
+        function getbalance() {
+            BlackCat.SDK.getBalance(function (res) {
                 console.log("getbalance.callback.function.res ", res)
             })
         }
 
-        function getUserInfo()
-        {
-            BlackCat.SDK.getUserInfo(function(res){
+        function getUserInfo() {
+            BlackCat.SDK.getUserInfo(function (res) {
                 console.log("getUserInfo.callback.function.res ", res)
             })
         }
 
-        function makeGasTransfer()
-        {
+        function makeGasTransfer() {
             var data = {
                 toaddr: document.getElementById('toaddr').value,
                 count: document.getElementById('gascount').value,
                 extString: document.getElementById('extString4').value
             }
-            BlackCat.SDK.makeGasTransfer(data, function(res){
+            BlackCat.SDK.makeGasTransfer(data, function (res) {
                 console.log("makeGasTransfer.callback.function.res ", res)
             })
         }
 
-        function makeGasTransferMulti()
-        {
+        function makeGasTransferMulti() {
             var data = [
                 {
                     toaddr: document.getElementById('toaddrMulti1').value,
@@ -270,17 +335,17 @@
                     extString: document.getElementById('extStringMulti2').value
                 }
             ]
-            BlackCat.SDK.makeGasTransferMulti(data, function(res){
+            BlackCat.SDK.makeGasTransferMulti(data, function (res) {
                 console.log("makeGasTransfeMultir.callback.function.res ", res)
             })
         }
 
-        function getNetType()
-        {
-            BlackCat.SDK.getNetType(function(res){
+        function getNetType() {
+            BlackCat.SDK.getNetType(function (res) {
                 console.log("getNetType.callback.function.res ", res)
             })
         }
     </script>
 </body>
+
 </html>
