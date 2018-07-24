@@ -19,7 +19,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
 				break;
 			case "invokescriptRes": // 合约读取调用
 				var params = res.data.params; // 合约调用参数
-				var result = rs.data.res; // 合约调用结果
+				var result = res.data.res; // 合约调用结果
 				if (result.err == true) {
 					// 执行失败
 				}
