@@ -485,7 +485,7 @@ BlackCat.SDK.makeGasTransferMulti(params, function(res){
             "g_id": "5",
             "txid": "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32",
             "state": "1",
-            "params": "{\"sbPushString\":\"transfer\", \"toaddr\":\"undefined\", \"count\": \"0.01\"}"
+            "params": "{\"sbPushString\":\"transfer\", \"toaddr\":\"AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5\", \"count\": \"0.01\"}"
         }
     ]
 }
