@@ -475,6 +475,10 @@
             wallet_open_check: "Please check your wallet file or password!",
             wallet_open_check_otcgo: "Please check the Otcgo wallet file!",
             wallet_open_check_otcgo_pwd: "Please check the Otcgo wallet password!",
+
+            // NetMgr
+            netmgr_select_api_slow: "Connection to the server is abnormal or slow, please check the network and try it again!",
+            netmgr_select_node_slow: "Communication with the nodes on the chain is abnormal or slow, please try it later!",
         }
     }
 }

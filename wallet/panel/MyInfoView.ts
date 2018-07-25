@@ -46,6 +46,9 @@ namespace BlackCat {
             var liMyinfoImg = this.objCreate("li")
             liMyinfoImg.classList.add("pc_myinfoimg")
             liMyinfoImg.style.cursor = "pointer"
+            liMyinfoImg.onclick=()=>{
+                this.modifyHeadImg()
+            }
             liMyinfoImg.textContent = Main.langMgr.get("myinfo_headImg")
 
             var iMyinfoimg = this.objCreate("i")
@@ -160,6 +163,11 @@ namespace BlackCat {
             Main.viewMgr.removeAll();
             Main.viewMgr.change("LoginView")
             Main.logoutCallback()
+        }
+
+        private async modifyHeadImg(){
+            //Main.viewMgr.change("ModifyHeadImgView")
+
         }
 
         private async modifyName() {

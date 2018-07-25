@@ -29,6 +29,7 @@ namespace BlackCat {
         payListMoreView: PayListMoreView; // 更多记录
 
         myInfoView: MyInfoView; // 我的信息
+        modifyHeadImgView: ModifyHeadImgView; //修改昵称
         modifyNameView: ModifyNameView; //修改昵称
         modifySexView: ModifySexView; //修改昵称
 
@@ -231,7 +232,14 @@ namespace BlackCat {
                     }
                     this.forgetPasswordView.start()
                     break;
-
+                case "ModifyHeadImgView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示修改头像(' + type + ') ...')
+                    if (!this.modifyHeadImgView) {
+                        this.modifyHeadImgView = new ModifyHeadImgView()
+                        this.views[type] = this.modifyHeadImgView
+                    }
+                    this.modifyHeadImgView.start()
+                    break;
                 case "ModifyNameView":
                     console.log('[Bla Cat]', '[ViewMgr]', '显示修改昵称(' + type + ') ...')
                     if (!this.modifyNameView) {

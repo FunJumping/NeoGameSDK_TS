@@ -15,6 +15,17 @@ namespace BlackCat {
         private getCodeCount: HTMLElement;
         private getCode: HTMLElement
 
+        private s_getCodeCountRetry: any;
+        private getCodeRetryMax: number;
+        private getCodeRetry_curr: number;
+
+        constructor() {
+            super()
+
+            this.getCodeRetryMax = 60;
+            this.getCodeRetry_curr = 0;
+        }
+
         create() {
             this.div = this.objCreate("div") as HTMLDivElement;
             this.div.classList.add("pc_login", "pc_register")
@@ -168,6 +179,15 @@ namespace BlackCat {
             this.inputUid.focus()
         }
 
+        update() {
+            super.update()
+            this.doRetryCount(0)
+        }
+
+        reset() {
+            if (this.s_getCodeCountRetry) clearInterval(this.s_getCodeCountRetry);
+        }
+
         private empty(value) {
             if (value.toString().length == 0) {
                 return true;
@@ -294,7 +314,7 @@ namespace BlackCat {
             }
 
             if (res.r) {
-                localStorage.setItem("userinfo", JSON.stringify(res.data));
+                localStorage.setItem(Main.user.cacheKey, JSON.stringify(res.data));
                 Main.user.getInfo();
 
                 // 获取钱包文件
@@ -324,22 +344,41 @@ namespace BlackCat {
             }
         }
 
-        private count_down() {
+        private doRetryCount(type: number) {
 
-            var i = 60;
+            switch (type) {
+                case 0:
+                    // 页面创建时
+                    if (this.s_getCodeCountRetry) {
+                        this.getCode.style.display = "none";
+                        this.getCodeCount.style.display = "block";
+                    }
+                    break;
+                case 1:
+                    // 发送验证码成功后
+                    this.getCodeRetry_curr = this.getCodeRetryMax
+                    this.getCode.style.display = "none";
+                    this.getCodeCount.style.display = "block";
+                    this.s_getCodeCountRetry = setInterval(() => {
+                        this._doRetryCount()
+                    }, 1000)
+                    break;
+            }
+        }
 
-            var time = setInterval(() => {
-                if (i > 0 && this.getCodeCount != null) {
-                    i--;
-                    this.getCodeCount.innerText = Main.langMgr.get("register_getCodecountRetry") + "(" + i + ")"
-                } else if (this.getCodeCount != null) {
-                    clearInterval(time);
-                    this.getCodeCount.style.display = "none";
-                    this.getCode.style.display = "block";
-                } else {
-                    clearInterval(time);
-                }
-            }, 1000);
+        private _doRetryCount() {
+            if (this.getCodeRetry_curr > 0 && this.getCodeCount != null) {
+                this.getCodeRetry_curr--;
+                this.getCodeCount.innerText = Main.langMgr.get("register_getCodecountRetry") + "(" + this.getCodeRetry_curr + ")"
+            } else if (this.getCodeCount != null) {
+                clearInterval(this.s_getCodeCountRetry);
+                this.getCodeCount.style.display = "none";
+                this.getCode.style.display = "block";
+                this.getCodeRetry_curr = 0
+            } else {
+                clearInterval(this.s_getCodeCountRetry);
+                this.getCodeRetry_curr = 0
+            }
         }
 
         private async doGetCode() {
@@ -361,7 +400,7 @@ namespace BlackCat {
             var res;
             switch (accountType) {
                 case 'email':
-                    res = await ApiTool.getEmailCode(this.inputAccount.value);
+                    res = await ApiTool.getEmailCode(this.inputAccount.value, Main.langMgr.type);
                     break;
                 case 'phone':
                     res = await ApiTool.getPhoneCode(this.getPhone());
@@ -371,11 +410,9 @@ namespace BlackCat {
             }
 
             if (res.r) {
-                this.count_down()
+                this.doRetryCount(1)
                 // "验证码已成功发送"
                 Main.showToast("register_getCodeSucc")
-                this.getCode.style.display = "none";
-                this.getCodeCount.style.display = "block";
             }
             else {
                 Main.showErrCode(res.errCode)

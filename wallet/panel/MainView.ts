@@ -43,8 +43,7 @@ namespace BlackCat {
         }
 
         changNetType() {
-            var type = Main.netMgr.type;
-            switch (type) {
+            switch (Main.netMgr.type) {
                 case 1: // 主网
                     this.div.classList.remove("pc_windowtest2")
                     break;

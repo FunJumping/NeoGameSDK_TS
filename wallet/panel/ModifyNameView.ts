@@ -15,6 +15,7 @@ namespace BlackCat {
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_popup")
+            
             //弹窗的框
             var popupbox = this.objCreate('div')
             popupbox.classList.add("pc_popupbox")
@@ -49,7 +50,7 @@ namespace BlackCat {
             this.ObjAppend(popupbutbox, popupClose)
 
 
-
+            //确认
             var confirmObj = this.objCreate("button")
             confirmObj.textContent = Main.langMgr.get("ok") // "确认"
             confirmObj.onclick = () => {

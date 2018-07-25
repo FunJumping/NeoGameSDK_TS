@@ -109,8 +109,8 @@ namespace BlackCat {
             return this.common('user_email.login_pass', { email: email, pwd: pwd })
         }
 
-        static async getEmailCode(email: string) {
-            return this.common('user_email.get_code', { email: email })
+        static async getEmailCode(email: string, lang: string) {
+            return this.common('user_email.get_code', { email: email, lang: lang })
         }
 
         static async userLoginPass(uid: string, pwd: string) {
@@ -137,8 +137,8 @@ namespace BlackCat {
             return this.common('user_phone.get_forget_code', { uid: uid, phone: phone_raw })
         }
 
-        static async getForgetCodeByEmail(uid: string, email: string) {
-            return this.common('user_email.get_forget_code', { uid: uid, email: email })
+        static async getForgetCodeByEmail(uid: string, email: string, lang:string) {
+            return this.common('user_email.get_forget_code', { uid: uid, email: email, lang: lang })
         }
     }
 

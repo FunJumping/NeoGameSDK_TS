@@ -4,7 +4,7 @@ namespace BlackCat {
     export class User {
 
         info: UserInfo = new UserInfo();
-        cacheKey: string = 'userinfo';
+        cacheKey: string = 'BC_userinfo';
 
         getInfo() {
             var userinfo = localStorage.getItem(this.cacheKey);

@@ -1,9 +1,13 @@
 namespace BlackCat {
     export class NetMgr {
 
-        types: Array<number>; // 网络类型
-        nodes: any; // nel节点
-        apis: any; // api节点
+        private types: Array<number>; // 网络类型
+        private nodes: any; // nel节点
+        private apis: any; // api节点
+
+        private api_server: string;
+        private node_server: any;
+
 
         type: number; // 1：主网；2:测试网
 
@@ -21,75 +25,118 @@ namespace BlackCat {
                 "http://nelnode00.blacat.org:82/api/testnet",
                 "https://api.nel.group/api/testnet"
             ]
+
+            // this.apis = [
+            //     // 正式服
+            //     "http://api01.blacat.org/apic/apic_user.php"
+            // ]
+
+            this.apis = [
+                // 调试服
+                "http://182.254.139.130/apic_v2/apic_user.php"
+            ]
+
+
+            this.node_server = {}
         }
 
-        async selectApi() {
-            // ApiTool.base_url = "http://api01.blacat.org/apic/apic_user.php"
-            ApiTool.base_url = "http://182.254.139.130/apic_v2/apic_user.php"
-            return true
+        selectApi(callback) {
+            if (this.api_server) {
+                ApiTool.base_url = this.api_server;
+                callback()
+                return
+            }
+            var conn = new Connector(this.apis, "")
+            conn.getOne((res) => {
+                if (res === false) {
+                    if (Main.viewMgr.mainView.isHidden()) {
+                        // 如果mainView隐藏，显示出来
+                        Main.viewMgr.mainView.show()
+                        Main.viewMgr.iconView.hidden()
+                    }
+                    Main.showErrMsg("netmgr_select_api_slow")
+                    return
+                }
+                console.log('[Bla Cat]', '[NetMgr]', 'api => ', res)
+                ApiTool.base_url = res;
+                this.api_server = res;
+                callback()
+            })
         }
 
-        private selectNode() {
-            // tools.WWW.api = this.nodes[this.type][0]; // BlaCat
-            tools.WWW.api = this.nodes[this.type][1]; // Nel
-            return true
+        private selectNode(callback, type) {
+            if (this.node_server && this.node_server.hasOwnProperty(type) && this.node_server[type]) {
+                tools.WWW.api = this.node_server[type];
+                callback()
+                return
+            }
+            var conn = new Connector(this.nodes[type], "?jsonrpc=2.0&id=1&method=getblockcount&params=[]")
+            conn.getOne((res) => {
+                if (res === false) {
+                    if (Main.viewMgr.mainView.isHidden()) {
+                        // 如果mainView隐藏，显示出来
+                        Main.viewMgr.mainView.show()
+                        Main.viewMgr.iconView.hidden()
+                    }
+                    Main.showErrMsg("netmgr_select_node_slow")
+                    return
+                }
+                console.log('[Bla Cat]', '[NetMgr]', 'node => ', res)
+                tools.WWW.api = res;
+                this.node_server[type] = res;
+                callback()
+            })
         }
 
 
         // 选择/切换网络
-        async change(type: number = 2) {
+        change(callback, type: number = 2) {
             if (this.type != type) {
                 console.log('[Bla Cat]', '[NetType]', ' change to type => ', type)
                 switch (type) {
                     case 1: // 主网
-                        return await this.change2Main()
+                        this.change2Main(callback)
+                        break;
                     case 2: // 测试网
-                        return await this.change2test()
-                    default:
-                        return false;
+                        this.change2test(callback)
+                        break;
                 }
             }
-            return false;
         }
 
 
 
-        private async change2test() {
-            // 测试网
-            this.type = 2;
-
+        private async change2test(callback) {
             // --节点地址
-            var res = this.selectNode()
-            if (!res) {
-                return false;
-            }
+            this.selectNode(() => {
+                // --sgas合约地址
+                tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
 
-            // --sgas合约地址
-            tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
+                // --资源访问地址
+                // Main.resHost = "http://182.254.139.130/sdk/"
 
-            // --资源访问地址
-            // Main.resHost = "http://182.254.139.130/sdk/"
+                // 测试网
+                this.type = 2;
 
-            return true;
+                callback()
+            }, 2)
         }
 
-        private async change2Main() {
-            // 主网
-            this.type = 1;
+        private async change2Main(callback) {
 
             // --节点地址
-            var res = this.selectNode()
-            if (!res) {
-                return false;
-            }
+            this.selectNode(() => {
+                // --主网sgas合约
+                tools.CoinTool.id_SGAS = "";
 
-            // --主网sgas合约
-            tools.CoinTool.id_SGAS = "";
+                // --资源访问地址
+                // Main.resHost = "http://182.254.139.130/sdk/"
 
-            // --资源访问地址
-            // Main.resHost = "http://182.254.139.130/sdk/"
+                // 主网
+                this.type = 1;
 
-            return true;
+                callback()
+            }, 1)
         }
 
         getOtherTypes(): Array<number> {

@@ -475,6 +475,10 @@ namespace BlackCat {
             wallet_open_check: "请核对钱包文件或密码！",
             wallet_open_check_otcgo: "请核对蓝鲸淘钱包文件！",
             wallet_open_check_otcgo_pwd: "请核对蓝鲸淘钱包密码！",
+
+            // NetMgr
+            netmgr_select_api_slow: "与服务器连接异常或缓慢，请检查网络后重试！",
+            netmgr_select_node_slow: "与链上节点通讯异常或缓慢，请稍后重试！",
         }
     }
 }

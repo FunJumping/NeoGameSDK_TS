@@ -67,7 +67,7 @@ declare namespace BlackCat {
         private static confirmPlatNotifyExt(params, ext);
         static getPlatNotifys(): Promise<boolean>;
         getNetType(): Promise<number>;
-        static changeNetType(type: number): Promise<void>;
+        static changeNetType(type: number): void;
         static getUrlParam(name: any): string;
         static validateLogin(): Promise<void>;
         static showErrCode(errCode: number, callback?: any): Promise<void>;
@@ -497,6 +497,8 @@ declare namespace BlackCat {
             wallet_open_check: string;
             wallet_open_check_otcgo: string;
             wallet_open_check_otcgo_pwd: string;
+            netmgr_select_api_slow: string;
+            netmgr_select_node_slow: string;
         };
     }
 }
@@ -907,6 +909,8 @@ declare namespace BlackCat {
             wallet_open_check: string;
             wallet_open_check_otcgo: string;
             wallet_open_check_otcgo_pwd: string;
+            netmgr_select_api_slow: string;
+            netmgr_select_node_slow: string;
         };
     }
 }
@@ -925,22 +929,23 @@ declare namespace BlackCat {
         private first_host;
         private check_params;
         constructor(hosts: Array<string>, check_params: string);
-        getOne(): Promise<string>;
-        checkFirst(count: any): Promise<string>;
+        getOne(callback: any): void;
     }
 }
 declare namespace BlackCat {
     class NetMgr {
-        types: Array<number>;
-        nodes: any;
-        apis: any;
+        private types;
+        private nodes;
+        private apis;
+        private api_server;
+        private node_server;
         type: number;
         constructor();
-        selectApi(): Promise<boolean>;
-        private selectNode();
-        change(type?: number): Promise<boolean>;
-        private change2test();
-        private change2Main();
+        selectApi(callback: any): void;
+        private selectNode(callback, type);
+        change(callback: any, type?: number): void;
+        private change2test(callback);
+        private change2Main(callback);
         getOtherTypes(): Array<number>;
     }
 }
@@ -995,8 +1000,14 @@ declare namespace BlackCat {
         private inputVpass;
         private getCodeCount;
         private getCode;
+        private s_getCodeCountRetry;
+        private getCodeRetryMax;
+        private getCodeRetry_curr;
+        constructor();
         create(): void;
         start(): void;
+        update(): void;
+        reset(): void;
         private empty(value);
         private checkUidFormat();
         private validateAccount(emptySkip?);
@@ -1005,7 +1016,8 @@ declare namespace BlackCat {
         private validatePass();
         private validateVpass();
         private doForgetPassword();
-        private count_down();
+        private doRetryCount(type);
+        private _doRetryCount();
         private doGetCode();
     }
 }
@@ -1051,6 +1063,14 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class ModifyHeadImgView extends ViewBase {
+        start(): void;
+        create(): void;
+        toRefer(): void;
+        private doConfirm();
+    }
+}
+declare namespace BlackCat {
     class ModifyNameView extends ViewBase {
         inputName: HTMLInputElement;
         start(): void;
@@ -1083,6 +1103,7 @@ declare namespace BlackCat {
         private getArea();
         private doLogout();
         private makeLogout();
+        private modifyHeadImg();
         private modifyName();
         private modifySex();
     }
@@ -1217,8 +1238,14 @@ declare namespace BlackCat {
         private inputVpass;
         private getCodeCount;
         private getCode;
+        private s_getCodeCountRetry;
+        private getCodeRetryMax;
+        private getCodeRetry_curr;
+        constructor();
         create(): void;
         start(): void;
+        update(): void;
+        reset(): void;
         private empty(value);
         private getPhone();
         private checkAccountFromApi();
@@ -1230,7 +1257,8 @@ declare namespace BlackCat {
         private validatePass();
         private validateVpass();
         private doRegister();
-        private count_down();
+        private doRetryCount(type);
+        private _doRetryCount();
         private doGetCode();
     }
 }
@@ -1281,6 +1309,7 @@ declare namespace BlackCat {
         payListDetailView: PayListDetailView;
         payListMoreView: PayListMoreView;
         myInfoView: MyInfoView;
+        modifyHeadImgView: ModifyHeadImgView;
         modifyNameView: ModifyNameView;
         modifySexView: ModifySexView;
         payWalletDetailView: PayWalletDetailView;
@@ -1585,14 +1614,14 @@ declare namespace BlackCat {
         static validEmail(email: string): Promise<any>;
         static phoneLoginPass(phone: string, pwd: string): Promise<any>;
         static emailLoginPass(email: string, pwd: string): Promise<any>;
-        static getEmailCode(email: string): Promise<any>;
+        static getEmailCode(email: string, lang: string): Promise<any>;
         static userLoginPass(uid: string, pwd: string): Promise<any>;
         static modUserName(uid: string, token: string, name: string): Promise<any>;
         static modUserSex(uid: string, token: string, sex: string): Promise<any>;
         static forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string): Promise<any>;
         static forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string): Promise<any>;
         static getForgetCodeByPhone(uid: string, phone_raw: string): Promise<any>;
-        static getForgetCodeByEmail(uid: string, email: string): Promise<any>;
+        static getForgetCodeByEmail(uid: string, email: string, lang: string): Promise<any>;
     }
     class StorageTool {
         static setStorage(key: string, value: string): void;

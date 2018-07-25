@@ -49,7 +49,6 @@ namespace BlackCat {
         private static update_timeout_max: number;
         private static update_timeout_min: number;
 
-
         constructor() {
             Main.netMgr = new NetMgr();
             Main.user = new User();
@@ -166,47 +165,23 @@ namespace BlackCat {
             if (Main.isCreated == false) {
 
                 // 选择BlaCat节点
-                var res_api = await Main.netMgr.selectApi()
-                if (!res_api) {
-                    var res = new Result();
-                    var callback_data = {
-                        cmd: "loginRes",
-                        data: res
-                    }
-                    res.err = true
-                    res.info = "select api server err"
-                    Main.callback(JSON.stringify(callback_data));
-                    // function回调
-                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res)
+                Main.netMgr.selectApi( () => {
 
-                    Main.showErrMsg("BlaCat通讯异常！")
-                    return
-                }
+                    Main.netMgr.change( () => {
 
-                // 选择默认网络
-                var res_net = Main.netMgr.change()
-                if (!res_net) {
-                    var res = new Result();
-                    var callback_data = {
-                        cmd: "loginRes",
-                        data: res
-                    }
-                    res.err = true
-                    res.info = "select nelnode server err"
-                    Main.callback(JSON.stringify(callback_data));
-                    // function回调
-                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res)
+                        Main.viewMgr.mainView.changNetType()
 
-                    Main.showErrMsg("链上通讯异常！")
-                    return
-                }
+                        // 创建定时器
+                        Main.update();
 
-                Main.viewMgr.mainView.changNetType()
+                        Main.isCreated = true;
 
-                // 创建定时器
-                Main.update();
-
-                Main.isCreated = true;
+                        // 检查登录
+                        Main.validateLogin();
+                    })
+                })
+                
+                return
             }
             // 检查登录
             Main.validateLogin();
@@ -395,17 +370,18 @@ namespace BlackCat {
         }
         // 充值到游戏
         async makeRecharge(params, callback) {
-            // 判断后台有没有配置地址，没有配置返回错误
-            if (!Main.app_recharge_addr) {
-                // Main.showErrMsg("应用没有配置收款钱包地址，无法充值")
-                Main.showErrMsg(("main_no_app_wallet"))
-                return;
-            }
 
             if (Main.viewMgr.mainView.isHidden()) {
                 // 如果mainView隐藏，显示出来
                 Main.viewMgr.mainView.show()
                 Main.viewMgr.iconView.hidden()
+            }
+
+            // 判断后台有没有配置地址，没有配置返回错误
+            if (!Main.app_recharge_addr) {
+                // Main.showErrMsg("应用没有配置收款钱包地址，无法充值")
+                Main.showErrMsg(("main_no_app_wallet"))
+                return;
             }
 
             if (Main.isWalletOpen()) {
@@ -1144,10 +1120,9 @@ namespace BlackCat {
             return type;
         }
 
-        static async changeNetType(type: number) {
-            var res = await Main.netMgr.change(type)
+        static changeNetType(type: number) {
 
-            if (res) {
+            Main.netMgr.change( () => {
                 var callback_data = {
                     cmd: "changeNetTypeRes",
                     data: type
@@ -1160,7 +1135,7 @@ namespace BlackCat {
                 Main.viewMgr.update()
                 // 重置
                 Main.reset(1)
-            }
+            }, type)
         }
 
         static getUrlParam(name) {
@@ -1179,7 +1154,7 @@ namespace BlackCat {
             if (uid && token) {
                 var res_isLogined = await ApiTool.isLogined(uid, token);
                 if (res_isLogined.r) {
-                    localStorage.setItem("userinfo", JSON.stringify(res_isLogined.data));
+                    localStorage.setItem(this.user.cacheKey, JSON.stringify(res_isLogined.data));
                     this.user.getInfo()
                     Main.platLoginType = 1;
 

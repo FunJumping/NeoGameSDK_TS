@@ -176,7 +176,7 @@ namespace BlackCat {
             }
 
             if (res.r) {
-                localStorage.setItem("userinfo", JSON.stringify(res.data));
+                localStorage.setItem(Main.user.cacheKey, JSON.stringify(res.data));
                 Main.user.getInfo();
 
                 // 获取钱包文件

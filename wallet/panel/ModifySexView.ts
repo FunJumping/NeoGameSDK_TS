@@ -16,7 +16,7 @@ namespace BlackCat {
             if (selectSex == "1") {
                 selectSexObj[0].checked = true
                 this.inputSex1Obj.classList.add("pc_modifysex_active")
-            } else if(selectSex == "2"){
+            } else if (selectSex == "2") {
                 selectSexObj[1].checked = true
                 this.inputSex2Obj.classList.add("pc_modifysex_active")
             }
@@ -25,7 +25,7 @@ namespace BlackCat {
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_popup")
-            //弹窗的框
+            // 弹窗的框
             var popupbox = this.objCreate('div')
             popupbox.classList.add("pc_popupbox")
             this.ObjAppend(this.div, popupbox)
@@ -33,17 +33,20 @@ namespace BlackCat {
             // 弹窗的标题
             var popupTitle = this.objCreate('div')
             popupTitle.classList.add("pc_popup_title")
-            popupTitle.innerText = Main.langMgr.get("modifySex") // "修改昵称"
+            popupTitle.innerText = Main.langMgr.get("modifySex") // "性别"
             this.ObjAppend(popupbox, popupTitle)
 
-
+            // 男女容器
             this.divSex = this.objCreate("div") as HTMLDivElement
             this.divSex.classList.add("pc_modifysex")
             this.ObjAppend(popupbox, this.divSex)
 
+            // 男
             this.inputSex1Obj = this.objCreate("div") as HTMLDivElement
             this.inputSex1Obj.classList.add("iconfont", "icon-nan1")
             this.ObjAppend(this.divSex, this.inputSex1Obj)
+
+            // 男单选按钮
             var inputSex1 = this.objCreate("input")
             inputSex1.setAttribute("type", "radio")
             inputSex1.setAttribute("value", "1")
@@ -54,9 +57,13 @@ namespace BlackCat {
             }
             this.ObjAppend(this.inputSex1Obj, inputSex1)
 
+            // 女
             this.inputSex2Obj = this.objCreate("div") as HTMLDivElement
             this.inputSex2Obj.classList.add("iconfont", "icon-nv1")
             this.ObjAppend(this.divSex, this.inputSex2Obj)
+
+
+            // 女单选按钮
             var inputSex2 = this.objCreate("input")
             inputSex2.setAttribute("type", "radio")
             inputSex2.setAttribute("value", "2")
@@ -85,7 +92,7 @@ namespace BlackCat {
             this.ObjAppend(popupbutbox, popupClose)
 
 
-
+            //确认
             var confirmObj = this.objCreate("button")
             confirmObj.textContent = Main.langMgr.get("ok") // "确认"
             confirmObj.onclick = () => {
