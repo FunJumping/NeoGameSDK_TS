@@ -309,6 +309,9 @@ namespace BlackCat {
             myinfo_logoutConfirm: "确定要退出登录么",
 
             // ModifyNameView
+            modifyImg:"头像",
+            modifyImg_succ:"头像修改成功",
+            modifyImg_select:"选择本地图片",
             modifyName: "昵称",
             modifyName_input: "请输入昵称",
             modifyName_succ: "昵称修改成功！",
@@ -450,11 +453,13 @@ namespace BlackCat {
             errCode_1101: "请求接口参数错误",
             errCode_1005: "您访问太频繁了，请休息一下！",
 
+            errCode_100601: "获取短信验证码失败！请检查地区与手机号码！",
             errCode_100602: "短信验证码错误！",
             errCode_100605: "手机已注册！",
             errCode_100606: "手机未注册，请先注册",
             errCode_100607: "用户名或手机错误！",
 
+            errCode_100801: "获取邮箱验证码失败！",
             errcode_100802: "邮箱验证码错误！",
             errCode_100805: "邮箱已注册！",
             errCode_100806: "邮箱未注册，请先注册",

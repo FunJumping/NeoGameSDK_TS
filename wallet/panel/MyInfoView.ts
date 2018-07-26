@@ -5,6 +5,7 @@ namespace BlackCat {
     // 我的信息
     export class MyInfoView extends ViewBase {
 
+        myImg: HTMLElement;
         myName: HTMLElement;
         mySex: HTMLElement;
 
@@ -47,7 +48,7 @@ namespace BlackCat {
             liMyinfoImg.classList.add("pc_myinfoimg")
             liMyinfoImg.style.cursor = "pointer"
             liMyinfoImg.onclick=()=>{
-                this.modifyHeadImg()
+                // this.modifyImg()
             }
             liMyinfoImg.textContent = Main.langMgr.get("myinfo_headImg")
 
@@ -58,9 +59,9 @@ namespace BlackCat {
             var spanMyinfoimg = this.objCreate("span")
             this.ObjAppend(liMyinfoImg, spanMyinfoimg)
 
-            var imgMyinfoimg = this.objCreate("img")
-            imgMyinfoimg.setAttribute("src", this.getImg())
-            this.ObjAppend(spanMyinfoimg, imgMyinfoimg)
+            this.myImg = this.objCreate("img") as HTMLElement
+            this.myImg.setAttribute("src", this.getImg())
+            this.ObjAppend(spanMyinfoimg, this.myImg)
 
             this.ObjAppend(ulMyinfo, liMyinfoImg)
 
@@ -165,9 +166,11 @@ namespace BlackCat {
             Main.logoutCallback()
         }
 
-        private async modifyHeadImg(){
-            //Main.viewMgr.change("ModifyHeadImgView")
-
+        private async modifyImg() {
+            ModifyImgView.callback = () => {
+                this.myImg.setAttribute("src", this.getImg())
+            }
+            Main.viewMgr.change("ModifyImgView")
         }
 
         private async modifyName() {

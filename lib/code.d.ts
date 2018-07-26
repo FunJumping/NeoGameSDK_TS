@@ -378,6 +378,9 @@ declare namespace BlackCat {
             myinfo_area: string;
             myinfo_logout: string;
             myinfo_logoutConfirm: string;
+            modifyImg: string;
+            modifyImg_succ: string;
+            modifyImg_select: string;
             modifyName: string;
             modifyName_input: string;
             modifyName_succ: string;
@@ -477,10 +480,12 @@ declare namespace BlackCat {
             main_refund_doFail: string;
             errCode_1101: string;
             errCode_1005: string;
+            errCode_100601: string;
             errCode_100602: string;
             errCode_100605: string;
             errCode_100606: string;
             errCode_100607: string;
+            errCode_100801: string;
             errcode_100802: string;
             errCode_100805: string;
             errCode_100806: string;
@@ -790,6 +795,9 @@ declare namespace BlackCat {
             myinfo_area: string;
             myinfo_logout: string;
             myinfo_logoutConfirm: string;
+            modifyImg: string;
+            modifyImg_succ: string;
+            modifyImg_select: string;
             modifyName: string;
             modifyName_input: string;
             modifyName_succ: string;
@@ -889,10 +897,12 @@ declare namespace BlackCat {
             main_refund_doFail: string;
             errCode_1101: string;
             errCode_1005: string;
+            errCode_100601: string;
             errCode_100602: string;
             errCode_100605: string;
             errCode_100606: string;
             errCode_100607: string;
+            errCode_100801: string;
             errcode_100802: string;
             errCode_100805: string;
             errCode_100806: string;
@@ -1063,8 +1073,13 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
-    class ModifyHeadImgView extends ViewBase {
-        start(): void;
+    class ModifyImgView extends ViewBase {
+        private inputImg;
+        private divImg;
+        private filename;
+        private reader;
+        private displayImg;
+        constructor();
         create(): void;
         toRefer(): void;
         private doConfirm();
@@ -1092,6 +1107,7 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class MyInfoView extends ViewBase {
+        myImg: HTMLElement;
         myName: HTMLElement;
         mySex: HTMLElement;
         create(): void;
@@ -1103,7 +1119,7 @@ declare namespace BlackCat {
         private getArea();
         private doLogout();
         private makeLogout();
-        private modifyHeadImg();
+        private modifyImg();
         private modifyName();
         private modifySex();
     }
@@ -1309,7 +1325,7 @@ declare namespace BlackCat {
         payListDetailView: PayListDetailView;
         payListMoreView: PayListMoreView;
         myInfoView: MyInfoView;
-        modifyHeadImgView: ModifyHeadImgView;
+        modifyImgView: ModifyImgView;
         modifyNameView: ModifyNameView;
         modifySexView: ModifySexView;
         payWalletDetailView: PayWalletDetailView;
@@ -1616,6 +1632,7 @@ declare namespace BlackCat {
         static emailLoginPass(email: string, pwd: string): Promise<any>;
         static getEmailCode(email: string, lang: string): Promise<any>;
         static userLoginPass(uid: string, pwd: string): Promise<any>;
+        static modUserIcon(uid: string, token: string, file: File): Promise<any>;
         static modUserName(uid: string, token: string, name: string): Promise<any>;
         static modUserSex(uid: string, token: string, sex: string): Promise<any>;
         static forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string): Promise<any>;

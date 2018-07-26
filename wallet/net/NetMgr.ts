@@ -26,10 +26,10 @@ namespace BlackCat {
                 "https://api.nel.group/api/testnet"
             ]
 
-            // this.apis = [
-            //     // 正式服
-            //     "http://api01.blacat.org/apic/apic_user.php"
-            // ]
+            this.apis = [
+                // 正式服
+                "http://api01.blacat.org/apic/apic_user.php"
+            ]
 
             this.apis = [
                 // 调试服
@@ -107,35 +107,36 @@ namespace BlackCat {
 
 
         private async change2test(callback) {
-            // --节点地址
+            
+            // 节点地址
             this.selectNode(() => {
-                // --sgas合约地址
-                tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
-
-                // --资源访问地址
-                // Main.resHost = "http://182.254.139.130/sdk/"
 
                 // 测试网
                 this.type = 2;
 
+                // sgas合约地址
+                tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
+
+                // 回调
                 callback()
+
             }, 2)
         }
 
         private async change2Main(callback) {
 
-            // --节点地址
+            // 节点地址
             this.selectNode(() => {
-                // --主网sgas合约
-                tools.CoinTool.id_SGAS = "";
-
-                // --资源访问地址
-                // Main.resHost = "http://182.254.139.130/sdk/"
 
                 // 主网
                 this.type = 1;
 
+                // 主网sgas合约
+                tools.CoinTool.id_SGAS = "";
+
+                // 回调
                 callback()
+
             }, 1)
         }
 

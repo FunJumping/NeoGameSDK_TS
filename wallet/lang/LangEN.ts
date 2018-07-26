@@ -309,6 +309,9 @@
             myinfo_logoutConfirm: "Are you sure to log out?",
 
             // ModifyNameView
+            modifyImg:"Head portrait",
+            modifyImg_succ:"Head portrait modified successfully!",
+            modifyImg_select:"Select the local picture",
             modifyName: "Nickname",
             modifyName_input: "Please input nickname",
             modifyName_succ: "Nickname modified successfully!",
@@ -450,11 +453,13 @@
             errCode_1101: "Request interface parameter error",
             errCode_1005: "You visit too often, please take a break!",
 
+            errCode_100601: "Failed to get SMS verification code! Please check your country and mobile number!",
             errCode_100602: "Incorrect verification code!",
             errCode_100605: "This phone number has been registered!",
             errCode_100606: "Please register first",
             errCode_100607: "Wrong username or telephone number!",
 
+            errCode_100801: "Failed to get email verification code!",
             errcode_100802: "Incorrect verification code!",
             errCode_100805: "This email address has been registered!",
             errCode_100806: "Please register first",

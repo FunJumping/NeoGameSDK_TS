@@ -117,6 +117,10 @@ namespace BlackCat {
             return this.common('user.login', { uid: uid, pwd: pwd })
         }
 
+        static async modUserIcon(uid: string, token: string, file: File) {
+            return this.common('user_icon.upload', { uid: uid, token: token, file: file })
+        }
+
         static async modUserName(uid: string, token: string, name: string) {
             return this.common('user.mod_name', { uid: uid, token: token, name: name })
         }

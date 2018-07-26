@@ -1,12 +1,16 @@
 ﻿
 namespace BlackCat {
-    export class Main {
 
+    var BC_scriptSrc = document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1].src;
+    var BC_scriptName = BC_scriptSrc.split('/')[BC_scriptSrc.split('/').length - 1];
+    var BC_path = BC_scriptSrc.replace(BC_scriptName, '');
+
+    export class Main {
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
 
         // 资源图标前缀路径
-        static resHost = ''
+        static resHost = BC_path + "../"
 
         // SDK相关
         static appid: string;
