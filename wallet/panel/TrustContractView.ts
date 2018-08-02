@@ -3,10 +3,11 @@
 
 namespace BlackCat {
     // 更多交易视图
-    export class PayListMoreView extends ViewBase {
+    export class TrustContractView extends ViewBase {
 
         // private lists: Array<walletLists>;
-        private page: number;
+        private offset: number;
+        // private page: number;
         private num: number;
 
         private isLast: boolean;
@@ -17,14 +18,14 @@ namespace BlackCat {
         constructor() {
             super()
 
-            this.page = 1;
             this.num = Main.viewMgr.payView.listPageNum;
-            this.isLast = false;
+            this.reset()
+
         }
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_paylist")
+            this.div.classList.add("pc_paylist", "pc_trustcontract")
 
             // header 
             var header = this.objCreate("div")
@@ -37,12 +38,13 @@ namespace BlackCat {
             returnA.textContent = Main.langMgr.get("return")//"返回"
             returnA.onclick = () => {
                 this.return()
+                Main.viewMgr.securityCenterView.show()
             }
             this.ObjAppend(header, returnA)
 
             // h1标题
             var headerH1 = this.objCreate("h1")
-            headerH1.textContent = Main.platName
+            headerH1.textContent = Main.langMgr.get("trust_title") // "信任合约"
             this.ObjAppend(header, headerH1)
 
             //钱包交易记录
@@ -52,11 +54,11 @@ namespace BlackCat {
             this.getMoreDiv = this.objCreate("div") as HTMLDivElement
             this.getMoreDiv.classList.add("pc_listmore")
             this.getMoreDiv.onclick = () => {
-                this.doGetWalletLists()
+                this.doGetTrustLists()
             }
             this.ObjAppend(this.div, this.getMoreDiv)
 
-            this.doGetWalletLists()
+            this.doGetTrustLists()
         }
 
         remove() {
@@ -64,21 +66,22 @@ namespace BlackCat {
             this.reset();
         }
 
-        toRefer() {
-            Main.viewMgr.change("PayView")
-        }
+        // toRefer() {
+        //     Main.viewMgr.change("PayView")
+        // }
 
         reset() {
-            this.page = 1;
+            // this.page = 1;
+            this.offset = 0;
             this.isLast = false;
         }
 
-        private async doGetWalletLists() {
+        private async doGetTrustLists() {
             if (this.isLast) {
                 return;
             }
 
-            var res = await ApiTool.getWalletListss(Main.user.info.uid, Main.user.info.token, this.page, this.num, Main.netMgr.type);
+            var res = await ApiTool.getTrustLists(Main.user.info.uid, Main.user.info.token, this.offset, this.num);
 
             if (res.r) {
                 if (res.data && res.data.length >= 1) {
@@ -87,7 +90,8 @@ namespace BlackCat {
                         this.getMoreDiv.textContent = Main.langMgr.get("paylist_noMore") //"没有记录了"
                     }
                     else {
-                        this.page += 1;
+                        this.offset += this.num;
+                        // this.page += 1;
                         this.getMoreDiv.textContent = Main.langMgr.get("paylist_getMore") //"点击加载更多记录"
                     }
 
@@ -96,14 +100,6 @@ namespace BlackCat {
                         list => {
                             // li
                             var listObj = this.objCreate("li")
-                            listObj.onclick = () => {
-                                this.hidden()
-                                PayListDetailView.refer = "PayListMoreView"
-                                PayListDetailView.list = list;
-                                Main.viewMgr.change("PayListDetailView")
-                            }
-
-
                             //判断收入或出，类名写在state_div块里
 
 
@@ -111,7 +107,7 @@ namespace BlackCat {
                             var img_div = this.objCreate("div")
                             img_div.classList.add("pc_listimg")
                             var img = this.objCreate("img") as HTMLImageElement
-                            img.src = Main.viewMgr.payView.getListImg(list)
+                            img.src = this.getListImg(list)
                             this.ObjAppend(img_div, img)
                             this.ObjAppend(listObj, img_div)
 
@@ -125,36 +121,27 @@ namespace BlackCat {
                             this.ObjAppend(content_div, content_name_div)
 
 
-                            //合约方法
+                            //合约地址
                             var content_ctm_p = this.objCreate("p")
                             content_ctm_p.classList.add("pc_method")
-                            content_ctm_p.textContent = Main.viewMgr.payView.getListParamMethods(list)
+                            content_ctm_p.textContent = this.getListNnc(list)
                             this.ObjAppend(content_div, content_ctm_p)
 
                             this.ObjAppend(listObj, content_div)
 
-                            // cnts & state
-                            var state_cnts_div = this.objCreate("div")
-                            state_cnts_div.classList.add("pc_cnts")
-
-                            //时间
-                            var content_ctm_span = this.objCreate("div")
-                            content_ctm_span.classList.add("pc_listdate")
-                            content_ctm_span.textContent = Main.viewMgr.payView.getListCtmMsg(list)
-                            this.ObjAppend(state_cnts_div, content_ctm_span)
-
-                            var cnts = Main.viewMgr.payView.getListCnts(list)
-                            if (cnts) {
-                                this.ObjAppend(state_cnts_div, cnts);
-
-                                var cnts_class = Main.viewMgr.payView.getListCntsClass(list);
-                                if (cnts_class) state_cnts_div.classList.add(cnts_class)
+                            // 信任合约按钮切换
+                            var trustObj = this.objCreate("a")
+                            trustObj.onclick = () => {
+                                // 删除信任合约
+                                listObj.remove()
+                                this.doDelList(list)
                             }
+                            trustObj.classList.add("pc_switch", "pc_switch_active")
 
-                            var state = Main.viewMgr.payView.getListState(list)
-                            if (state) this.ObjAppend(state_cnts_div, state)
+                            var spanSwitchBut = this.objCreate("span")
+                            this.ObjAppend(trustObj, spanSwitchBut)
 
-                            this.ObjAppend(listObj, state_cnts_div)
+                            this.ObjAppend(listObj, trustObj)
 
                             this.ObjAppend(this.listsDiv, listObj)
                         }
@@ -171,5 +158,25 @@ namespace BlackCat {
 
         }
 
+        private getListImg(v) {
+            return v.icon;
+        }
+
+        private getListNnc(v) {
+            return v.nnc;
+        }
+
+        private async doDelList(v) {
+            var res = await ApiTool.delTrustNncs(Main.user.info.uid, Main.user.info.token, v.id);
+            if (res.r) {
+                // TODO: 清理
+                Main.removeTrustNnc(v.nnc)
+                this.offset -= 1
+                Main.showToast("trust_relieve_succ")
+            }
+            else {
+                Main.showErrCode(res.errCode)
+            }
+        }
     }
 }

@@ -229,14 +229,21 @@
             area_code_ZM: 'Zambia',
             area_code_ZW: 'Zimbabwe',
 
+            main_uid_format_err: "Username format is incorrect! Only use 4-16 digits of English letters, numbers, underscores!",
+            main_email_format_err: "Email address format is incorrect!",
+            main_phone_format_err: "Phone number format is incorrect!",
+            main_phone: "Phone",
+            main_email: "Email",
+            main_user: "UserName",
 
             // RegisterView
+            register_title: "Register",
+            register_inputphone: "Please input phone number",
+            register_inputphone_err: "Please input phone number",
+            register_inputemail: "Please input email address",
+            register_inputemail_err: "Please input email address",
             register_inputUid: "Username",
             register_inputUid_err: "Please input username",
-            register_inputUid_format_err: "Username format is incorrect! Only use 4-16 digits of English letters, numbers, underscores!",
-            register_inputAccount: "Phone number / email",
-            register_inputAccount_err: "Please input phone number / email address",
-            register_inputAccount_err_type: "Incorrect account,please try it again",
             register_inputCode: "Verification code",
             register_inputCode_err: "Please input verification code!",
             register_inputPass: "Password",
@@ -254,8 +261,15 @@
             register_doRegister: "sign up",
 
             // LoginView
-            login_inputAccount: "Username / email",
-            login_inputAccount_err: "Please input username / email address",
+            login_inputuser: "Username",
+            login_inputuser_err: "Please input username",
+
+            login_inputphone: "Phone number",
+            login_inputphone_err: "Please input phone number",
+
+            login_inputemail: "Email address",
+            login_inputemail_err: "Please input email address",
+
             login_inputPass: "Password",
             login_inputPass_err: "Please input password",
 
@@ -267,15 +281,26 @@
             login_walletDownloadFail: "Download failed , please log in again!",
             login_loginFail: "Login failed",
 
+
+
             //ForgetPasswordView
+            forgetpass_title: "Find Password",
+            forgetpass_inputphone: "Please input phone number",
+            forgetpass_inputphone_err: "Please input phone number",
+            forgetpass_inputemail: "Please input email address",
+            forgetpass_inputemail_err: "Please input email address",
+
             forgetpass_inputUid: "Username",
             forgetpass_inputUid_err: "Please input username",
-            forgetpass_inputUid_format_err: "Username format is incorrect! Only use 4-16 digits of English letters, numbers, underscores!",
             forgetpass_inputUid_validate_err: "Invalid username",
             forgetpass_inputAccount: "Phone number / email",
             forgetpass_inputAccount_err: "Please input phone number / email address",
             forgetpass_inputAccount_err_type: "Incorrect phone number / email address,please try it again",
             forgetpass_inputAccount_validate_err: "Invalid phone number or email address",
+
+            forgetpass_inputphone_notexist: "Please register first!",
+            forgetpass_inputemail_notexist: "Please register first!",
+
             forgetpass_inputCode: "Verification code",
             forgetpass_inputCode_err: "Please input verification code!",
             forgetpass_inputPass: "New Password",
@@ -305,18 +330,37 @@
 
             myinfo_uid: "Account",
             myinfo_area: "Area",
+            myinfo_security: "Security Center",
+            myinfo_set: "Set",
             myinfo_logout: "Logout",
             myinfo_logoutConfirm: "Are you sure to log out?",
 
             // ModifyNameView
-            modifyImg:"Head portrait",
-            modifyImg_succ:"Head portrait modified successfully!",
-            modifyImg_select:"Select the local picture",
+            modifyImg: "Head portrait",
+            modifyImg_succ: "Head portrait modified successfully!",
+            modifyImg_select: "Please choose local image",
+            modifyImg_select_err: "Please choose local image",
+            modifyImg_selectSize_err: "Image size must be less than 100Kb",
+            modifyImg_selectType_err: "Image format must be jpg., jpge. or png",
             modifyName: "Nickname",
             modifyName_input: "Please input nickname",
             modifyName_succ: "Nickname modified successfully!",
             modifySex: "Gender",
             modifySex_succ: "Gender modified successfully!",
+
+            //SecurityCenterView
+            security_title: "Security Center",
+            security_trust: " Trust contract",
+            security_trust_admin: "Administration",
+            security_walletOut: "Automatically log out",
+            security_walletOut_admin: "Never",
+            security_walletOut_admin_m: "%minutes% minute(s)",
+            security_walletOut_admin_h: "%hours% hour(s)",
+            security_walletOut_toast: "When the wallet is not operated for more than a certain period of time, it will be automatically logged out and the password needs to be re-inputted",
+
+            // TrustContractView
+            trust_title: "Trust contract",
+            trust_relieve_succ: "Successful contracts cancellation",
 
             // PayListDetailView
             paylist_txid: "Trading order number:",
@@ -341,7 +385,9 @@
 
             // PayReceivablesView
             pay_received: "Receive",
-            pc_receivables_copy:"Copy success",
+            pc_receivables_download: "Download QR Code",
+            pc_receivables_address: "Wallet address",
+            pc_receivables_copy: "Copy success",
 
             // PayTransferView
             pay_transfer: "Transfer",
@@ -363,8 +409,8 @@
             pay_gas_desc: "GAS is a digital currency on NEO chain that can be obtained through exchanges",
             pay_sgas: "SGas",
             pay_sgas_desc: "SGas is a universal chip that Bla Cat offers to players.",
-            pay_refund: "withdraw",
-            pay_makeMint: "exchange",
+            pay_refund: "Withdraw",
+            pay_makeMint: "Exchange",
             pay_recentLists: "Recent records",
             pay_makeMintGasNotEnough: "GAS balance is insufficient",
             pay_makeMintDoFail: "Recharge sgas failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
@@ -377,11 +423,11 @@
             pay_not_enough_money: "Insufficient balance",
             pay_not_enough_utxo: "Please wait for the last transaction to complete before executing!",
 
-            pay_nettype_1: "mainnet",
-            pay_nettype_2: "testnet",
+            pay_nettype_1: "Mainnet",
+            pay_nettype_2: "Testnet",
 
             // PayWalletDetailView
-            pay_walletDetail: "wallet details",
+            pay_walletDetail: "Wallet details",
             pay_walletDetail_addr: "Address:",
             pay_walletDetail_key: "Public Key:",
             pay_walletDetail_hex: "KEY HEX:",
@@ -391,6 +437,32 @@
 
             pay_makerawtrans_err: "Transaction failed!",
 
+            // AddressbookView
+            addressbook_title: "Mail list",
+            addressbook_search: "Search",
+
+            //AddressbookDetailsView
+            addressbook_det_title: "Mail list",
+            addressbook_det_transfer: "Transfer",
+            addressbook_det_address: "Wallet address",
+            addressbook_det_download: "Download QR Code",
+            addressbook_det_describe: "Describe",
+            addressbook_det_empty: "Empty",
+
+            // AddressbookAddView
+            addressbook_add_button: "Complete",
+            addressbook_add_name: "Memo name",
+            addressbook_add_inputName: "Please input memo name",
+            addressbook_add_inputName_err: "Please input memo name",
+            addressbook_add_address: "Wallet address",
+            addressbook_add_inputAddress: "Please input wallet address",
+            addressbook_add_inputAddress_err: "Please input wallet address",
+            addressbook_add_describe: "Describe",
+            addressbook_add_inputDescribe: "Please input Describe",
+            addressbook_add_inputDescribe_err: "Please input Describe",
+            addressbook_add_succ: "Contact added success",
+
+
             // ViewAlert
 
             // ViewConfirm
@@ -399,6 +471,9 @@
 
             // ViewTransConfirm
             pay_makeRecharge: "Recharge",
+            pay_trust_tips: "Trust contracts",
+            pay_trust_Vice_tips: "(no longer pops out)",
+
 
             // ViewTransConfirmGas
             pay_transferGas_toaddr: "transfer address",
@@ -458,12 +533,14 @@
             errCode_100605: "This phone number has been registered!",
             errCode_100606: "Please register first",
             errCode_100607: "Wrong username or telephone number!",
+            errCode_100608: "Wrong phone number or password!",
 
             errCode_100801: "Failed to get email verification code!",
             errcode_100802: "Incorrect verification code!",
             errCode_100805: "This email address has been registered!",
             errCode_100806: "Please register first",
             errCode_100807: "Wrong username or email address!",
+            errCode_100808: "Wrong email address or password!",
 
             errCode_100700: "Incorrect account or password!",
             errCode_100701: "Login is invalid, please log in again",
@@ -474,6 +551,10 @@
             errCode_8100001: "The format of the uploaded wallet is incorrect. Please check the wallet file!",
             errCode_8100002: "System error, wallet binding failed!",
             errCode_8100003: "The wallet has been bound by other users!",
+            errCode_8100004: "Incorrect format!",
+            errcode_8100005: "Upload failed!",
+            errcode_8100006: "Image size must be less than 100Kb.",
+
             errCode_default: "Unknown error! Error code: %errCode%",
 
             // wallet

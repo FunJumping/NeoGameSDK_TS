@@ -27,7 +27,7 @@ namespace BlackCat {
                 )
             }
             catch (e) {
-
+                console.log('[Bla Cat]', '[Connector]', 'getOne, error => ', e.toString())
             }
 
             setTimeout(() => {

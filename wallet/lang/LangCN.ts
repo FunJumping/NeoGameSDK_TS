@@ -229,14 +229,21 @@ namespace BlackCat {
             area_code_ZM: '赞比亚',
             area_code_ZW: '津巴布韦',
 
+            main_uid_format_err: "用户名格式不正确！只能使用4-16位英文字母、数字、下划线！",
+            main_email_format_err: "邮件地址格式不正确！",
+            main_phone_format_err: "手机号码格式不正确！",
+            main_phone: "手机",
+            main_email: "邮箱",
+            main_user: "用户名",
 
             // RegisterView
+            register_title: "注册",
+            register_inputphone: "请输入手机号码",
+            register_inputphone_err: "请输入手机号码",
+            register_inputemail: "请输入邮箱",
+            register_inputemail_err: "请输入邮箱",
             register_inputUid: "请输入用户名",
             register_inputUid_err: "请输入用户名",
-            register_inputUid_format_err: "用户名格式不正确！只能使用4-16位英文字母、数字、下划线！",
-            register_inputAccount: "请输入手机号码/邮箱",
-            register_inputAccount_err: "请输入手机号码/邮箱",
-            register_inputAccount_err_type: "手机号码/邮箱格式不正确，请检查",
             register_inputCode: "请输入验证码",
             register_inputCode_err: "请输入验证码",
             register_inputPass: "请输入密码",
@@ -254,8 +261,15 @@ namespace BlackCat {
             register_doRegister: "立即注册",
 
             // LoginView
-            login_inputAccount: "请输入用户名/邮箱",
-            login_inputAccount_err: "请输入用户名/邮箱",
+            login_inputuser: "请输入用户名",
+            login_inputuser_err: "请输入用户名",
+
+            login_inputphone: "请输入手机号码",
+            login_inputphone_err: "请输入手机号码",
+
+            login_inputemail: "请输入邮箱",
+            login_inputemail_err: "请输入邮箱",
+
             login_inputPass: "请输入密码",
             login_inputPass_err: "请输入密码",
 
@@ -267,15 +281,28 @@ namespace BlackCat {
             login_walletDownloadFail: "钱包文件下载失败，请重新登录!",
             login_loginFail: "登录失败",
 
+
+
+
+
             //ForgetPasswordView
+            forgetpass_title: "找回密码",
+            forgetpass_inputphone: "请输入手机号码",
+            forgetpass_inputphone_err: "请输入手机号码",
+            forgetpass_inputemail: "请输入邮箱",
+            forgetpass_inputemail_err: "请输入邮箱",
+
             forgetpass_inputUid: "请输入用户名",
             forgetpass_inputUid_err: "请输入用户名",
-            forgetpass_inputUid_format_err: "用户名格式不正确！只能使用4-16位英文字母、数字、下划线！",
             forgetpass_inputUid_validate_err: "无效的用户名",
             forgetpass_inputAccount: "请输入手机号码/邮箱",
             forgetpass_inputAccount_err: "请输入手机号码/邮箱",
             forgetpass_inputAccount_err_type: "手机号码/邮箱格式不正确，请检查",
             forgetpass_inputAccount_validate_err: "无效的手机号码/邮箱",
+
+            forgetpass_inputphone_notexist: "手机未注册，请先注册！",
+            forgetpass_inputemail_notexist: "邮箱未注册，请先注册！",
+
             forgetpass_inputCode: "请输入验证码",
             forgetpass_inputCode_err: "请输入验证码",
             forgetpass_inputPass: "请输入新密码",
@@ -305,18 +332,37 @@ namespace BlackCat {
 
             myinfo_uid: "账号",
             myinfo_area: "地区",
+            myinfo_security: "安全中心",
+            myinfo_set: "设置",
             myinfo_logout: "退出账号",
             myinfo_logoutConfirm: "确定要退出登录么",
 
             // ModifyNameView
-            modifyImg:"头像",
-            modifyImg_succ:"头像修改成功",
-            modifyImg_select:"选择本地图片",
+            modifyImg: "头像",
+            modifyImg_succ: "头像修改成功",
+            modifyImg_select: "选择本地图片",
+            modifyImg_select_err: "请选择本地图片",
+            modifyImg_selectSize_err: "选择的图片，大小不要超过100kb",
+            modifyImg_selectType_err: "图片的格式不对，请使用jpg、jpeg或png图片",
             modifyName: "昵称",
             modifyName_input: "请输入昵称",
             modifyName_succ: "昵称修改成功！",
             modifySex: "性别",
             modifySex_succ: "性别修改成功",
+
+            //SecurityCenterView
+            security_title: "安全中心",
+            security_trust: " 信任合约",
+            security_trust_admin: "管理",
+            security_walletOut: "自动登出钱包",
+            security_walletOut_admin: "永不",
+            security_walletOut_admin_m: "%minutes% 分钟",
+            security_walletOut_admin_h: "%hours% 小时",
+            security_walletOut_toast: "当超过一定时间未操作钱包，将会自动登出，需要重新输入密码",
+
+            // TrustContractView
+            trust_title: "信任合约",
+            trust_relieve_succ: "解除合约成功",
 
             // PayListDetailView
             paylist_txid: "交易单号：",
@@ -341,7 +387,9 @@ namespace BlackCat {
 
             // PayReceivablesView
             pay_received: "收款",
-            pc_receivables_copy:"复制成功",
+            pc_receivables_download: "下载二维码",
+            pc_receivables_address: "钱包地址",
+            pc_receivables_copy: "复制成功",
 
             // PayTransferView
             pay_transfer: "转账",
@@ -391,6 +439,32 @@ namespace BlackCat {
 
             pay_makerawtrans_err: "交易发起失败",
 
+            // AddressbookView
+            addressbook_title: "通讯录",
+            addressbook_search: "搜索",
+
+            // AddressbookDetailsView
+            addressbook_det_title: "通讯录",
+            addressbook_det_transfer: "转账",
+            addressbook_det_address: "钱包地址",
+            addressbook_det_download: "下载二维码",
+            addressbook_det_describe: "描述",
+            addressbook_det_empty: "空",
+
+
+            // AddressbookAddView
+            addressbook_add_button: "完成",
+            addressbook_add_name: "备注名",
+            addressbook_add_inputName: "输入备注名",
+            addressbook_add_inputName_err: "请输入备注名",
+            addressbook_add_address: "钱包地址",
+            addressbook_add_inputAddress: "输入钱包地址",
+            addressbook_add_inputAddress_err: "请输入钱包地址",
+            addressbook_add_describe: "描述",
+            addressbook_add_inputDescribe: "输入描述",
+            addressbook_add_inputDescribe_err: "请输入描述",
+            addressbook_add_succ: "联系人添加成功",
+
             // ViewAlert
 
             // ViewConfirm
@@ -399,6 +473,8 @@ namespace BlackCat {
 
             // ViewTransConfirm
             pay_makeRecharge: "充值",
+            pay_trust_tips: "信任合约",
+            pay_trust_Vice_tips: "（本合约交易不再弹出此窗口）",
 
             // ViewTransConfirmGas
             pay_transferGas_toaddr: "转账地址",
@@ -458,12 +534,14 @@ namespace BlackCat {
             errCode_100605: "手机已注册！",
             errCode_100606: "手机未注册，请先注册",
             errCode_100607: "用户名或手机错误！",
+            errCode_100608: "手机或密码错误！",
 
             errCode_100801: "获取邮箱验证码失败！",
             errcode_100802: "邮箱验证码错误！",
             errCode_100805: "邮箱已注册！",
             errCode_100806: "邮箱未注册，请先注册",
             errCode_100807: "用户名或邮箱错误！",
+            errCode_100808: "邮箱或密码错误！",
 
             errCode_100700: "账号或密码错误！",
             errCode_100701: "登录失效，请重新登录",
@@ -474,6 +552,10 @@ namespace BlackCat {
             errCode_8100001: "上传绑定的钱包格式错误，请检查钱包文件！",
             errCode_8100002: "系统错误，钱包绑定失败！",
             errCode_8100003: "该钱包已经被其他用户绑定了！",
+            errCode_8100004: "头像文件格式不支持！",
+            errcode_8100005: "头像文件上传失败！",
+            errcode_8100006: "头像文件大小不能超过100kb！",
+
             errCode_default: "未知错误！错误码： %errCode%",
 
             // wallet

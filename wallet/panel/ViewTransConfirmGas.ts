@@ -37,8 +37,8 @@ namespace BlackCat {
 
             if (ViewTransConfirmGas.list && ViewTransConfirmGas.list.hasOwnProperty("wallet")) {
                 // header // header标签创建比较麻烦
-                var headerObj = this.objCreate("div")
-                headerObj.classList.add("pc_header")
+                var headerTitle = this.objCreate("div")
+                headerTitle.classList.add("pc_header")
                 // 返回按钮
                 var returnBtn = this.objCreate("a")
                 returnBtn.classList.add("iconfont", "icon-fanhui")
@@ -50,12 +50,13 @@ namespace BlackCat {
                         ViewTransConfirmGas.callback_cancel = null;
                     }
                 }
-                this.ObjAppend(headerObj, returnBtn)
+                this.ObjAppend(headerTitle, returnBtn)
                 // h1标题
                 var h1Obj = this.objCreate("h1")
                 h1Obj.textContent = Main.platName
-                this.ObjAppend(headerObj, h1Obj)
-                this.ObjAppend(this.div, headerObj)
+                this.ObjAppend(headerTitle, h1Obj)
+                
+                this.ObjAppend(this.div, headerTitle)
 
                 var contentObj = this.objCreate("div")
                 contentObj.classList.add("pc_detail")
@@ -152,7 +153,10 @@ namespace BlackCat {
                                 + '</li>';
                         }
                     }
-                } catch (e) { }
+                }
+                catch (e) {
+                    console.log('[Bla Cat]', '[ViewTransConfirmGas]', 'getParams error => ', e.toString())
+                }
             }
 
             return html;

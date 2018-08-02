@@ -1,6 +1,7 @@
 /// <reference path="../wallet/tools/neo-ts.d.ts" />
 declare namespace BlackCat {
     class Main {
+        private static isCreated;
         static readonly platName: string;
         static platLoginType: number;
         static resHost: string;
@@ -9,6 +10,7 @@ declare namespace BlackCat {
         static appname: string;
         static appicon: string;
         static app_recharge_addr: string;
+        private static app_trust;
         static user: User;
         static wallet: tools.wallet;
         static viewMgr: ViewMgr;
@@ -29,35 +31,39 @@ declare namespace BlackCat {
         private static transGasMultiCallback;
         private static loginFunctionCallback;
         private static isLoginCallback;
-        private static isCreated;
         private static s_update;
         private static update_timeout_max;
         private static update_timeout_min;
+        private static liveTime;
+        private static liveTimeMax;
         constructor();
         static reset(type?: number): void;
         static clearTimeout(): void;
-        init(appid: any, appkey: any, callback: any, lang: any): void;
-        setLang(type: any): void;
+        init(appid: string, appkey: string, callback: Function, lang: string): void;
+        start(callback?: Function): Promise<void>;
+        setLang(type: string): void;
+        setDefaultNetType(type: number): void;
         showMain(): void;
         showIcon(): void;
         getBalance(): Promise<{
             sgas: number;
             gas: number;
         }>;
-        start(callback?: any): Promise<void>;
-        static loginCallback(): Promise<void>;
-        static setGameInfo(param: any): Promise<void>;
-        isLogined(): boolean;
         getUserInfo(): UserInfo;
-        static logoutCallback(): Promise<void>;
-        static listenerCallback(cmd: any, data: any): Promise<void>;
+        getNetType(): number;
         invokescript(params: any): Promise<tools.Result>;
         makeRawTransaction(params: any, callback: any): Promise<void>;
+        private _makeRawTransaction(params, trust?, callback?);
         makeRecharge(params: any, callback: any): Promise<void>;
         makeGasTransfer(params: any, callback?: any): Promise<void>;
         makeGasTransferMulti(params: any, callback?: any): Promise<void>;
-        static update(): Promise<void>;
         confirmAppNotify(params: any): Promise<Result>;
+        static loginCallback(): Promise<void>;
+        private static setGameInfo(param);
+        isLogined(): boolean;
+        static logoutCallback(): Promise<void>;
+        static listenerCallback(cmd: any, data: any): Promise<void>;
+        static update(): Promise<void>;
         static getAppNotifys(): Promise<boolean>;
         private static doPlatNotify(params);
         static continueRefund(): Promise<void>;
@@ -66,7 +72,6 @@ declare namespace BlackCat {
         private static confirmPlatNotify(params);
         private static confirmPlatNotifyExt(params, ext);
         static getPlatNotifys(): Promise<boolean>;
-        getNetType(): Promise<number>;
         static changeNetType(type: number): void;
         static getUrlParam(name: any): string;
         static validateLogin(): Promise<void>;
@@ -77,11 +82,19 @@ declare namespace BlackCat {
         static showConFirm(msgKey: string): Promise<void>;
         static showLoading(msgKey: string): Promise<void>;
         static isWalletOpen(): boolean;
-        static checkAccountTypeLogin(account: string): string;
-        static checkAccountTypeRegister(account: string): string;
+        private static validateEmail(email);
+        private static validatePhone(phone);
+        private static validateUid(uid);
+        static validateFormat(accountType: string, accountElement: HTMLInputElement): boolean;
         static getPhone(selectArea: string, phone: string): string;
         static getDate(timeString: string): string;
         static getObjectClass(obj: any): any;
+        static getUnTrustNnc(params: any): Array<string>;
+        static updateTrustNnc(): Promise<void>;
+        static removeTrustNnc(nnc: string): void;
+        static setLiveTime(): void;
+        static setLiveTimeMax(minutes: number): void;
+        static getLiveTimeMax(): number;
     }
 }
 declare namespace BlackCat {
@@ -317,12 +330,19 @@ declare namespace BlackCat {
             area_code_ZA: string;
             area_code_ZM: string;
             area_code_ZW: string;
+            main_uid_format_err: string;
+            main_email_format_err: string;
+            main_phone_format_err: string;
+            main_phone: string;
+            main_email: string;
+            main_user: string;
+            register_title: string;
+            register_inputphone: string;
+            register_inputphone_err: string;
+            register_inputemail: string;
+            register_inputemail_err: string;
             register_inputUid: string;
             register_inputUid_err: string;
-            register_inputUid_format_err: string;
-            register_inputAccount: string;
-            register_inputAccount_err: string;
-            register_inputAccount_err_type: string;
             register_inputCode: string;
             register_inputCode_err: string;
             register_inputPass: string;
@@ -336,8 +356,12 @@ declare namespace BlackCat {
             register_getCodecountRetry: string;
             register_doLogin: string;
             register_doRegister: string;
-            login_inputAccount: string;
-            login_inputAccount_err: string;
+            login_inputuser: string;
+            login_inputuser_err: string;
+            login_inputphone: string;
+            login_inputphone_err: string;
+            login_inputemail: string;
+            login_inputemail_err: string;
             login_inputPass: string;
             login_inputPass_err: string;
             login_textForgetpass: string;
@@ -345,14 +369,20 @@ declare namespace BlackCat {
             login_doRegister: string;
             login_walletDownloadFail: string;
             login_loginFail: string;
+            forgetpass_title: string;
+            forgetpass_inputphone: string;
+            forgetpass_inputphone_err: string;
+            forgetpass_inputemail: string;
+            forgetpass_inputemail_err: string;
             forgetpass_inputUid: string;
             forgetpass_inputUid_err: string;
-            forgetpass_inputUid_format_err: string;
             forgetpass_inputUid_validate_err: string;
             forgetpass_inputAccount: string;
             forgetpass_inputAccount_err: string;
             forgetpass_inputAccount_err_type: string;
             forgetpass_inputAccount_validate_err: string;
+            forgetpass_inputphone_notexist: string;
+            forgetpass_inputemail_notexist: string;
             forgetpass_inputCode: string;
             forgetpass_inputCode_err: string;
             forgetpass_inputPass: string;
@@ -376,16 +406,31 @@ declare namespace BlackCat {
             myinfo_sex_2: string;
             myinfo_uid: string;
             myinfo_area: string;
+            myinfo_security: string;
+            myinfo_set: string;
             myinfo_logout: string;
             myinfo_logoutConfirm: string;
             modifyImg: string;
             modifyImg_succ: string;
             modifyImg_select: string;
+            modifyImg_select_err: string;
+            modifyImg_selectSize_err: string;
+            modifyImg_selectType_err: string;
             modifyName: string;
             modifyName_input: string;
             modifyName_succ: string;
             modifySex: string;
             modifySex_succ: string;
+            security_title: string;
+            security_trust: string;
+            security_trust_admin: string;
+            security_walletOut: string;
+            security_walletOut_admin: string;
+            security_walletOut_admin_m: string;
+            security_walletOut_admin_h: string;
+            security_walletOut_toast: string;
+            trust_title: string;
+            trust_relieve_succ: string;
             paylist_txid: string;
             paylist_wallet: string;
             paylist_nnc: string;
@@ -402,6 +447,8 @@ declare namespace BlackCat {
             paylist_getMore: string;
             paylist_noRecord: string;
             pay_received: string;
+            pc_receivables_download: string;
+            pc_receivables_address: string;
             pc_receivables_copy: string;
             pay_transfer: string;
             pay_transferType: string;
@@ -442,7 +489,28 @@ declare namespace BlackCat {
             pay_walletDetail_notice: string;
             pay_walletDetail_export: string;
             pay_makerawtrans_err: string;
+            addressbook_title: string;
+            addressbook_search: string;
+            addressbook_det_title: string;
+            addressbook_det_transfer: string;
+            addressbook_det_address: string;
+            addressbook_det_download: string;
+            addressbook_det_describe: string;
+            addressbook_det_empty: string;
+            addressbook_add_button: string;
+            addressbook_add_name: string;
+            addressbook_add_inputName: string;
+            addressbook_add_inputName_err: string;
+            addressbook_add_address: string;
+            addressbook_add_inputAddress: string;
+            addressbook_add_inputAddress_err: string;
+            addressbook_add_describe: string;
+            addressbook_add_inputDescribe: string;
+            addressbook_add_inputDescribe_err: string;
+            addressbook_add_succ: string;
             pay_makeRecharge: string;
+            pay_trust_tips: string;
+            pay_trust_Vice_tips: string;
             pay_transferGas_toaddr: string;
             pay_transferGas_count: string;
             pay_transCount_count: string;
@@ -485,11 +553,13 @@ declare namespace BlackCat {
             errCode_100605: string;
             errCode_100606: string;
             errCode_100607: string;
+            errCode_100608: string;
             errCode_100801: string;
             errcode_100802: string;
             errCode_100805: string;
             errCode_100806: string;
             errCode_100807: string;
+            errCode_100808: string;
             errCode_100700: string;
             errCode_100701: string;
             errCode_100702: string;
@@ -498,6 +568,9 @@ declare namespace BlackCat {
             errCode_8100001: string;
             errCode_8100002: string;
             errCode_8100003: string;
+            errCode_8100004: string;
+            errcode_8100005: string;
+            errcode_8100006: string;
             errCode_default: string;
             wallet_open_check: string;
             wallet_open_check_otcgo: string;
@@ -734,12 +807,19 @@ declare namespace BlackCat {
             area_code_ZA: string;
             area_code_ZM: string;
             area_code_ZW: string;
+            main_uid_format_err: string;
+            main_email_format_err: string;
+            main_phone_format_err: string;
+            main_phone: string;
+            main_email: string;
+            main_user: string;
+            register_title: string;
+            register_inputphone: string;
+            register_inputphone_err: string;
+            register_inputemail: string;
+            register_inputemail_err: string;
             register_inputUid: string;
             register_inputUid_err: string;
-            register_inputUid_format_err: string;
-            register_inputAccount: string;
-            register_inputAccount_err: string;
-            register_inputAccount_err_type: string;
             register_inputCode: string;
             register_inputCode_err: string;
             register_inputPass: string;
@@ -753,8 +833,12 @@ declare namespace BlackCat {
             register_getCodecountRetry: string;
             register_doLogin: string;
             register_doRegister: string;
-            login_inputAccount: string;
-            login_inputAccount_err: string;
+            login_inputuser: string;
+            login_inputuser_err: string;
+            login_inputphone: string;
+            login_inputphone_err: string;
+            login_inputemail: string;
+            login_inputemail_err: string;
             login_inputPass: string;
             login_inputPass_err: string;
             login_textForgetpass: string;
@@ -762,14 +846,20 @@ declare namespace BlackCat {
             login_doRegister: string;
             login_walletDownloadFail: string;
             login_loginFail: string;
+            forgetpass_title: string;
+            forgetpass_inputphone: string;
+            forgetpass_inputphone_err: string;
+            forgetpass_inputemail: string;
+            forgetpass_inputemail_err: string;
             forgetpass_inputUid: string;
             forgetpass_inputUid_err: string;
-            forgetpass_inputUid_format_err: string;
             forgetpass_inputUid_validate_err: string;
             forgetpass_inputAccount: string;
             forgetpass_inputAccount_err: string;
             forgetpass_inputAccount_err_type: string;
             forgetpass_inputAccount_validate_err: string;
+            forgetpass_inputphone_notexist: string;
+            forgetpass_inputemail_notexist: string;
             forgetpass_inputCode: string;
             forgetpass_inputCode_err: string;
             forgetpass_inputPass: string;
@@ -793,16 +883,31 @@ declare namespace BlackCat {
             myinfo_sex_2: string;
             myinfo_uid: string;
             myinfo_area: string;
+            myinfo_security: string;
+            myinfo_set: string;
             myinfo_logout: string;
             myinfo_logoutConfirm: string;
             modifyImg: string;
             modifyImg_succ: string;
             modifyImg_select: string;
+            modifyImg_select_err: string;
+            modifyImg_selectSize_err: string;
+            modifyImg_selectType_err: string;
             modifyName: string;
             modifyName_input: string;
             modifyName_succ: string;
             modifySex: string;
             modifySex_succ: string;
+            security_title: string;
+            security_trust: string;
+            security_trust_admin: string;
+            security_walletOut: string;
+            security_walletOut_admin: string;
+            security_walletOut_admin_m: string;
+            security_walletOut_admin_h: string;
+            security_walletOut_toast: string;
+            trust_title: string;
+            trust_relieve_succ: string;
             paylist_txid: string;
             paylist_wallet: string;
             paylist_nnc: string;
@@ -819,6 +924,8 @@ declare namespace BlackCat {
             paylist_getMore: string;
             paylist_noRecord: string;
             pay_received: string;
+            pc_receivables_download: string;
+            pc_receivables_address: string;
             pc_receivables_copy: string;
             pay_transfer: string;
             pay_transferType: string;
@@ -859,7 +966,28 @@ declare namespace BlackCat {
             pay_walletDetail_notice: string;
             pay_walletDetail_export: string;
             pay_makerawtrans_err: string;
+            addressbook_title: string;
+            addressbook_search: string;
+            addressbook_det_title: string;
+            addressbook_det_transfer: string;
+            addressbook_det_address: string;
+            addressbook_det_download: string;
+            addressbook_det_describe: string;
+            addressbook_det_empty: string;
+            addressbook_add_button: string;
+            addressbook_add_name: string;
+            addressbook_add_inputName: string;
+            addressbook_add_inputName_err: string;
+            addressbook_add_address: string;
+            addressbook_add_inputAddress: string;
+            addressbook_add_inputAddress_err: string;
+            addressbook_add_describe: string;
+            addressbook_add_inputDescribe: string;
+            addressbook_add_inputDescribe_err: string;
+            addressbook_add_succ: string;
             pay_makeRecharge: string;
+            pay_trust_tips: string;
+            pay_trust_Vice_tips: string;
             pay_transferGas_toaddr: string;
             pay_transferGas_count: string;
             pay_transCount_count: string;
@@ -902,11 +1030,13 @@ declare namespace BlackCat {
             errCode_100605: string;
             errCode_100606: string;
             errCode_100607: string;
+            errCode_100608: string;
             errCode_100801: string;
             errcode_100802: string;
             errCode_100805: string;
             errCode_100806: string;
             errCode_100807: string;
+            errCode_100808: string;
             errCode_100700: string;
             errCode_100701: string;
             errCode_100702: string;
@@ -915,6 +1045,9 @@ declare namespace BlackCat {
             errCode_8100001: string;
             errCode_8100002: string;
             errCode_8100003: string;
+            errCode_8100004: string;
+            errcode_8100005: string;
+            errcode_8100006: string;
             errCode_default: string;
             wallet_open_check: string;
             wallet_open_check_otcgo: string;
@@ -947,13 +1080,15 @@ declare namespace BlackCat {
         private types;
         private nodes;
         private apis;
+        private default_type;
+        type: number;
         private api_server;
         private node_server;
-        type: number;
         constructor();
         selectApi(callback: any): void;
         private selectNode(callback, type);
         change(callback: any, type?: number): void;
+        setDefault(type: number): void;
         private change2test(callback);
         private change2Main(callback);
         getOtherTypes(): Array<number>;
@@ -990,6 +1125,34 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class AddressbookAddView extends ViewBase {
+        private inputName;
+        private textAddress;
+        private textDescribe;
+        create(): void;
+        toRefer(): void;
+        private butHeader();
+    }
+}
+declare namespace BlackCat {
+    class AddressbookDetailsView extends ViewBase {
+        static contact: contact;
+        constructor();
+        create(): void;
+        toRefer(): void;
+    }
+}
+declare namespace BlackCat {
+    class AddressbookView extends ViewBase {
+        inputSearch: HTMLInputElement;
+        ulAddressbook: HTMLElement;
+        create(): void;
+        toRefer(): void;
+        getAddressbook(): Promise<void>;
+        private getAddressElement(k, addrs);
+    }
+}
+declare namespace BlackCat {
     class AreaView extends ViewBase {
         static areaInfo: {
             "area": string;
@@ -1001,8 +1164,16 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class AutoLogoutWalletView extends ViewBase {
+        private logoutTime;
+        create(): void;
+        toRefer(): void;
+    }
+}
+declare namespace BlackCat {
     class ForgetPasswordView extends ViewBase {
         private selectArea;
+        private divArea;
         private inputUid;
         private inputAccount;
         private inputCode;
@@ -1013,22 +1184,23 @@ declare namespace BlackCat {
         private s_getCodeCountRetry;
         private getCodeRetryMax;
         private getCodeRetry_curr;
+        private accountType;
         constructor();
         create(): void;
         start(): void;
         update(): void;
         reset(): void;
         private empty(value);
-        private checkUidFormat();
         private validateAccount(emptySkip?);
-        private validateUid(emptySkip?);
         private validateCode();
         private validatePass();
         private validateVpass();
+        private checkAccountFromApi();
         private doForgetPassword();
         private doRetryCount(type);
         private _doRetryCount();
         private doGetCode();
+        private getPhone();
     }
 }
 declare namespace BlackCat {
@@ -1041,16 +1213,19 @@ declare namespace BlackCat {
         create(): void;
         remove(): void;
         flushProcess(count: any): void;
-        dragTouch(ev: any): void;
-        drag(): void;
+        private dragTouch(ev);
+        private drag();
         private onResize();
     }
 }
 declare namespace BlackCat {
     class LoginView extends ViewBase {
         private selectArea;
+        private divArea;
         private inputAccount;
         private inputPass;
+        private accountType;
+        reset(): void;
         create(): void;
         start(): void;
         private getPhone();
@@ -1082,12 +1257,13 @@ declare namespace BlackCat {
         constructor();
         create(): void;
         toRefer(): void;
+        private changeInputImg();
         private doConfirm();
     }
 }
 declare namespace BlackCat {
     class ModifyNameView extends ViewBase {
-        inputName: HTMLInputElement;
+        private inputName;
         start(): void;
         create(): void;
         toRefer(): void;
@@ -1096,10 +1272,9 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class ModifySexView extends ViewBase {
-        divSex: HTMLDivElement;
-        inputSex1Obj: HTMLDivElement;
-        inputSex2Obj: HTMLDivElement;
-        start(): void;
+        private divSex;
+        private inputSex1Obj;
+        private inputSex2Obj;
         create(): void;
         toRefer(): void;
         private doConfirm();
@@ -1107,9 +1282,9 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class MyInfoView extends ViewBase {
-        myImg: HTMLElement;
-        myName: HTMLElement;
-        mySex: HTMLElement;
+        private myImg;
+        private myName;
+        private mySex;
         create(): void;
         toRefer(): void;
         private getImg();
@@ -1138,7 +1313,6 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class PayListMoreView extends ViewBase {
-        private lists;
         private page;
         private num;
         private isLast;
@@ -1152,18 +1326,14 @@ declare namespace BlackCat {
         private doGetWalletLists();
     }
 }
+declare const QRCode: any;
+declare const QrCodeWithLogo: any;
 declare namespace BlackCat {
     class PayReceivablesView extends ViewBase {
-        private inputGasCount;
-        private inputTransferAddr;
-        private textareaAddress;
-        private gasBalance;
-        private toaddress;
-        private isDomain;
-        private addrerr;
-        constructor();
+        private divAddress;
         create(): void;
         toRefer(): void;
+        private base64ToBlob(code);
     }
 }
 declare namespace BlackCat {
@@ -1172,8 +1342,6 @@ declare namespace BlackCat {
         private inputTransferAddr;
         private gasBalance;
         private toaddress;
-        private isDomain;
-        private addrerr;
         constructor();
         start(): void;
         create(): void;
@@ -1192,7 +1360,6 @@ declare namespace BlackCat {
         payMyWallet: HTMLElement;
         private spanGas;
         private spanSgas;
-        private walletLists;
         private divLists;
         private divListsMore;
         private divNetSelect;
@@ -1205,7 +1372,7 @@ declare namespace BlackCat {
         start(): void;
         create(): void;
         update(): void;
-        clearTimeout(): void;
+        private clearTimeout();
         doGetBalances(): Promise<void>;
         private doMakeMintToken();
         private doMakeRefund();
@@ -1238,6 +1405,7 @@ declare namespace BlackCat {
         private private_wif;
         private private_hex;
         private walletExport;
+        reset(): void;
         create(): void;
         toRefer(): void;
         private getWalletInfo();
@@ -1252,11 +1420,13 @@ declare namespace BlackCat {
         private inputCode;
         private inputPass;
         private inputVpass;
+        private divArea;
         private getCodeCount;
         private getCode;
         private s_getCodeCountRetry;
         private getCodeRetryMax;
         private getCodeRetry_curr;
+        private accountType;
         constructor();
         create(): void;
         start(): void;
@@ -1266,7 +1436,6 @@ declare namespace BlackCat {
         private getPhone();
         private checkAccountFromApi();
         private checkUidFromApi();
-        private checkUidFormat();
         private validateAccount(emptySkip?);
         private validateUid(emptySkip?);
         private validateCode();
@@ -1276,6 +1445,32 @@ declare namespace BlackCat {
         private doRetryCount(type);
         private _doRetryCount();
         private doGetCode();
+    }
+}
+declare namespace BlackCat {
+    class SecurityCenterView extends ViewBase {
+        spanSignOut: HTMLElement;
+        create(): void;
+        toRefer(): void;
+        getWalletOutTimeMaxMsg(liveTimeMax: number): string;
+        updateWalletOutTimeMaxMsg(): void;
+    }
+}
+declare namespace BlackCat {
+    class TrustContractView extends ViewBase {
+        private offset;
+        private num;
+        private isLast;
+        private listsDiv;
+        private getMoreDiv;
+        constructor();
+        create(): void;
+        remove(): void;
+        reset(): void;
+        private doGetTrustLists();
+        private getListImg(v);
+        private getListNnc(v);
+        private doDelList(v);
     }
 }
 declare namespace BlackCat {
@@ -1328,9 +1523,15 @@ declare namespace BlackCat {
         modifyImgView: ModifyImgView;
         modifyNameView: ModifyNameView;
         modifySexView: ModifySexView;
+        securityCenterView: SecurityCenterView;
+        trustContractView: TrustContractView;
+        autoLogoutWalletView: AutoLogoutWalletView;
         payWalletDetailView: PayWalletDetailView;
         payReceivablesView: PayReceivablesView;
         payTransferView: PayTransferView;
+        addressbookView: AddressbookView;
+        addressbookDetailsView: AddressbookDetailsView;
+        addressbookAddView: AddressbookAddView;
         constructor();
         change(type: string): void;
         removeAll(): void;
@@ -1349,6 +1550,8 @@ declare namespace BlackCat {
     class ViewTransConfirm extends ViewBase {
         static list: walletLists;
         private divConfirmSelect;
+        private divTrust;
+        private trust;
         constructor();
         start(): void;
         create(): void;
@@ -1600,15 +1803,15 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class WalletView extends ViewBase {
-        private divCreate;
         create(): void;
     }
 }
 declare namespace BlackCat {
     class ApiTool {
+        static api_version: string;
         static base_url: string;
-        static makeUrl(cmd: string): string;
-        static common(cmd: string, post: object): Promise<any>;
+        private static makeUrl(cmd);
+        private static common(cmd, post);
         static isLogined(uid: string, token: string): Promise<any>;
         static getPhoneCode(phone: string): Promise<any>;
         static getGameIndex(): Promise<any>;
@@ -1616,7 +1819,7 @@ declare namespace BlackCat {
         static bindWallet(uid: string, token: string, wallet: string): Promise<any>;
         static getWalletFile(uid: string, token: string): Promise<any>;
         static getEntergameParam(uid: string, token: string, g_id: string): Promise<any>;
-        static addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number): Promise<any>;
+        static addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust?: string): Promise<any>;
         static getWalletListss(uid: string, token: string, page: number, num: number, net_type: number): Promise<any>;
         static walletNotify(uid: string, token: string, txid: string, net_type: number): Promise<any>;
         static getAppWalletNotifys(uid: string, token: string, g_id: string, net_type: number): Promise<any>;
@@ -1635,14 +1838,15 @@ declare namespace BlackCat {
         static modUserIcon(uid: string, token: string, file: File): Promise<any>;
         static modUserName(uid: string, token: string, name: string): Promise<any>;
         static modUserSex(uid: string, token: string, sex: string): Promise<any>;
-        static forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string): Promise<any>;
-        static forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string): Promise<any>;
-        static getForgetCodeByPhone(uid: string, phone_raw: string): Promise<any>;
-        static getForgetCodeByEmail(uid: string, email: string, lang: string): Promise<any>;
-    }
-    class StorageTool {
-        static setStorage(key: string, value: string): void;
-        static getStorage(key: string): string;
+        static forgetPassByPhone(phone: string, code: string, new_pwd: string): Promise<any>;
+        static forgetPassByEmail(email: string, code: string, new_pwd: string): Promise<any>;
+        static getTrustNncs(uid: string, token: string, g_id: string): Promise<any>;
+        static getTrustLists(uid: string, token: string, offset: number, num: number): Promise<any>;
+        static delTrustNncs(uid: string, token: string, id: string): Promise<any>;
+        static addAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string): Promise<any>;
+        static delAddrbook(uid: string, token: string, id: string): Promise<any>;
+        static getAddrbook(uid: string, token: string): Promise<any>;
+        static updateAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string, id: string): Promise<any>;
     }
 }
 declare namespace BlackCat {
@@ -1791,6 +1995,14 @@ declare namespace BlackCat {
         ext: string;
         client_notify: string;
     }
+    class contact {
+        id: string;
+        ctm: string;
+        uid: string;
+        address_name: string;
+        address_wallet: string;
+        address_desc: string;
+    }
 }
 declare namespace BlackCat {
     class SDK {
@@ -1810,6 +2022,7 @@ declare namespace BlackCat {
         static makeGasTransfer(params: any, callback?: any): Promise<void>;
         static makeGasTransferMulti(params: any, callback?: any): Promise<void>;
         static getNetType(callback?: any): Promise<void>;
+        static setDefaultNetType(type: any): Promise<void>;
     }
     class NEOGAMESDK {
         private static is_init;
@@ -1860,8 +2073,8 @@ declare namespace BlackCat.tools {
     class wallet {
         private wallet;
         private otcgo;
-        filestr: string;
         private isotc;
+        filestr: string;
         wallet_addr: string;
         constructor();
         setWalletStr(filestr: any): Promise<boolean>;
@@ -1869,8 +2082,9 @@ declare namespace BlackCat.tools {
         open(filepass: string): Promise<boolean>;
         isOpen(): boolean;
         invokescript(params: any): Promise<Result>;
-        makeRawTransaction(params: any): Promise<Result>;
+        makeRawTransaction(params: any, trust?: string): Promise<Result>;
         makeRecharge(params: any): Promise<Result>;
+        closeWallet(): void;
     }
 }
 declare namespace BlackCat.tools {

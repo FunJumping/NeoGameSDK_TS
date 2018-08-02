@@ -33,10 +33,17 @@ namespace BlackCat {
         modifyNameView: ModifyNameView; //修改昵称
         modifySexView: ModifySexView; //修改性别
 
+        securityCenterView: SecurityCenterView; //安全中心
+        trustContractView: TrustContractView; //信任合约
+        autoLogoutWalletView: AutoLogoutWalletView; //自动登出钱包
 
         payWalletDetailView: PayWalletDetailView; // 钱包详情
         payReceivablesView: PayReceivablesView;//收款
         payTransferView: PayTransferView; // 转账
+
+        addressbookView: AddressbookView; //通讯录
+        addressbookDetailsView: AddressbookDetailsView; //通讯录详情
+        addressbookAddView: AddressbookAddView; //通讯录添加联系人
 
 
         constructor() {
@@ -256,7 +263,54 @@ namespace BlackCat {
                     }
                     this.modifySexView.start()
                     break;
-
+                case "SecurityCenterView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示安全中心(' + type + ') ...')
+                    if (!this.securityCenterView) {
+                        this.securityCenterView = new SecurityCenterView()
+                        this.views[type] = this.securityCenterView
+                    }
+                    this.securityCenterView.start()
+                    break;
+                case "TrustContractView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示信任合约(' + type + ') ...')
+                    if (!this.trustContractView) {
+                        this.trustContractView = new TrustContractView()
+                        this.views[type] = this.trustContractView
+                    }
+                    this.trustContractView.start()
+                    break;
+                case "AutoLogoutWalletView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示自动登出钱包(' + type + ') ...')
+                    if (!this.autoLogoutWalletView) {
+                        this.autoLogoutWalletView = new AutoLogoutWalletView()
+                        this.views[type] = this.autoLogoutWalletView
+                    }
+                    this.autoLogoutWalletView.start()
+                    break;
+                case "AddressbookView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示通讯录(' + type + ') ...')
+                    if (!this.addressbookView) {
+                        this.addressbookView = new AddressbookView();
+                        this.views[type] = this.addressbookView
+                    }
+                    this.addressbookView.start()
+                    break;
+                case "AddressbookDetailsView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示通讯录详情(' + type + ') ...')
+                    if (!this.addressbookDetailsView) {
+                        this.addressbookDetailsView = new AddressbookDetailsView();
+                        this.views[type] = this.addressbookDetailsView
+                    }
+                    this.addressbookDetailsView.start()
+                    break;
+                case "AddressbookAddView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示通讯录添加联系人(' + type + ') ...')
+                    if (!this.addressbookAddView) {
+                        this.addressbookAddView = new AddressbookAddView();
+                        this.views[type] = this.addressbookAddView
+                    }
+                    this.addressbookAddView.start()
+                    break;
             }
         }
 
@@ -288,6 +342,7 @@ namespace BlackCat {
             for (let className in this.views) {
                 let v = this.views[className];
 
+                console.log('[Bla Cat]', '[ViewMgr]', 'update, v =>', v)
                 switch (className) {
                     case "PayView":
                         if (v.isCreated) {

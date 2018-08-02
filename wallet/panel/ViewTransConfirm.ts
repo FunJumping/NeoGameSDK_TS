@@ -9,6 +9,9 @@ namespace BlackCat {
 
         private divConfirmSelect: HTMLElement; // 确认/取消栏div
 
+        private divTrust: HTMLElement
+        private trust: string; // 是否信任，"1"表示信任
+
         constructor() {
             super()
 
@@ -28,17 +31,19 @@ namespace BlackCat {
                 this.divConfirmSelect.style.top = "auto"
                 this.divConfirmSelect.style.bottom = "0"
             }
+
+            this.trust = "0";
         }
 
         create() {
 
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_listdetail", "pc_tradeconfirm")
+            this.div.classList.add("pc_listdetail", "pc_tradeconfirm", "pc_trust")
 
             if (ViewTransConfirm.list && ViewTransConfirm.list.hasOwnProperty("wallet")) {
-                // header // header标签创建比较麻烦
-                var headerObj = this.objCreate("div")
-                headerObj.classList.add("pc_header")
+                // header标签创建比较麻烦
+                var headerTitle = this.objCreate("div")
+                headerTitle.classList.add("pc_header")
                 // 返回按钮
                 var returnBtn = this.objCreate("a")
                 returnBtn.classList.add("iconfont", "icon-fanhui")
@@ -50,16 +55,17 @@ namespace BlackCat {
                         ViewTransConfirm.callback_cancel = null;
                     }
                 }
-                this.ObjAppend(headerObj, returnBtn)
+                this.ObjAppend(headerTitle, returnBtn)
                 // h1标题
                 var h1Obj = this.objCreate("h1")
                 h1Obj.textContent = Main.platName
-                this.ObjAppend(headerObj, h1Obj)
-                this.ObjAppend(this.div, headerObj)
+                this.ObjAppend(headerTitle, h1Obj)
+
+                this.ObjAppend(this.div, headerTitle)
 
                 var contentObj = this.objCreate("div")
                 contentObj.classList.add("pc_detail")
-                contentObj.style.paddingBottom = "90px"
+                contentObj.style.paddingBottom = "120px"
                 contentObj.innerHTML
                     = '<ul>'
                     + '<li>'
@@ -86,7 +92,32 @@ namespace BlackCat {
                 this.divConfirmSelect.classList.add("pc_tradeconfirmbut")
                 this.ObjAppend(this.div, this.divConfirmSelect)
 
+                // 信任合约
+                this.divTrust = this.objCreate("div")
+                this.divTrust.classList.add("pc_switchbox")
+                this.divTrust.textContent = Main.langMgr.get("pay_trust_tips") //信任合约
+                this.ObjAppend(this.divConfirmSelect, this.divTrust)
 
+                var labelTrust = this.objCreate("label")
+                labelTrust.textContent = Main.langMgr.get("pay_trust_Vice_tips") //（本合约交易不再弹出此窗口）
+                this.ObjAppend(this.divTrust, labelTrust)
+
+                var trustObj = this.objCreate("a")
+                trustObj.classList.add("pc_switch")
+                trustObj.onclick = () => {
+                    if (this.trust == "0") {
+                        this.trust = "1"
+                        trustObj.classList.add("pc_switch_active")
+                    }
+                    else {
+                        this.trust = "0"
+                        trustObj.classList.remove("pc_switch_active")
+                    }
+                }
+                this.ObjAppend(this.divTrust, trustObj)
+
+                var spanSwitchBut = this.objCreate("span")
+                this.ObjAppend(trustObj, spanSwitchBut)
 
                 var cancelObj = this.objCreate("button")
                 cancelObj.classList.add("pc_cancel")
@@ -110,7 +141,7 @@ namespace BlackCat {
                 }
                 confirmObj.onclick = () => {
                     console.log('[Bla Cat]', '[ViewTransConfirm]', '交易确认..')
-                    ViewTransConfirm.callback(ViewTransConfirm.callback_params)
+                    ViewTransConfirm.callback(ViewTransConfirm.callback_params, this.trust)
                     ViewTransConfirm.callback = null;
                     this.remove(300)
                 }
@@ -154,7 +185,10 @@ namespace BlackCat {
                                 + '</li>';
                         }
                     }
-                } catch (e) { }
+                }
+                catch (e) {
+                    console.log('[Bla Cat]', '[ViewTransConfirm]', 'getParams error => ', e.toString())
+                }
             }
 
             return html;

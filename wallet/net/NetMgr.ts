@@ -5,11 +5,11 @@ namespace BlackCat {
         private nodes: any; // nel节点
         private apis: any; // api节点
 
-        private api_server: string;
-        private node_server: any;
+        private default_type: number; // 默认网络，1：主网；2:测试网
 
-
-        type: number; // 1：主网；2:测试网
+        type: number; // 当前网络
+        private api_server: string; // 当前api_server
+        private node_server: any; // 当前nelnode_server
 
         constructor() {
             this.types = [1, 2]
@@ -18,26 +18,30 @@ namespace BlackCat {
             this.nodes[1] = [
                 // 主网
                 "http://nelnode01.blacat.org:82/api/mainnet",
-                "https://api.nel.group/api/mainnet"
+                "https://api.nel.group/api/mainnet",
+                // "https://nelnode01.9191wyx.com/api/mainnet",
             ]
             this.nodes[2] = [
                 // 测试网
                 "http://nelnode00.blacat.org:82/api/testnet",
-                "https://api.nel.group/api/testnet"
+                "https://api.nel.group/api/testnet",
+                "https://nelnode00.9191wyx.com/api/testnet",
             ]
 
-            this.apis = [
-                // 正式服
-                "http://api01.blacat.org/apic/apic_user.php"
-            ]
+            // this.apis = [
+            //     // 正式服
+            //     "https://api01.blacat.org/apic/apic_user.php"
+            // ]
 
             this.apis = [
                 // 调试服
-                "http://182.254.139.130/apic_v2/apic_user.php"
+                "https://api00.9191wyx.com/apic_v2/apic_user.php"
+                // "http://10.1.8.132/new/nel/api_c/apic_user.php"
             ]
 
 
             this.node_server = {}
+            this.default_type = 1;
         }
 
         selectApi(callback) {
@@ -90,7 +94,10 @@ namespace BlackCat {
 
 
         // 选择/切换网络
-        change(callback, type: number = 2) {
+        change(callback, type: number = null) {
+            if (!type) {
+                type = this.default_type;
+            }
             if (this.type != type) {
                 console.log('[Bla Cat]', '[NetType]', ' change to type => ', type)
                 switch (type) {
@@ -102,6 +109,10 @@ namespace BlackCat {
                         break;
                 }
             }
+        }
+        setDefault(type: number) {
+            console.log('[Bla Cat]', '[NetType]', ' default type => ', type)
+            this.default_type = type;
         }
 
 

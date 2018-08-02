@@ -67,4 +67,13 @@ namespace BlackCat {
         client_notify: string = "";
 
     }
+
+    export class contact {
+        id: string = "";
+        ctm: string = "";
+        uid: string = "";
+        address_name: string = "";
+        address_wallet: string = "";
+        address_desc: string = "";
+    }
 }

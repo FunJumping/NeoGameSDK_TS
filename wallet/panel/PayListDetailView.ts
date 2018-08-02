@@ -115,7 +115,10 @@ namespace BlackCat {
                         }
                     }
 
-                } catch (e) { }
+                }
+                catch (e) {
+                    console.log('[Bla Cat]', '[PayListDetailView]', 'getParams error => ', e.toString())
+                }
             }
 
             return html;

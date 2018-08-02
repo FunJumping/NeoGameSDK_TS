@@ -37,6 +37,8 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
 			case "makeGasTransferRes": // GAS转账回调
 				// 回调数据格式参考invokescriptRes
 				break;
+			case "makeGasTransferMultiRes": // GAS批量转账回调
+				break;
 			case "confirmAppNotifyRes": // 交易通知接收确认回调
 				// 回调数据格式参考invokescriptRes
 				break;
@@ -85,6 +87,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
     <script src="lib/scrypt.js"></script>
     <script src="lib/jsrsasign.js"></script>
     <script src="lib/neo-ts.js"></script>
+    <script src="lib/qr-code-with-logo.browser.min.js"></script>
     <script src="lib/code.js"></script>
 
 
@@ -659,6 +662,12 @@ BlackCat.SDK.showMain()
 最小化SDK界面
 ``` 
 BlackCat.SDK.showIcon()
+```
+
+### 16、设置初始网络类型
+设置初始网络类型（1：主网；2：测试网）
+``` 
+BlackCat.SDK.setDefaultType(2)
 ```
 
 

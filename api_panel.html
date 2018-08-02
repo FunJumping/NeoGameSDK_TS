@@ -15,6 +15,7 @@
     <script src="lib/scrypt.js"></script>
     <script src="lib/jsrsasign.js"></script>
     <script src="lib/neo-ts.js"></script>
+    <script src="lib/qr-code-with-logo.browser.min.js"></script>
     <script src="lib/code.js"></script>
 
 </head>
@@ -22,6 +23,20 @@
 <body style="background-color: cadetblue">
     <button onclick="initSDK()">初始化SDK</button>
     <button onclick="login()" style="margin-left:20px">登录</button>
+
+    <hr>
+    <button onclick="setLang('en')">英文</button>
+    <button onclick="setLang('cn')" style="margin-left:2px">中文</button>
+    <button onclick="showMain()" style="margin-left:20px">显示</button>
+    <button onclick="showIcon()" style="margin-left:2px">隐藏</button>
+
+    <button onclick="setDefaultNetType(1)" style="margin-left:20px">默认主网</button>
+    <button onclick="setDefaultNetType(2)" style="margin-left:2px">默认测试网</button>
+
+    <hr>
+    <button onclick="getbalance()">余额</button>
+    <button onclick="getUserInfo()" style="margin-left:20px">用户信息</button>
+    <button onclick="getNetType()" style="margin-left:20px">网络类型</button>
 
     <hr>
     <button onclick="showDiv('invokescriptdiv')">合约读取</button>
@@ -32,16 +47,7 @@
     <button onclick="showDiv('confirmNotifydiv')" style="margin-left:20px">确认通知</button>
 
     <hr>
-    <button onclick="getbalance()">余额</button>
-    <button onclick="getUserInfo()" style="margin-left:20px">用户信息</button>
-    <button onclick="getNetType()" style="margin-left:20px">网络类型</button>
 
-    <hr>
-    <button onclick="setLang('en')">英文</button>
-    <button onclick="setLang('cn')" style="margin-left:20px">中文</button>
-    <button onclick="showMain()" style="margin-left:20px">显示</button>
-    <button onclick="showIcon()" style="margin-left:20px">隐藏</button>
-    <hr>
     <div class="dis" id="invokescriptdiv" style="display:none">
         nnc:
         <input style="width: 100%" type="text" id="nnc" name="nnc" value="0xcfe8f6824365f70d382733a92d8f373ee4faf222">
@@ -146,7 +152,7 @@
     <div id="res"></div>
 
     <script>
-        var appid = "1";
+        var appid = "5";
         var appkey = "";
         
         var listener = function (data) {
@@ -211,11 +217,18 @@
                         // 测试网
                     }
                     break;
+                case "getAppNotifysRes": // 交易成功回调
+                    for (let i=0; i< res.data.length; i++ ){
+                        let txid = res.data[i].txid;
+                        BlackCat.SDK.confirmAppNotify({txid: txid})
+                    }
+                    break;
             }
         };
 
-        // initSDK()
-        // login()
+        initSDK()
+        setDefaultNetType(2)
+        login()
 
 
         function showDiv(id) {
@@ -344,6 +357,10 @@
             BlackCat.SDK.getNetType(function (res) {
                 console.log("getNetType.callback.function.res ", res)
             })
+        }
+
+        function setDefaultNetType(type) {
+            BlackCat.SDK.setDefaultNetType(type)
         }
     </script>
 </body>

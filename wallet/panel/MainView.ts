@@ -22,6 +22,8 @@ namespace BlackCat {
             this.div.onclick = () => {
                 // 阻止事件向上冒泡
                 event.stopPropagation();
+                // 更新main存活时间
+                Main.setLiveTime()
             }
         }
 

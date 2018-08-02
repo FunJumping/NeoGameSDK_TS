@@ -14,6 +14,12 @@ namespace BlackCat {
 
             var divLoading = this.objCreate("div")
             divLoading.classList.add("pc_loadingbox")
+
+            var lang_content = Main.langMgr.get(ViewLoading.content)
+            if (!lang_content) {
+                lang_content = ViewLoading.content
+            }
+
             divLoading.innerHTML =
                 "<div class='pc_loading1'></div>"
                 + "<div class='pc_loading2'></div>"
@@ -27,7 +33,7 @@ namespace BlackCat {
                 + "<div class='pc_loading10'></div>"
                 + "<div class='pc_loading11'></div>"
                 + "<div class='pc_loading12'></div>"
-                + "<p id='pc_loadingtext'>" + Main.langMgr.get(ViewLoading.content) + "</p>"
+                + "<p id='pc_loadingtext'>" + lang_content + "</p>"
             this.ObjAppend(this.div, divLoading)
 
         }

@@ -15,6 +15,7 @@
     <script src="lib/scrypt.js"></script>
     <script src="lib/jsrsasign.js"></script>
     <script src="lib/neo-ts.js"></script>
+    <script src="lib/qr-code-with-logo.browser.min.js"></script>
     <script src="lib/code.js"></script>
 
 ### 2、回调方式说明

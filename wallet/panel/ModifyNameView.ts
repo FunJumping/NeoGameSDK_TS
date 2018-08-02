@@ -5,7 +5,7 @@ namespace BlackCat {
     // 修改昵称
     export class ModifyNameView extends ViewBase {
 
-        inputName: HTMLInputElement
+        private inputName: HTMLInputElement
 
         start() {
             super.start()
@@ -15,7 +15,7 @@ namespace BlackCat {
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_popup")
-            
+
             //弹窗的框
             var popupbox = this.objCreate('div')
             popupbox.classList.add("pc_popupbox")

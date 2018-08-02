@@ -10,16 +10,12 @@ namespace BlackCat {
 
         private gasBalance: string;
         private toaddress: string;
-        private isDomain: boolean;
-        private addrerr: string;
 
         constructor() {
             super();
 
             this.gasBalance = '0';
             this.toaddress = "";
-            this.isDomain = false;
-            this.addrerr = "";
         }
 
         start() {
@@ -148,6 +144,8 @@ namespace BlackCat {
                 var res = new Result()
                 res.err = true;
                 res.info = e.toString();
+
+                console.log('[Bla Cat]', '[PayTransferView]', 'doTransfer, tools.CoinTool.rawTransaction error => ', e.toString())
             }
 
 
@@ -195,18 +193,15 @@ namespace BlackCat {
                     let addr = await tools.NNSTool.resolveData(this.inputTransferAddr.value);
                     if (addr) {
                         this.toaddress = addr;
-                        this.isDomain = true;
-                        this.addrerr = 'false';
                         return true;
                     }
                     else {
                         this.toaddress = "";
-                        this.addrerr = 'true';
                         return false;
                     }
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[PayTransferView]', '钱包地址错误 => ', e)
+                    console.log('[Bla Cat]', '[PayTransferView]', 'verify_addr, isDomain, 钱包地址错误 => ', e)
                     return false;
                 }
 
@@ -215,17 +210,15 @@ namespace BlackCat {
                 try {
                     if (tools.neotools.verifyPublicKey(this.inputTransferAddr.value)) {
                         this.toaddress = this.inputTransferAddr.value;
-                        this.addrerr = 'false';
                         return true;
                     }
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[PayTransferView]', '钱包地址错误 => ', e)
+                    console.log('[Bla Cat]', '[PayTransferView]', 'verify_addr, isAddress, 钱包地址错误 => ', e)
                     return false;
                 }
             }
             else {
-                this.addrerr = 'true';
                 this.toaddress = "";
                 return false;
             }

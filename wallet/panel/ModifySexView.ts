@@ -5,22 +5,9 @@ namespace BlackCat {
     // 修改性别
     export class ModifySexView extends ViewBase {
 
-        divSex: HTMLDivElement
-        inputSex1Obj: HTMLDivElement
-        inputSex2Obj: HTMLDivElement
-
-        start() {
-            super.start()
-            var selectSexObj = this.divSex.getElementsByTagName("input")
-            var selectSex = Main.user.info.sex
-            if (selectSex == "1") {
-                selectSexObj[0].checked = true
-                this.inputSex1Obj.classList.add("pc_modifysex_active")
-            } else if (selectSex == "2") {
-                selectSexObj[1].checked = true
-                this.inputSex2Obj.classList.add("pc_modifysex_active")
-            }
-        }
+        private divSex: HTMLDivElement
+        private inputSex1Obj: HTMLDivElement
+        private inputSex2Obj: HTMLDivElement
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
@@ -47,13 +34,17 @@ namespace BlackCat {
             this.ObjAppend(this.divSex, this.inputSex1Obj)
 
             // 男单选按钮
-            var inputSex1 = this.objCreate("input")
+            var inputSex1 = this.objCreate("input") as HTMLInputElement
             inputSex1.setAttribute("type", "radio")
             inputSex1.setAttribute("value", "1")
             inputSex1.setAttribute("name", "pc_sex")
             inputSex1.onclick = () => {
                 this.inputSex1Obj.classList.add("pc_modifysex_active")
                 this.inputSex2Obj.classList.remove("pc_modifysex_active")
+            }
+            if (Main.user.info.sex == "1") {
+                inputSex1.setAttribute("checked", "true")
+                this.inputSex1Obj.classList.add("pc_modifysex_active")
             }
             this.ObjAppend(this.inputSex1Obj, inputSex1)
 
@@ -71,7 +62,10 @@ namespace BlackCat {
             inputSex2.onclick = () => {
                 this.inputSex2Obj.classList.add("pc_modifysex_active")
                 this.inputSex1Obj.classList.remove("pc_modifysex_active")
-
+            }
+            if (Main.user.info.sex == "2") {
+                inputSex2.setAttribute("checked", "true")
+                this.inputSex2Obj.classList.add("pc_modifysex_active")
             }
             this.ObjAppend(this.inputSex2Obj, inputSex2)
 
@@ -144,8 +138,6 @@ namespace BlackCat {
 
                 }
             }
-
-
         }
     }
 }

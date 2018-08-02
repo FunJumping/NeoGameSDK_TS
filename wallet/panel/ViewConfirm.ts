@@ -25,7 +25,12 @@ namespace BlackCat {
             // 提示内容
             var alterText = this.objCreate("div")
             alterText.classList.add("pc_altertext")
-            alterText.textContent = Main.langMgr.get(ViewConfirm.content) // "内容"
+            var lang_content = Main.langMgr.get(ViewConfirm.content);
+            if (!lang_content) {
+                lang_content = ViewConfirm.content
+            }
+            alterText.textContent = lang_content // "内容"
+
             this.ObjAppend(alter, alterText)
 
 

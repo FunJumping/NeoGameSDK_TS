@@ -17,7 +17,6 @@ namespace BlackCat {
         private spanGas: HTMLElement;
         private spanSgas: HTMLElement;
 
-        private walletLists: Array<walletLists>;
         private divLists: HTMLDivElement;
         private divListsMore: HTMLElement;
         private divNetSelect: HTMLElement;
@@ -33,7 +32,6 @@ namespace BlackCat {
             this.gas = 0;
             this.sgas = 0;
 
-            this.walletLists = new Array();
             this.listPageNum = 10;
 
             this.getWalletListsTimeout = 3000;
@@ -109,6 +107,11 @@ namespace BlackCat {
             //我的钱包
             var divMyWallet=this.objCreate("div")
             divMyWallet.classList.add("pc_mywallet","iconfont", "icon-qianbao")
+            // divMyWallet.onclick=()=>{
+            //     this.hidden()
+            //     AddressbookView.refer = "PayView"
+            //     Main.viewMgr.change("AddressbookView")
+            // }
             this.ObjAppend(paycard, divMyWallet)
 
             this.payMyWallet = this.objCreate("label")
@@ -271,7 +274,7 @@ namespace BlackCat {
             if (isHidden) this.hidden()
         }
 
-        clearTimeout() {
+        private clearTimeout() {
             if (this.s_doGetWalletLists) clearTimeout(this.s_doGetWalletLists)
         }
 
@@ -587,7 +590,7 @@ namespace BlackCat {
                         }
                     }
                     catch (e) {
-
+                        console.log('[Bla Cat]', '[PayView]', 'getListImg, v.type=5, error => ', e)
                     }
                     return v.icon;
                 case "6": // gas转账
@@ -616,6 +619,7 @@ namespace BlackCat {
                 }
                 catch (e) {
                     // return v.name;
+                    console.log('[Bla Cat]', '[PayView]', 'getListName, v', v, 'error => ', e.toString())
                 }
             }
             return v.name;
@@ -696,7 +700,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-
+                console.log('[Bla Cat]', '[PayView]', 'getListParamMethods, v', v, 'error => ', e.toString())
             }
             return Main.langMgr.get("paylist_sbPushString_none")
         }
@@ -819,7 +823,8 @@ namespace BlackCat {
                     tools.CoinTool.id_GAS,
                     Neo.Fixed8.fromNumber(Number(mintCount))
                 );
-            } catch (e) {
+            }
+            catch (e) {
                 Main.viewMgr.viewLoading.remove()
                 let errmsg = Main.langMgr.get(e.message);
                 if (errmsg) {
@@ -971,7 +976,8 @@ namespace BlackCat {
                     tools.CoinTool.id_GAS,
                     Neo.Fixed8.fromNumber(Number(refundCount))
                 );
-            } catch (e) {
+            }
+            catch (e) {
                 Main.viewMgr.viewLoading.remove()
                 // Main.showErrMsg("SGAS余额不足");
                 Main.showErrMsg(("pay_makeRefundSgasNotEnough"))
@@ -1081,6 +1087,8 @@ namespace BlackCat {
 
         //收款
         private async doMakeReceivables() {
+            this.hidden()
+            PayReceivablesView.refer="PayView"
             Main.viewMgr.change("PayReceivablesView")
         }
 

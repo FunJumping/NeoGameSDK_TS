@@ -5,9 +5,9 @@ namespace BlackCat {
     // 我的信息
     export class MyInfoView extends ViewBase {
 
-        myImg: HTMLElement;
-        myName: HTMLElement;
-        mySex: HTMLElement;
+        private myImg: HTMLImageElement;
+        private myName: HTMLElement;
+        private mySex: HTMLElement;
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
@@ -47,11 +47,12 @@ namespace BlackCat {
             var liMyinfoImg = this.objCreate("li")
             liMyinfoImg.classList.add("pc_myinfoimg")
             liMyinfoImg.style.cursor = "pointer"
-            liMyinfoImg.onclick=()=>{
-                // this.modifyImg()
+            liMyinfoImg.onclick = () => {
+                this.modifyImg()
             }
             liMyinfoImg.textContent = Main.langMgr.get("myinfo_headImg")
 
+            //头像标签
             var iMyinfoimg = this.objCreate("i")
             iMyinfoimg.classList.add("iconfont", "icon-gengduo")
             this.ObjAppend(liMyinfoImg, iMyinfoimg)
@@ -59,7 +60,8 @@ namespace BlackCat {
             var spanMyinfoimg = this.objCreate("span")
             this.ObjAppend(liMyinfoImg, spanMyinfoimg)
 
-            this.myImg = this.objCreate("img") as HTMLElement
+            //头像图片
+            this.myImg = this.objCreate("img") as HTMLImageElement
             this.myImg.setAttribute("src", this.getImg())
             this.ObjAppend(spanMyinfoimg, this.myImg)
 
@@ -72,15 +74,18 @@ namespace BlackCat {
             liMyinfoName.onclick = () => {
                 this.modifyName()
             }
+            this.ObjAppend(ulMyinfo, liMyinfoName)
+
+            //昵称标签
             var iMyinfoName = this.objCreate("i")
             iMyinfoName.classList.add("iconfont", "icon-gengduo")
             this.ObjAppend(liMyinfoName, iMyinfoName)
 
+            //昵称内容
             this.myName = this.objCreate("span")
             this.myName.textContent = this.getName()
             this.ObjAppend(liMyinfoName, this.myName)
 
-            this.ObjAppend(ulMyinfo, liMyinfoName)
 
 
             //性别
@@ -90,6 +95,13 @@ namespace BlackCat {
             liMyinfoSex.onclick = () => {
                 this.modifySex()
             }
+
+            //性别标签
+            var iMyinfoSex = this.objCreate("i")
+            iMyinfoSex.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfoSex, iMyinfoSex)
+
+            //性别内容
             this.mySex = this.objCreate("span")
             this.mySex.textContent = this.getSex()
             this.ObjAppend(liMyinfoSex, this.mySex)
@@ -98,18 +110,42 @@ namespace BlackCat {
             //账号
             var liMyinfoUid = this.objCreate("li")
             liMyinfoUid.textContent = Main.langMgr.get("myinfo_uid")
+            this.ObjAppend(ulMyinfo, liMyinfoUid)
+
+            //账号内容
             var spanMyinfoUid = this.objCreate("span")
             spanMyinfoUid.textContent = this.getUid()
             this.ObjAppend(liMyinfoUid, spanMyinfoUid)
-            this.ObjAppend(ulMyinfo, liMyinfoUid)
 
             //地区
             var liMyinfoArea = this.objCreate("li")
             liMyinfoArea.textContent = Main.langMgr.get("myinfo_area")
+            this.ObjAppend(ulMyinfo, liMyinfoArea)
+
+            // 地区内容
             var spanMyinfoArea = this.objCreate("span")
             spanMyinfoArea.textContent = this.getArea()
             this.ObjAppend(liMyinfoArea, spanMyinfoArea)
-            this.ObjAppend(ulMyinfo, liMyinfoArea)
+
+            // 安全中心
+            var liMyinfoTrust = this.objCreate("li")
+            liMyinfoTrust.style.cursor = "pointer"
+            liMyinfoTrust.textContent = Main.langMgr.get("myinfo_security")
+            liMyinfoTrust.onclick = () => {
+                this.hidden()
+                Main.viewMgr.change("SecurityCenterView")
+            }
+            this.ObjAppend(ulMyinfo, liMyinfoTrust)
+
+            // 安全中心图标
+            var iMyinfoTrust = this.objCreate("i")
+            iMyinfoTrust.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfoTrust, iMyinfoTrust)
+
+            // 安全中心设置
+            var spanMyinfoTrust = this.objCreate("span")
+            spanMyinfoTrust.textContent = Main.langMgr.get("myinfo_set")
+            this.ObjAppend(liMyinfoTrust, spanMyinfoTrust)
 
             //退出账号
             var logout = this.objCreate("button")
@@ -168,7 +204,7 @@ namespace BlackCat {
 
         private async modifyImg() {
             ModifyImgView.callback = () => {
-                this.myImg.setAttribute("src", this.getImg())
+                this.myImg.src = this.getImg()
             }
             Main.viewMgr.change("ModifyImgView")
         }

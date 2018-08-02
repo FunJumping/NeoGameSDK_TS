@@ -73,8 +73,7 @@ namespace BlackCat {
             this.info = new UserInfo();
 
             // 清理打开的钱包
-            tools.StorageTool.delStorage("current-address")
-            tools.StorageTool.delStorage("login-info-arr")
+            Main.wallet.closeWallet()
         }
 
         async getWalletFileCache() {

@@ -72,7 +72,7 @@ namespace BlackCat {
 
         }
 
-        dragTouch(ev) {
+        private dragTouch(ev) {
             // console.log('[Bla Cat]', '[IconView]', 'dragTouch, ev => ', ev)
             var sent = {
                 l: 0,  //设置div在父元素的活动范围，10相当于给父div设置padding-left：10;
@@ -131,7 +131,7 @@ namespace BlackCat {
             }
         }
 
-        drag() {
+        private drag() {
             // console.log('[Bla Cat]', '[IconView]', 'drag ..')
 
             var sent = {

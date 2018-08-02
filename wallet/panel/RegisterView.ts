@@ -11,6 +11,7 @@ namespace BlackCat {
         private inputCode: HTMLInputElement;
         private inputPass: HTMLInputElement;
         private inputVpass: HTMLInputElement;
+        private divArea: HTMLDivElement;
 
         private getCodeCount: HTMLElement;
         private getCode: HTMLElement
@@ -19,37 +20,100 @@ namespace BlackCat {
         private getCodeRetryMax: number;
         private getCodeRetry_curr: number;
 
+        private accountType: string;
+
         constructor() {
             super()
 
             this.getCodeRetryMax = 60;
             this.getCodeRetry_curr = 0;
+
+
         }
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement;
             this.div.classList.add("pc_login", "pc_register")
 
-            //登录标题
-            var h1Title = this.objCreate("h1")
-            h1Title.classList.add("pc_login_title", "iconfont", "icon-blacat")
+            // 注册logo
+            var divLogo = this.objCreate("div")
+            divLogo.classList.add("pc_login_logo", "iconfont", "icon-blacat")
             // h1Title.innerText = Main.platName;
-            this.ObjAppend(this.div, h1Title)
+            this.ObjAppend(this.div, divLogo)
 
-            //input 登录框
+            //注册标题
+            var divTitle = this.objCreate("div")
+            divTitle.classList.add("pc_login_title")
+            this.ObjAppend(this.div, divTitle)
+
+            //注册
+            var h1TitleType = this.objCreate("h1")
+            h1TitleType.classList.add("pc_title_tyle")
+            h1TitleType.textContent = Main.langMgr.get("register_title") // "注册"
+            this.ObjAppend(divTitle, h1TitleType)
+
+            //注册方式切换
+            var divTitleobj = this.objCreate("div")
+            divTitleobj.classList.add("pc_title_switch")
+            this.ObjAppend(divTitle, divTitleobj)
+
+
+            // 手机
+            var aTiletMobile = this.objCreate("a")
+            aTiletMobile.classList.add("pc_tiletmobile", "pc_active")
+            aTiletMobile.style.borderLeft = "0"
+            aTiletMobile.textContent = Main.langMgr.get("main_phone") // 手机
+            aTiletMobile.onclick = () => {
+                areaSelect.style.display = "block"
+                aTiletMobile.classList.add("pc_active")
+                aTilEtEmail.classList.remove("pc_active")
+                iIshurushouji.classList.add("icon-shurushouji")
+                iIshurushouji.classList.remove("icon-xinxi")
+
+                this.inputAccount.value = ""
+                this.inputCode.value = ""
+                this.accountType = "phone"
+                this.inputAccount.placeholder = Main.langMgr.get("register_input" + this.accountType)
+            }
+            this.ObjAppend(divTitleobj, aTiletMobile)
+
+            // 邮箱
+            var aTilEtEmail = this.objCreate("a")
+            aTilEtEmail.textContent = Main.langMgr.get("main_email") // 邮箱
+            aTilEtEmail.onclick = () => {
+                areaSelect.style.display = "none"
+                aTilEtEmail.classList.add("pc_active")
+                aTiletMobile.classList.remove("pc_active")
+                iIshurushouji.classList.add("icon-xinxi")
+                iIshurushouji.classList.remove("icon-shurushouji")
+
+                this.inputAccount.value = ""
+                this.inputCode.value = ""
+                this.accountType = "email"
+                this.inputAccount.placeholder = Main.langMgr.get("register_input" + this.accountType)
+            }
+            this.ObjAppend(divTitleobj, aTilEtEmail)
+
+            // 注册框
             var divInput = this.objCreate("div")
             divInput.classList.add("pc_login_input")
             this.ObjAppend(this.div, divInput)
 
 
-            //用户名
+            // 用户名
             var userName = this.objCreate("div")
             userName.classList.add("pc_login_inputbox")
             this.ObjAppend(divInput, userName)
 
+            // 用户名 图标
+            var iUserName = this.objCreate("i")
+            iUserName.classList.add("iconfont", "icon-my")
+            this.ObjAppend(userName, iUserName)
+
+            // 请输入用户名
             this.inputUid = this.objCreate("input") as HTMLInputElement;
             this.inputUid.type = "text"
-            this.inputUid.placeholder = Main.langMgr.get("register_inputUid")
+            this.inputUid.placeholder = Main.langMgr.get("register_inputUid") // "请输入用户名"
             this.inputUid.onblur = () => {
                 this.validateUid()
             }
@@ -57,9 +121,15 @@ namespace BlackCat {
 
             // 地区
             var areaSelect = this.objCreate("div")
-            areaSelect.classList.add("pc_login_inputbox", "pc_region", "iconfont", "icon-xiala")
+            areaSelect.classList.add("pc_login_inputbox")
             this.ObjAppend(divInput, areaSelect)
 
+            // 地区 图标
+            var iRegion = this.objCreate("i")
+            iRegion.classList.add("iconfont", "icon-diqiu")
+            this.ObjAppend(areaSelect, iRegion)
+
+            // 选择地区
             this.selectArea = this.objCreate("select") as HTMLSelectElement
             AreaView.areaInfo.forEach(
                 area => {
@@ -67,82 +137,116 @@ namespace BlackCat {
                     option.setAttribute("value", area.codename);
                     option.textContent = Main.langMgr.get("area_code_" + area.codename)
                     this.selectArea.options.add(option)
+
                 }
             )
+            this.selectArea.onchange = () => {
+                AreaView.areaInfo.forEach(
+                    area => {
+                        if (area.codename == this.selectArea.value) {
+                            this.divArea.textContent = area.areacode
+                        }
+                    }
+                )
+            }
             this.ObjAppend(areaSelect, this.selectArea)
 
-            // input 手机号码/邮箱
-            var telInput = this.objCreate("div")
-            telInput.classList.add("pc_login_inputbox", "pc_tel")
-            this.ObjAppend(divInput, telInput)
+            // 地区区号
+            this.divArea = this.objCreate("div") as HTMLDivElement
+            this.divArea.classList.add("pc_area")
+            AreaView.areaInfo.forEach(
+                area => {
+                    if (area.codename == this.selectArea.value) {
+                        this.divArea.textContent = area.areacode
+                    }
+                }
+            )
+            this.ObjAppend(areaSelect, this.divArea)
 
+            // 地区下拉 图标
+            var aArea = this.objCreate("a")
+            aArea.classList.add("pc_areaa", "iconfont", "icon-xiala")
+            this.ObjAppend(areaSelect, aArea)
+
+
+            // 手机号码
+            var divTel = this.objCreate("div")
+            divTel.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divTel)
+
+            // 手机号码 图标
+            var iIshurushouji = this.objCreate("i")
+            iIshurushouji.classList.add("iconfont", "icon-shurushouji")
+            this.ObjAppend(divTel, iIshurushouji)
+
+            // 请输入手机号码
             this.inputAccount = this.objCreate("input") as HTMLInputElement;
             this.inputAccount.type = "text"
-            this.inputAccount.placeholder = Main.langMgr.get("register_inputAccount") // "请输入手机号码/邮箱"
+            this.inputAccount.placeholder = Main.langMgr.get("register_inputphone") // "请输入手机号码"
             this.inputAccount.onblur = () => {
                 this.validateAccount();
             }
-            this.ObjAppend(telInput, this.inputAccount)
+            this.ObjAppend(divTel, this.inputAccount)
 
-            // input 验证码
-            var codeInput = this.objCreate("div");
-            codeInput.classList.add("pc_login_inputbox")
-            this.ObjAppend(divInput, codeInput)
+            // 验证码
+            var divCode = this.objCreate("div");
+            divCode.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divCode)
 
+            // 验证码 图标
+            var iDivCode = this.objCreate("i")
+            iDivCode.classList.add("iconfont", "icon-dunpai1")
+            this.ObjAppend(divCode, iDivCode)
+
+            // 请输入验证码
             this.inputCode = this.objCreate("input") as HTMLInputElement
             this.inputCode.type = "text"
+            this.inputCode.style.width = "60%"
             this.inputCode.placeholder = Main.langMgr.get("register_inputCode"); // "请输入验证码"
-            this.ObjAppend(codeInput, this.inputCode)
+            this.ObjAppend(divCode, this.inputCode)
 
-            // input 密码
-            var passInput = this.objCreate("div")
-            passInput.classList.add("pc_login_inputbox")
-            this.ObjAppend(divInput, passInput)
+            // 密码
+            var divPass = this.objCreate("div")
+            divPass.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divPass)
 
+            // 密码 图标
+            var iPass = this.objCreate("i")
+            iPass.classList.add("iconfont", "icon-mima")
+            this.ObjAppend(divPass, iPass)
+
+            // 请输入密码
             this.inputPass = this.objCreate("input") as HTMLInputElement
             this.inputPass.type = "password"
             this.inputPass.placeholder = Main.langMgr.get("register_inputPass") // 请输入密码
-            this.ObjAppend(passInput, this.inputPass)
+            this.ObjAppend(divPass, this.inputPass)
 
-            // input 确认密码
-            var vPassInput = this.objCreate("div")
-            vPassInput.classList.add("pc_login_inputbox")
-            this.ObjAppend(divInput, vPassInput)
+            // 确认密码
+            var divVPass = this.objCreate("div")
+            divVPass.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divVPass)
 
+            // 确认密码 图标
+            var iVPass = this.objCreate("i")
+            iVPass.classList.add("iconfont", "icon-mima")
+            this.ObjAppend(divVPass, iVPass)
+
+            // 再次输入密码
             this.inputVpass = this.objCreate("input") as HTMLInputElement
             this.inputVpass.type = "password"
             this.inputVpass.placeholder = Main.langMgr.get("register_inputVpass") // 再次输入密码
-            this.ObjAppend(vPassInput, this.inputVpass)
-
-            //注册框图标
-            var iUserName = this.objCreate("i")
-            iUserName.classList.add("iconfont", "icon-my")
-            this.ObjAppend(userName, iUserName)
-
-            var iRegion = this.objCreate("i")
-            iRegion.classList.add("iconfont", "icon-diqiu")
-            this.ObjAppend(areaSelect, iRegion)
-            var iIshurushouji = this.objCreate("i")
-            iIshurushouji.classList.add("iconfont", "icon-xinxi")
-            this.ObjAppend(telInput, iIshurushouji)
-            var iImima = this.objCreate("i")
-            iImima.classList.add("iconfont", "icon-dunpai1")
-            this.ObjAppend(codeInput, iImima)
-            var iPaw1 = this.objCreate("i")
-            iPaw1.classList.add("iconfont", "icon-mima")
-            this.ObjAppend(passInput, iPaw1)
-            var iPaw2 = this.objCreate("i")
-            iPaw2.classList.add("iconfont", "icon-mima")
-            this.ObjAppend(vPassInput, iPaw2)
+            this.ObjAppend(divVPass, this.inputVpass)
 
 
-            // getCode 获取验证码
+
+
+            // 获取验证码
             this.getCode = this.objCreate("button");
             this.getCode.textContent = Main.langMgr.get("register_getCode") //"获取验证码"
             this.getCode.onclick = () => {
                 this.doGetCode();
             }
-            this.ObjAppend(codeInput, this.getCode)
+            this.ObjAppend(divCode, this.getCode)
 
 
             // 验证码倒计时
@@ -152,12 +256,12 @@ namespace BlackCat {
             // getCode.onclick = () => {
             //     this.doGetCode();
             // }
-            this.ObjAppend(codeInput, this.getCodeCount)
+            this.ObjAppend(divCode, this.getCodeCount)
 
             //  立即注册
             var doRegister = this.objCreate("button");
             doRegister.classList.add("pc_doLogin")
-            doRegister.textContent = Main.langMgr.get("register_doRegister"); // "进入"
+            doRegister.textContent = Main.langMgr.get("register_doRegister"); // "立即注册"
             doRegister.onclick = () => {
                 this.doRegister();
             }
@@ -166,7 +270,7 @@ namespace BlackCat {
             // 返回登录
             var doLogin = this.objCreate("button");
             doLogin.classList.add("pc_loginregion")
-            doLogin.textContent = Main.langMgr.get("register_doLogin"); // "进入"
+            doLogin.textContent = Main.langMgr.get("register_doLogin"); // "返回登录"
             doLogin.onclick = () => {
                 this.remove()
                 Main.viewMgr.change("LoginView")
@@ -186,6 +290,7 @@ namespace BlackCat {
 
         reset() {
             if (this.s_getCodeCountRetry) clearInterval(this.s_getCodeCountRetry);
+            this.accountType = "phone"
         }
 
         private empty(value) {
@@ -201,10 +306,9 @@ namespace BlackCat {
         }
 
         private async checkAccountFromApi() {
-            var accountType = Main.checkAccountTypeRegister(this.inputAccount.value)
 
             var res: any;
-            switch (accountType) {
+            switch (this.accountType) {
                 case 'email':
                     res = await ApiTool.validEmail(this.inputAccount.value)
                     break;
@@ -230,18 +334,13 @@ namespace BlackCat {
             return true;
         }
 
-        private checkUidFormat() {
-            var regex = /^[a-zA-Z0-9_]{4,16}$/
-            if (regex.test(this.inputUid.value)) {
-                return true;
-            }
-            return false;
-        }
-
         private async validateAccount(emptySkip = true) {
             if (this.empty(this.inputAccount.value)) {
                 if (emptySkip) return;
-                Main.showErrMsg(("register_inputAccount_err"))
+                Main.showErrMsg(("register_input" + this.accountType + "_err"))
+                return false;
+            }
+            if (Main.validateFormat(this.accountType, this.inputAccount) == false) {
                 return false;
             }
             return await this.checkAccountFromApi()
@@ -253,8 +352,8 @@ namespace BlackCat {
                 Main.showErrMsg(("register_inputUid_err"))
                 return false;
             }
-            if (this.checkUidFormat() == false) {
-                Main.showErrMsg(("register_inputUid_format_err"))
+
+            if (Main.validateFormat("user", this.inputUid) == false) {
                 return false;
             }
             return await this.checkUidFromApi()
@@ -299,10 +398,8 @@ namespace BlackCat {
 
             if (!(await this.validateVpass())) return
 
-            var accountType = Main.checkAccountTypeRegister(this.inputAccount.value)
-
             var res: any;
-            switch (accountType) {
+            switch (this.accountType) {
                 case 'email':
                     res = await ApiTool.registerByEmail(this.inputAccount.value, this.inputCode.value, this.inputVpass.value, this.selectArea.value, this.inputUid.value);
                     break;
@@ -385,29 +482,38 @@ namespace BlackCat {
             // 检查账号是否输入
             if (this.empty(this.inputAccount.value)) {
                 // "请输入手机号码"
-                Main.showErrMsg(("register_inputAccount_err"), () => {
+                Main.showErrMsg(("register_input"+this.accountType+"_err"), () => {
                     this.inputAccount.focus()
                 })
                 return;
             }
 
-            if (!( await this.checkAccountFromApi())) {
+            Main.viewMgr.change("ViewLoading")
+
+            if (!(await this.checkAccountFromApi())) {
+                Main.viewMgr.viewLoading.remove()
                 return
             }
 
-            var accountType = Main.checkAccountTypeRegister(this.inputAccount.value)
-
-            var res;
-            switch (accountType) {
-                case 'email':
-                    res = await ApiTool.getEmailCode(this.inputAccount.value, Main.langMgr.type);
-                    break;
-                case 'phone':
-                    res = await ApiTool.getPhoneCode(this.getPhone());
-                    break;
-                default:
-                    return;
+            try {
+                var res;
+                switch (this.accountType) {
+                    case 'email':
+                        res = await ApiTool.getEmailCode(this.inputAccount.value, Main.langMgr.type);
+                        break;
+                    case 'phone':
+                        res = await ApiTool.getPhoneCode(this.getPhone());
+                        break;
+                    default:
+                        return;
+                }
             }
+            catch (e) {
+                console.log('[Bla Cat]', '[RegisterView]', 'doGetCode, ApiTool.getxxCode', 'error => ', e.toString())
+            }
+
+            Main.viewMgr.viewLoading.remove()
+
 
             if (res.r) {
                 this.doRetryCount(1)

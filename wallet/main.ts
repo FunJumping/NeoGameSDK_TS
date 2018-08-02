@@ -5,19 +5,29 @@ namespace BlackCat {
     var BC_scriptName = BC_scriptSrc.split('/')[BC_scriptSrc.split('/').length - 1];
     var BC_path = BC_scriptSrc.replace(BC_scriptName, '');
 
+    // window.onclick = () => {
+    //     //console.log('[Bla Cat]', 'window.onclick ...')
+    //     Main.setLiveTime()
+    // }
+
     export class Main {
+
+        private static isCreated: boolean;
+
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
+
 
         // 资源图标前缀路径
         static resHost = BC_path + "../"
 
         // SDK相关
-        static appid: string;
-        static appkey: string;
-        static appname: string;
-        static appicon: string;
-        static app_recharge_addr: string;
+        static appid: string;               // appid
+        static appkey: string;              // appkey
+        static appname: string;             // appname
+        static appicon: string;             // appicon
+        static app_recharge_addr: string;   // app充值地址
+        private static app_trust: Array<any>; // app信任合约
 
         static user: User;
         static wallet: tools.wallet;
@@ -26,6 +36,7 @@ namespace BlackCat {
         static netMgr: NetMgr;
 
 
+        // wallet钱包记录更新相关
         static walletLogId: number; // 当前logid最大值(walletLists获取到的)
 
         static appWalletLogId: number; // 应用相关的logId最大值（makeRawTransaction/makeRecharge)
@@ -39,21 +50,26 @@ namespace BlackCat {
         static platNotifyTxids: any; // 平台已经通知的txids列表（refund)
 
 
+        // SDK回调相关
         private static callback: Function; // 统一sdk调用回调接口，即sdk的listener
         private static transCallback: Function; // 接口makeRawTransaction/makeRecharge回调函数
         private static transGasCallback: Function; // 接口makeGasTransfer回调函数
         private static transGasMultiCallback: Function; // 接口makeGasTransferMulti回调函数
         private static loginFunctionCallback: Function; // 接口login的回调函数
-
         private static isLoginCallback: boolean;
-        private static isCreated: boolean;
 
+
+        // main定时任务相关
         private static s_update: any;
-
         private static update_timeout_max: number;
         private static update_timeout_min: number;
 
+        // 存活时间
+        private static liveTime: number;
+        private static liveTimeMax: number = 60 * 60 * 1000; // 1小时未操作钱包，退出钱包登录
+
         constructor() {
+            // 初始化
             Main.netMgr = new NetMgr();
             Main.user = new User();
             Main.wallet = new tools.wallet();
@@ -70,7 +86,7 @@ namespace BlackCat {
             Neo.Cryptography.RandomNumberGenerator.startCollectors();
         }
 
-        static reset(type = 0) {
+        static reset(type = 0): void {
             Main.appWalletLogId = 0;
             Main.appWalletNotifyId = 0;
             Main.appNotifyTxids = {};
@@ -91,28 +107,67 @@ namespace BlackCat {
             }
         }
 
-        static clearTimeout() {
+        // 清理定时任务
+        static clearTimeout(): void {
             if (Main.s_update) {
                 clearTimeout(Main.s_update)
                 Main.update()
             }
         }
 
-        // SDK初始化
-        init(appid, appkey, callback, lang) {
+
+
+
+
+
+
+
+
+
+        // 对外接口：SDK初始化
+        init(appid: string, appkey: string, callback: Function, lang: string): void {
             Main.appid = appid;
             Main.appkey = appkey;
             Main.callback = callback;
             Main.langMgr.setType(lang);
         }
-        // SDK设置语言
-        setLang(type) {
+        // 对外接口：SDK登录
+        async start(callback: Function = null) {
+            Main.loginFunctionCallback = callback;
+            // 创建遮罩层
+            Main.viewMgr.mainView.createMask()
+            if (Main.isCreated == false) {
+                // 选择BlaCat节点
+                Main.netMgr.selectApi(() => {
+                    Main.netMgr.change(() => {
+                        Main.viewMgr.mainView.changNetType()
+                        // 创建定时器
+                        Main.update();
+                        Main.isCreated = true;
+                        // 检查登录
+                        Main.validateLogin();
+                    })
+                })
+                return
+            }
+            // 检查登录
+            Main.validateLogin();
+        }
+
+
+
+        // 对外接口：SDK设置语言(type: cn/en)
+        setLang(type: string): void {
             if (Main.langMgr.setType(type) === true) {
                 Main.viewMgr.update()
             }
         }
-        // 显示SDK界面
-        showMain() {
+        // 对外接口：设置初始网络
+        setDefaultNetType(type: number): void {
+            Main.netMgr.setDefault(type)
+        }
+        // 对外接口：显示SDK界面
+        showMain(): void {
             if (Main.viewMgr.mainView.div.innerHTML == "") {
                 return;
             }
@@ -121,21 +176,23 @@ namespace BlackCat {
             }
             Main.viewMgr.mainView.show()
         }
-        // 显示icon界面
-        showIcon() {
+        // 对外接口：显示icon界面
+        showIcon(): void {
             if (Main.viewMgr.mainView.div.innerHTML == "") {
                 return;
             }
             Main.viewMgr.mainView.hidden()
             Main.viewMgr.change("IconView")
         }
-        // 获取余额
+
+
+
+        // 对外接口：SDK获取余额
         async getBalance() {
             var sgas = 0;
             var gas = 0;
             var balances = (await tools.WWW.api_getBalance(Main.user.info.wallet)) as tools.BalanceInfo[];
             var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
-
             if (balances) {
                 //余额不唯空
                 balances.map(item => (item.names = tools.CoinTool.assetID2name[item.asset])); //将列表的余额资产名称赋值
@@ -148,7 +205,6 @@ namespace BlackCat {
                     }
                 );
             }
-
             if (nep5balances) {
                 sgas = Number(nep5balances[0]['nep5balance'])
             }
@@ -159,104 +215,21 @@ namespace BlackCat {
             Main.listenerCallback("getBalanceRes", callback_data);
             return callback_data;
         }
-
-        // SDK登录
-        async start(callback = null) {
-            Main.loginFunctionCallback = callback;
-            // 创建遮罩层
-            Main.viewMgr.mainView.createMask()
-
-            if (Main.isCreated == false) {
-
-                // 选择BlaCat节点
-                Main.netMgr.selectApi( () => {
-
-                    Main.netMgr.change( () => {
-
-                        Main.viewMgr.mainView.changNetType()
-
-                        // 创建定时器
-                        Main.update();
-
-                        Main.isCreated = true;
-
-                        // 检查登录
-                        Main.validateLogin();
-                    })
-                })
-                
-                return
-            }
-            // 检查登录
-            Main.validateLogin();
-        }
-        // SDK登录回调
-        static async loginCallback() {
-            if (!Main.isLoginCallback) {
-                var res = await ApiTool.getEnterParams(Main.user.info.uid, Main.user.info.token, Main.appid);
-                if (res.r) {
-                    Main.setGameInfo(res.data.gameParam);
-                    // listener回调
-                    var callback_data = {
-                        cmd: "loginRes",
-                        data: res.data.loginParam
-                    }
-                    Main.callback(JSON.stringify(callback_data));
-                    // function回调
-                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res.data.loginParam)
-
-                    Main.isLoginCallback = true;
-                    // 首次登录，获取应用notify
-                    Main.needGetAppNotifys = true;
-                    // 首次登录，获取平台notify
-                    Main.needGetPlatNotifys = true;
-                    console.log('[Bla Cat]', '[main]', 'loginCallback，轮询平台notify和应用notify')
-                }
-                else {
-                    Main.showErrCode(res.errCode);
-                }
-            }
-        }
-        // SDK设置游戏信息
-        static async setGameInfo(param) {
-            Main.appname = param.name;
-            Main.appicon = param.icon;
-            Main.app_recharge_addr = param.recharge_addr;
-        }
-        // SDK判断是否登录
-        isLogined() {
-            return Main.isLoginCallback;
-        }
-        // SDK获取用户信息
+        // 对外接口：SDK获取用户信息
         getUserInfo() {
             Main.listenerCallback("getUserInfoRes", Main.user.info)
             return Main.user.info;
         }
-        // SDK登出回调
-        static async logoutCallback() {
-            Main.isLoginCallback = false;
-            var callback_data = {
-                cmd: "logoutRes"
-            }
-            Main.callback(JSON.stringify(callback_data));
-
-            // 信息清理
-            Main.reset()
-
-            // 页面登录的退回
-            if (Main.platLoginType === 1) {
-                window.history.back();
-            }
+        // 对外接口：SDK获取网络类型
+        getNetType() {
+            let type = Main.netMgr.type;
+            Main.listenerCallback("getNetTypeRes", type)
+            return type;
         }
-        // SDK回调
-        static async listenerCallback(cmd, data) {
-            var callback_data = {
-                cmd: cmd,
-                data: data
-            }
-            Main.callback(JSON.stringify(callback_data));
-        }
-        // SDK合约读取
+
+
+
+        // 对外接口：SDK合约读取
         async invokescript(params) {
             var res = await Main.wallet.invokescript(params)
             var callback_data = {
@@ -266,16 +239,26 @@ namespace BlackCat {
             Main.listenerCallback("invokescriptRes", callback_data);
             return res;
         }
-        // SDK合约交易
+        // 对外接口：SDK合约交易
         async makeRawTransaction(params, callback) {
-            if (Main.viewMgr.mainView.isHidden()) {
-                // 如果mainView隐藏，显示出来
-                Main.viewMgr.mainView.show()
-                Main.viewMgr.iconView.hidden()
-            }
 
             if (Main.isWalletOpen()) {
                 // 打开钱包了
+
+                // 检查是否有未信任合约
+                let unTrust = Main.getUnTrustNnc(params);
+                if (unTrust.length == 0) {
+                    // 信任合约，直接操作
+                    console.log('[Bla Cat]', '[main]', 'makeRawTransaction, trust nnc ...')
+                    this._makeRawTransaction(params, "0", callback)
+                    return
+                }
+
+                if (Main.viewMgr.mainView.isHidden()) {
+                    // 如果mainView隐藏，显示出来
+                    Main.viewMgr.mainView.show()
+                    Main.viewMgr.iconView.hidden()
+                }
 
                 // 记录回调，锁定状态，当前不接收makerawtransaction请求了
                 if (Main.transCallback) {
@@ -301,34 +284,19 @@ namespace BlackCat {
                 ViewTransConfirm.refer = ""
                 ViewTransConfirm.callback_params = params;
 
-                ViewTransConfirm.callback = async (params) => {
+                ViewTransConfirm.callback = async (params, trust) => {
                     console.log('[Bla Cat]', '[main]', 'makeRawTransaction交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
                     setTimeout(async () => {
                         try {
-                            var res = await Main.wallet.makeRawTransaction(params);
+                            await this._makeRawTransaction(params, trust, Main.transCallback)
                         }
                         catch (e) {
-                            var res = new Result()
-                            res.err = true
-                            res.info = e.toString()
+                            console.log('[Bla Cat]', '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'error => ', e.toString())
                         }
-
-                        // function回调
-                        if (Main.transCallback) Main.transCallback(res);
-                        Main.transCallback = null;
-                        // listener回调
-                        var callback_data = {
-                            params: params,
-                            res: res
-                        }
-                        Main.listenerCallback("makeRawTransactionRes", callback_data);
-                        // 重新获取钱包记录
-                        await Main.viewMgr.payView.doGetWalletLists(1)
                         Main.viewMgr.viewLoading.remove()
-
                     }, 300);
                 }
                 ViewTransConfirm.callback_cancel = () => {
@@ -351,6 +319,13 @@ namespace BlackCat {
 
             } else {
                 // 未打开钱包
+
+                if (Main.viewMgr.mainView.isHidden()) {
+                    // 如果mainView隐藏，显示出来
+                    Main.viewMgr.mainView.show()
+                    Main.viewMgr.iconView.hidden()
+                }
+
                 ViewWalletOpen.refer = ""
                 ViewWalletOpen.callback_params = params;
                 ViewWalletOpen.callback_callback = callback;
@@ -372,7 +347,37 @@ namespace BlackCat {
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
-        // 充值到游戏
+        // 对外接口：合约交易的私有函数
+        private async _makeRawTransaction(params, trust: string = "0", callback = null) {
+            // 合约交易，延长钱包退出时间
+            Main.setLiveTime()
+
+            try {
+                var res = await Main.wallet.makeRawTransaction(params, trust);
+            }
+            catch (e) {
+                var res = new Result()
+                res.err = true
+                res.info = e.toString()
+
+                console.log('[Bla Cat]', '[main]', '_makeRawTransaction, Main.wallet.makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'e => ', e.toString())
+            }
+
+            // function回调
+            if (callback) callback(res);
+
+
+            Main.transCallback = null;
+            // listener回调
+            var callback_data = {
+                params: params,
+                res: res
+            }
+            Main.listenerCallback("makeRawTransactionRes", callback_data);
+            // 重新获取钱包记录
+            await Main.viewMgr.payView.doGetWalletLists(1)
+        }
+        // 对外接口：充值
         async makeRecharge(params, callback) {
 
             if (Main.viewMgr.mainView.isHidden()) {
@@ -433,6 +438,8 @@ namespace BlackCat {
                             var res = new Result()
                             res.err = true
                             res.info = e.toString()
+
+                            console.log('[Bla Cat]', '[main]', 'makeRecharge, Main.wallet.makeRecharge(params) error, params => ', params, 'e => ', e.toString())
                         }
 
                         // function回调
@@ -493,7 +500,7 @@ namespace BlackCat {
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
-        // gas转账
+        // 对外接口：gas转账
         async makeGasTransfer(params, callback = null) {
             if (Main.viewMgr.mainView.isHidden()) {
                 // 如果mainView隐藏，显示出来
@@ -563,6 +570,8 @@ namespace BlackCat {
                             res.err = true;
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
+
+                            console.log('[Bla Cat]', '[main]', 'makeGasTransfer, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
                         }
 
                         // function回调
@@ -621,8 +630,7 @@ namespace BlackCat {
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
-
-        // gas转账（批量）
+        // 对外接口：gas转账（批量）
         async makeGasTransferMulti(params, callback = null) {
             if (Main.viewMgr.mainView.isHidden()) {
                 // 如果mainView隐藏，显示出来
@@ -697,6 +705,8 @@ namespace BlackCat {
                             res.err = true;
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
+
+                            console.log('[Bla Cat]', '[main]', 'makeGasTransferMulti, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
                         }
 
                         // function回调
@@ -755,36 +765,13 @@ namespace BlackCat {
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
-
-        static async update() {
-            // console.log('[Bla Cat]', '[main]', 'update ...')
-
-            await Main.getAppNotifys();
-            await Main.getPlatNotifys();
-
-            // 更新payView的List时间
-            if (Main.viewMgr.payView && Main.viewMgr.payView.isCreated && !Main.viewMgr.payView.isHidden()) {
-                Main.viewMgr.payView.flushListCtm()
-            }
-
-            var timeout = Main.update_timeout_min;
-            if (Main.isLoginCallback) {
-                timeout = Main.update_timeout_max;
-            }
-            Main.s_update = setTimeout(() => { this.update() }, timeout);
-        }
-
-
-        // SDK客户端合约确认回调
+        // 对外接口：SDK客户端合约确认回调
         async confirmAppNotify(params) {
             var data_res = await ApiTool.walletNotify(Main.user.info.uid, Main.user.info.token, params.txid, Main.netMgr.type);
-
             var res = new Result();
-
             if (data_res.r) {
                 res.err = false;
                 res.info = data_res.data
-
                 var callback_data = {
                     params: params,
                     res: res
@@ -796,16 +783,134 @@ namespace BlackCat {
             else {
                 res.err = true;
                 res.info = data_res.errCode;
-
                 var callback_data = {
                     params: params,
                     res: res
                 }
-
                 Main.listenerCallback("confirmAppNotifyRes", callback_data);
             }
-
             return res;
+        }
+
+
+
+        // SDK登录回调
+        static async loginCallback() {
+            if (!Main.isLoginCallback) {
+                var res = await ApiTool.getEnterParams(Main.user.info.uid, Main.user.info.token, Main.appid);
+                if (res.r) {
+                    Main.setGameInfo(res.data.gameParam);
+
+                    var res_nncs = await ApiTool.getTrustNncs(Main.user.info.uid, Main.user.info.token, Main.appid)
+                    if (res_nncs.r) {
+                        Main.app_trust = res_nncs.data;
+                    }
+                    else {
+                        Main.app_trust = []
+                    }
+
+                    // listener回调
+                    Main.listenerCallback("loginRes", res.data.loginParam)
+                    // function回调
+                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res.data.loginParam)
+
+                    Main.isLoginCallback = true;
+                    // 首次登录，获取应用notify
+                    Main.needGetAppNotifys = true;
+                    // 首次登录，获取平台notify
+                    Main.needGetPlatNotifys = true;
+
+                    console.log('[Bla Cat]', '[main]', 'loginCallback，轮询平台notify和应用notify')
+                }
+                else {
+                    Main.showErrCode(res.errCode);
+                }
+            }
+        }
+        // SDK设置游戏信息
+        private static setGameInfo(param) {
+            Main.appname = param.name;
+            Main.appicon = param.icon;
+            Main.app_recharge_addr = param.recharge_addr;
+        }
+        // SDK判断是否登录
+        isLogined() {
+            return Main.isLoginCallback;
+        }
+        // SDK登出回调
+        static async logoutCallback() {
+            Main.isLoginCallback = false;
+
+            Main.listenerCallback("logoutRes", null);
+
+            // 信息清理
+            Main.reset()
+
+            // 页面登录的退回
+            if (Main.platLoginType === 1) {
+                window.history.back();
+            }
+        }
+        // SDK回调
+        static async listenerCallback(cmd, data) {
+            var callback_data = {
+                cmd: cmd,
+                data: data
+            }
+            Main.callback(JSON.stringify(callback_data));
+        }
+
+
+
+        static async update() {
+            // console.log('[Bla Cat]', '[main]', 'update ...')
+
+            // 获取app交易notify
+            try {
+                await Main.getAppNotifys();
+            }
+            catch (e) {
+                console.log('[Bla Cat]', '[main]', 'update, Main.getAppNotifys() error => ', e.toString())
+            }
+
+
+            // 获取平台交易notiy
+            try {
+                await Main.getPlatNotifys();
+            }
+            catch (e) {
+                console.log('[Bla Cat]', '[main]', 'update, Main.getPlatNotifys() error => ', e.toString())
+            }
+
+
+            // 更新payView的List时间
+            if (Main.viewMgr.payView && Main.viewMgr.payView.isCreated && !Main.viewMgr.payView.isHidden()) {
+                try {
+                    Main.viewMgr.payView.flushListCtm()
+                }
+                catch (e) {
+                    console.log('[Bla Cat]', '[main]', 'update, Main.viewMgr.payView.flushListCtm() error => ', e.toString())
+                }
+            }
+
+            // 存活时间判定，过期就退出钱包
+            if (Main.liveTime && Main.liveTime > 0 && Main.liveTimeMax != 0) {
+                if (Main.isWalletOpen() == true) {
+                    // 钱包已经打开
+                    var cur_ts = new Date().getTime();
+                    if (cur_ts - Main.liveTime > Main.liveTimeMax) {
+                        Main.wallet.closeWallet()
+                    }
+                }
+            }
+
+            // update间隔时间判定
+            var timeout = Main.update_timeout_min;
+            if (Main.isLoginCallback) {
+                timeout = Main.update_timeout_max;
+            }
+
+            Main.s_update = setTimeout(() => { this.update() }, timeout);
         }
         // main获取交易确认通知记录
         static async getAppNotifys(): Promise<boolean> {
@@ -871,7 +976,6 @@ namespace BlackCat {
             }
             return false;
         }
-
         private static async doPlatNotify(params: Array<any>) {
             console.log('[Bla Cat]', '[main]', 'doPlatNotify, params => ', params)
             var openTask = null; // 打开钱包任务
@@ -939,7 +1043,6 @@ namespace BlackCat {
             // Main.showConFirm("提现操作需要打开钱包，是否立即打开？")
             Main.showConFirm("main_need_open_wallet_confirm")
         }
-
         private static async doPlatNotiyRefund(params) {
             //tx的第一个utxo就是给自己的
             var utxo: tools.UTXO = new tools.UTXO();
@@ -963,7 +1066,8 @@ namespace BlackCat {
                     tools.CoinTool.id_GAS,
                     Neo.Fixed8.fromNumber(Number(params.cnts))
                 );
-            } catch (e) {
+            }
+            catch (e) {
                 // Main.showErrMsg("生成转换请求（utxo->gas）失败");
                 Main.showErrMsg(("main_refund_second_fail"))
                 return;
@@ -1117,21 +1221,11 @@ namespace BlackCat {
             return false;
         }
 
-        // 获取网络类型
-        async getNetType() {
-            let type = Main.netMgr.type;
-            Main.listenerCallback("getNetTypeRes", type)
-            return type;
-        }
-
         static changeNetType(type: number) {
 
-            Main.netMgr.change( () => {
-                var callback_data = {
-                    cmd: "changeNetTypeRes",
-                    data: type
-                }
-                Main.callback(JSON.stringify(callback_data));
+            Main.netMgr.change(() => {
+
+                Main.listenerCallback('changeNetTypeRes', type);
 
                 // 替换底色
                 Main.viewMgr.mainView.changNetType()
@@ -1256,30 +1350,50 @@ namespace BlackCat {
             return false;
         }
 
-        static checkAccountTypeLogin(account: string) {
-            var type = "";
+        private static validateEmail(email: HTMLInputElement): boolean {
             var regex = /^([0-9A-Za-z\-_\.]+)@([0-9A-Za-z]+\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?)$/g;
-            if (regex.test(account)) {
-                type = "email";
+            if (regex.test(email.value)) {
+                return true;
             }
-            else {
-                type = "user";
-            }
-            console.log('[Bla Cat]', '[main]', 'checkAccountTypeLogin => ', type)
-            return type;
+            Main.showErrMsg('main_email_format_err', () => {
+                email.focus()
+            })
+            return false;
         }
 
-        static checkAccountTypeRegister(account: string) {
-            var type = "";
-            var regex = /^([0-9A-Za-z\-_\.]+)@([0-9A-Za-z]+\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?)$/g;
-            if (regex.test(account)) {
-                type = "email";
+        private static validatePhone(phone: HTMLInputElement): boolean {
+            var regex = /^\d{4,}$/
+            if (regex.test(phone.value)) {
+                return true;
             }
-            else {
-                type = "phone";
+            Main.showErrMsg('main_phone_format_err', () => {
+                phone.focus()
+            })
+            return false;
+        }
+
+        private static validateUid(uid: HTMLInputElement): boolean {
+            var regex = /^[a-zA-Z0-9_]{4,16}$/
+            if (regex.test(uid.value)) {
+                return true;
             }
-            console.log('[Bla Cat]', '[main]', 'checkAccountTypeRegister => ', type)
-            return type;
+            Main.showErrMsg('main_uid_format_err', () => {
+                uid.focus()
+            })
+            return false;
+        }
+
+        static validateFormat(accountType: string, accountElement: HTMLInputElement) {
+            switch (accountType) {
+                case "user":
+                    return Main.validateUid(accountElement)
+                case "email":
+                    return Main.validateEmail(accountElement)
+                case "phone":
+                    return Main.validatePhone(accountElement)
+                default:
+                    return false
+            }
         }
 
         static getPhone(selectArea: string, phone: string) {
@@ -1351,5 +1465,79 @@ namespace BlackCat {
             }
             return undefined;
         };
+
+        static getUnTrustNnc(params): Array<string> {
+            var result = []
+            if (params.hasOwnProperty('nnc')) {
+                params = [params]
+            }
+            if (params instanceof Array) {
+                for (let i = 0; i < params.length; i++) {
+                    if (params[i].hasOwnProperty('nnc')) {
+                        let nnc = params[i]['nnc']
+                        if (Main.app_trust.length == 0) {
+                            result.push(nnc)
+                        }
+                        else {
+                            var isTrust = false;
+                            for (let m = 0; m < Main.app_trust.length; m++) {
+                                if (Main.app_trust[m] && nnc == Main.app_trust[m]['nnc']) {
+                                    isTrust = true;
+                                    break;
+                                }
+                            }
+                            if (isTrust == false) {
+                                result.push(nnc)
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        static async updateTrustNnc(): Promise<void> {
+            try {
+                var res_nncs = await ApiTool.getTrustNncs(Main.user.info.uid, Main.user.info.token, Main.appid)
+                if (res_nncs.r) {
+                    Main.app_trust = res_nncs.data;
+                    if (Main.viewMgr.trustContractView && !Main.viewMgr.trustContractView.isHidden()) {
+                        Main.viewMgr.trustContractView.remove()
+                    }
+                }
+                else {
+                    Main.app_trust = []
+                }
+            }
+            catch (e) {
+                console.log('[Bla Cat]', '[main]', 'updateTrustNnc, ApiTool.getTrustNncs error => ', e.toString())
+            }
+        }
+
+        static removeTrustNnc(nnc: string) {
+            if (Main.app_trust.length > 0) {
+                for (let k = 0; k < Main.app_trust.length; k++) {
+                    if (Main.app_trust[k] && Main.app_trust[k]['nnc'] == nnc) {
+                        delete Main.app_trust[k]
+                        // Main.app_trust.length -= 1
+                        break;
+                    }
+                }
+            }
+        }
+
+        static setLiveTime() {
+            Main.liveTime = new Date().getTime()
+            // console.log('[Bla Cat]', '[main]', 'liveTime => ', Main.liveTime)
+        }
+
+        static setLiveTimeMax(minutes: number) {
+            Main.liveTimeMax = minutes * 60 * 1000;
+            //console.log('[Bla Cat]', '[main]', 'liveTimeMax => ', Main.liveTimeMax)
+        }
+
+        static getLiveTimeMax(): number {
+            return Main.liveTimeMax;
+        }
     }
 }

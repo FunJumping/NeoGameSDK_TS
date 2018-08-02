@@ -162,6 +162,14 @@ namespace BlackCat {
             var res = await SDK.main.getNetType();
             if (callback) callback(res)
         }
+        // 设置默认网络
+        static async setDefaultNetType(type) {
+            if (SDK.is_init === false) {
+                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                return;
+            }
+            SDK.main.setDefaultNetType(type)
+        }
     }
 
     export class NEOGAMESDK {

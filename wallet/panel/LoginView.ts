@@ -6,82 +6,197 @@ namespace BlackCat {
     export class LoginView extends ViewBase {
 
         private selectArea: HTMLSelectElement;
+        private divArea: HTMLDivElement;
 
         private inputAccount: HTMLInputElement;
         private inputPass: HTMLInputElement;
+
+        private accountType: string;
+
+        reset() {
+            this.accountType = "user";
+        }
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement;
             this.div.classList.add("pc_login")
 
-            //登录标题
-            var h1Title = this.objCreate("h1")
-            h1Title.classList.add("pc_login_title", "iconfont", "icon-blacat")
+            //登录logo
+            var divLogo = this.objCreate("div")
+            divLogo.classList.add("pc_login_logo", "iconfont", "icon-blacat")
             // h1Title.innerText = Main.platName;
-            this.ObjAppend(this.div, h1Title)
+            this.ObjAppend(this.div, divLogo)
 
-            //input 登录框
+            //登录标题
+            var divTitle = this.objCreate("div")
+            divTitle.classList.add("pc_login_title")
+            this.ObjAppend(this.div, divTitle)
+
+            //登录
+            var h1TitleType = this.objCreate("h1")
+            h1TitleType.classList.add("pc_title_tyle")
+            h1TitleType.textContent = Main.langMgr.get("login_doLogin") // "登录"
+            this.ObjAppend(divTitle, h1TitleType)
+
+            //登录方式切换
+            var divTitleobj = this.objCreate("div")
+            divTitleobj.classList.add("pc_title_switch")
+            this.ObjAppend(divTitle, divTitleobj)
+
+            // 用户名
+            var aTiletUserName = this.objCreate("a")
+            aTiletUserName.classList.add("pc_active")
+            aTiletUserName.textContent = Main.langMgr.get("main_user") // 用户名
+            aTiletUserName.onclick = () => {
+                areaSelect.style.display = "none"
+                aTiletUserName.classList.add("pc_active")
+                aTiletMobile.classList.remove("pc_active")
+                aTilEtEmail.classList.remove("pc_active")
+                iIshurushouji.classList.add("icon-my")
+                iIshurushouji.classList.remove("icon-shurushouji", "icon-xinxi")
+
+                this.inputAccount.value = ""
+                this.inputPass.value = ""
+                this.accountType = "user"
+                this.inputAccount.placeholder = Main.langMgr.get("login_input" + this.accountType)
+            }
+            this.ObjAppend(divTitleobj, aTiletUserName)
+
+            // 手机
+            var aTiletMobile = this.objCreate("a")
+            aTiletMobile.classList.add("pc_tiletmobile")
+            aTiletMobile.textContent = Main.langMgr.get("main_phone") // 手机
+            aTiletMobile.onclick = () => {
+                areaSelect.style.display = "block"
+                aTiletMobile.classList.add("pc_active")
+                aTiletUserName.classList.remove("pc_active")
+                aTilEtEmail.classList.remove("pc_active")
+                iIshurushouji.classList.add("icon-shurushouji")
+                iIshurushouji.classList.remove("icon-my", "icon-xinxi")
+
+                this.inputAccount.value = ""
+                this.inputPass.value = ""
+                this.accountType = "phone"
+                this.inputAccount.placeholder = Main.langMgr.get("login_input" + this.accountType)
+            }
+            this.ObjAppend(divTitleobj, aTiletMobile)
+
+            // 邮箱
+            var aTilEtEmail = this.objCreate("a")
+            aTilEtEmail.textContent = Main.langMgr.get("main_email") // 邮箱
+            aTilEtEmail.onclick = () => {
+                areaSelect.style.display = "none"
+                aTilEtEmail.classList.add("pc_active")
+                aTiletUserName.classList.remove("pc_active")
+                aTiletMobile.classList.remove("pc_active")
+                iIshurushouji.classList.add("icon-xinxi")
+                iIshurushouji.classList.remove("icon-my", "icon-shurushouji")
+
+                this.inputAccount.value = ""
+                this.inputPass.value = ""
+                this.accountType = "email"
+                this.inputAccount.placeholder = Main.langMgr.get("login_input" + this.accountType)
+
+            }
+            this.ObjAppend(divTitleobj, aTilEtEmail)
+
+
+            //登录框
             var divInput = this.objCreate("div")
             divInput.classList.add("pc_login_input")
             this.ObjAppend(this.div, divInput)
 
+            // 地区
+            var areaSelect = this.objCreate("div")
+            areaSelect.classList.add("pc_login_inputbox")
+            areaSelect.style.display = "none"
+            this.ObjAppend(divInput, areaSelect)
 
-            // select 地区
-            // var areaSelect = this.objCreate("div")
-            // areaSelect.classList.add("pc_login_inputbox","pc_region","iconfont","icon-xiala")
-            // this.ObjAppend(divInput, areaSelect)
+            // 地区 图标
+            var iRegion = this.objCreate("i")
+            iRegion.classList.add("iconfont", "icon-diqiu")
+            this.ObjAppend(areaSelect, iRegion)
 
-            // this.selectArea = this.objCreate("select") as HTMLSelectElement
-            // AreaView.areaInfo.forEach(
-            //     area => {
-            //         var option = this.objCreate("option") as HTMLOptionElement;
-            //         option.setAttribute("value", area.codename);
-            //         option.textContent = Main.langMgr.get("area_code_"+area.codename)
-            //         this.selectArea.options.add(option)
-            //     }
-            // )
-            // this.ObjAppend(areaSelect, this.selectArea)
+            // 选择地区
+            this.selectArea = this.objCreate("select") as HTMLSelectElement
+            AreaView.areaInfo.forEach(
+                area => {
+                    var option = this.objCreate("option") as HTMLOptionElement;
+                    option.setAttribute("value", area.codename);
+                    option.textContent = Main.langMgr.get("area_code_" + area.codename)
+                    this.selectArea.options.add(option)
 
+                }
+            )
+            this.selectArea.onchange = () => {
+                AreaView.areaInfo.forEach(
+                    area => {
+                        if (area.codename == this.selectArea.value) {
+                            this.divArea.textContent = area.areacode
+                        }
+                    }
+                )
+            }
+            this.ObjAppend(areaSelect, this.selectArea)
 
-            // input 请输入用户名/邮箱
-            var telInput = this.objCreate("div")
-            telInput.classList.add("pc_login_inputbox", "pc_tel")
-            this.ObjAppend(divInput, telInput)
+            // 地区区号
+            this.divArea = this.objCreate("div") as HTMLDivElement
+            this.divArea.classList.add("pc_area")
+            AreaView.areaInfo.forEach(
+                area => {
+                    if (area.codename == this.selectArea.value) {
+                        this.divArea.textContent = area.areacode
+                    }
+                }
+            )
+            this.ObjAppend(areaSelect, this.divArea)
 
-            this.inputAccount = this.objCreate("input") as HTMLInputElement;
-            this.inputAccount.type = "text"
-            this.inputAccount.autocomplete="off"
-            this.inputAccount.placeholder = Main.langMgr.get("login_inputAccount"); //"请输入用户名/邮箱"
-            this.ObjAppend(telInput, this.inputAccount)
+            // 地区下拉 图标
+            var aArea = this.objCreate("a")
+            aArea.classList.add("pc_areaa", "iconfont", "icon-xiala")
+            this.ObjAppend(areaSelect, aArea)
 
-            // input 密码
-            var passInput = this.objCreate("div")
-            passInput.classList.add("pc_login_inputbox")
-            this.ObjAppend(divInput, passInput)
+            // 用户名
+            var divTel = this.objCreate("div")
+            divTel.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divTel)
 
-            this.inputPass = this.objCreate("input") as HTMLInputElement
-            this.inputPass.type = "password"
-            this.inputPass.autocomplete="off"
-            this.inputPass.placeholder = Main.langMgr.get("login_inputPass"); // "请输入密码"
-            this.ObjAppend(passInput, this.inputPass)
-
-            // 地区图标
-            // var iRegion=this.objCreate("i")
-            // iRegion.classList.add("iconfont","icon-diqiu")
-            // this.ObjAppend(areaSelect, iRegion)
-
+            //  用户名 图标
             var iIshurushouji = this.objCreate("i")
             iIshurushouji.classList.add("iconfont", "icon-my")
-            this.ObjAppend(telInput, iIshurushouji)
+            this.ObjAppend(divTel, iIshurushouji)
 
-            var iImima = this.objCreate("i")
-            iImima.classList.add("iconfont", "icon-mima")
-            this.ObjAppend(passInput, iImima)
+            // 请输入用户名
+            this.inputAccount = this.objCreate("input") as HTMLInputElement;
+            this.inputAccount.type = "text"
+            this.inputAccount.autocomplete = "off"
+            this.inputAccount.placeholder = Main.langMgr.get("login_inputuser"); //"请输入用户名"
+            this.ObjAppend(divTel, this.inputAccount)
+
+            // 密码
+            var divPass = this.objCreate("div")
+            divPass.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divPass)
+
+            //密码图标
+            var iPass = this.objCreate("i")
+            iPass.classList.add("iconfont", "icon-mima")
+            this.ObjAppend(divPass, iPass)
+
+            //请输入密码
+            this.inputPass = this.objCreate("input") as HTMLInputElement
+            this.inputPass.type = "password"
+            this.inputPass.autocomplete = "off"
+            this.inputPass.placeholder = Main.langMgr.get("login_inputPass"); // "请输入密码"
+            this.ObjAppend(divPass, this.inputPass)
+
+
+
 
             //忘记密码
-            var passInput = this.objCreate("div")
-            passInput.classList.add("pc_login_forgetpass")
-            this.ObjAppend(divInput, passInput)
+            var divForgetPass = this.objCreate("div")
+            divForgetPass.classList.add("pc_login_forgetpass")
+            this.ObjAppend(divInput, divForgetPass)
 
             var aForgetPass = this.objCreate("a")
             aForgetPass.textContent = Main.langMgr.get("login_textForgetpass")//"忘记密码"
@@ -89,7 +204,7 @@ namespace BlackCat {
                 this.remove();
                 Main.viewMgr.change("ForgetPasswordView")
             }
-            this.ObjAppend(passInput, aForgetPass)
+            this.ObjAppend(divForgetPass, aForgetPass)
 
 
             // Login 登录
@@ -142,11 +257,15 @@ namespace BlackCat {
         private async doLogin() {
             // 检查phone&code
             if (!this.verifyAccount()) {
-                // "请输入手机号码/邮箱"
-                Main.showErrMsg("login_inputAccount_err", () => {
+                // "请输入手机号码/邮箱/账号"
+                Main.showErrMsg("login_input" + this.accountType + "_err", () => {
                     this.inputAccount.focus()
                 })
                 return;
+            }
+
+            if (Main.validateFormat(this.accountType, this.inputAccount) == false) {
+                return
             }
 
             // 检查密码
@@ -158,16 +277,14 @@ namespace BlackCat {
                 return;
             }
 
-            var accountType = Main.checkAccountTypeLogin(this.inputAccount.value)
-
             var res: any;
-            switch (accountType) {
+            switch (this.accountType) {
                 case 'email': // 邮箱
                     res = await ApiTool.emailLoginPass(this.inputAccount.value, this.inputPass.value);
                     break;
-                // case 'phone': // phone
-                //     res = await ApiTool.phoneLoginPass(this.getPhone(), this.inputPass.value);
-                //     break;
+                case 'phone': // phone
+                    res = await ApiTool.phoneLoginPass(this.getPhone(), this.inputPass.value);
+                    break;
                 case 'user': // 用户名
                     res = await ApiTool.userLoginPass(this.inputAccount.value, this.inputPass.value);
                     break;

@@ -12,6 +12,11 @@ namespace BlackCat {
 
         private walletExport: HTMLElement;
 
+        reset() {
+            this.private_wif = ""
+            this.private_hex = ""
+        }
+
         create() {
             this.getWalletInfo();
 

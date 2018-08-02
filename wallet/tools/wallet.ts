@@ -3,10 +3,9 @@ namespace BlackCat.tools {
 
         private wallet: ThinNeo.nep6wallet;
         private otcgo: WalletOtcgo;
-
-        filestr: string;
         private isotc: boolean; // 是否是蓝鲸淘钱包
 
+        filestr: string;
         wallet_addr: string;
 
         constructor() {
@@ -47,7 +46,7 @@ namespace BlackCat.tools {
                     }
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[wallet]', '钱包文件解析异常', this.filestr)
+                    console.log('[Bla Cat]', '[wallet]', 'readWalletFile, 钱包文件解析异常', this.filestr)
                     return false;
                 }
             }
@@ -73,7 +72,7 @@ namespace BlackCat.tools {
                     return true;
 
                 }
-                catch (error) {
+                catch (e) {
                     // Main.showErrMsg("请核对钱包文件或密码！");
                     Main.showErrMsg("wallet_open_check")
                     return false;
@@ -102,7 +101,7 @@ namespace BlackCat.tools {
                         Main.showErrMsg("wallet_open_check_otcgo_pwd")
                         return false;
                     }
-                } catch (error) {
+                } catch (e) {
                     // Main.showErrMsg("请核对蓝鲸淘钱包文件！");
                     Main.showErrMsg(("wallet_open_check_otcgo"))
                     return false;
@@ -154,7 +153,7 @@ namespace BlackCat.tools {
         }
 
         // 合约交易
-        async makeRawTransaction(params: any) {
+        async makeRawTransaction(params: any, trust:string = "0") {
             var res: Result = new Result();
 
             var login = LoginInfo.getCurrentLogin();
@@ -250,7 +249,7 @@ namespace BlackCat.tools {
 
             var signdata = ThinNeo.Helper.Sign(msg, prekey);
             tran.AddWitness(signdata, pubkey, addr);
-            let txid = tran.GetHash().clone().reverse().toHexString();
+            // let txid = tran.GetHash().clone().reverse().toHexString();
             var data: Uint8Array = tran.GetRawData();
 
             var r = await tools.WWW.api_postRawTransaction(data);
@@ -269,9 +268,13 @@ namespace BlackCat.tools {
                         "",
                         "5",
                         JSON.stringify(params),
-                        Main.netMgr.type
+                        Main.netMgr.type,
+                        trust
                     );
                     Main.appWalletLogId = logRes.data;
+                    if (trust == "1") {
+                        Main.updateTrustNnc()
+                    }
                 } else {
                     // 失败
                     res.err = true;
@@ -349,6 +352,16 @@ namespace BlackCat.tools {
             console.log("[Bla Cat]", "[wallet]", "makeRechargeRes => ", res);
 
             return res;
+        }
+
+        closeWallet() {
+            // 清理打开的钱包
+            tools.StorageTool.delStorage("current-address")
+            tools.StorageTool.delStorage("login-info-arr")
+            console.log('[Bla Cat]', '[wallet]', 'closeWallet ...')
+            if (Main.viewMgr.payWalletDetailView && Main.viewMgr.payWalletDetailView.isCreated && Main.viewMgr.payWalletDetailView.isHidden() == false) {
+                Main.viewMgr.payWalletDetailView.return()
+            }
         }
     }
 }

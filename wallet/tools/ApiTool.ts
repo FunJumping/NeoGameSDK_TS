@@ -1,22 +1,20 @@
 namespace BlackCat {
     export class ApiTool {
 
-        // 外网
+        static api_version: string = "1";
+
         static base_url: string = ''
-        // static readonly base_url: string = 'http://47.52.60.231/apic/apic_user.php'
 
-        // 内网测试
-        // static readonly base_url: string = 'http://10.1.8.132/new/nel/api_c/apic_user.php'
-
-        static makeUrl(cmd: string) {
+        private static makeUrl(cmd: string) {
             return this.base_url + '?cmd=' + cmd;
         }
 
-        static async common(cmd: string, post: object) {
+        private static async common(cmd: string, post: object) {
             let formData = new FormData();
             for (let i in post) {
                 formData.append(i, post[i]);
             }
+            formData.append("v", this.api_version)
             var result = await fetch(this.makeUrl(cmd), {
                 method: 'post',
                 body: formData
@@ -53,8 +51,8 @@ namespace BlackCat {
             return this.common('user.get_entergame_param', { uid: uid, token: token, g_id: g_id });
         }
 
-        static async addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number) {
-            return this.common('user_wallet.logss', { uid: uid, token: token, txid: txid, g_id: g_id, cnts: cnts, type: type, params: params, net_type: net_type });
+        static async addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust: string = "0") {
+            return this.common('user_wallet.logss', { uid: uid, token: token, txid: txid, g_id: g_id, cnts: cnts, type: type, params: params, net_type: net_type, trust: trust });
         }
 
         static async getWalletListss(uid: string, token: string, page: number, num: number, net_type: number) {
@@ -129,30 +127,49 @@ namespace BlackCat {
             return this.common('user.mod_sex', { uid: uid, token: token, sex: sex })
         }
 
-        static async forgetPassByPhone(uid: string, phone_raw: string, code: string, new_pwd: string) {
-            return this.common('user_phone.mod_pwd', { uid: uid, phone: phone_raw, code: code, new_pwd: new_pwd })
+        static async forgetPassByPhone(phone: string, code: string, new_pwd: string) {
+            return this.common('user_phone.mod_pwd', { phone: phone, code: code, new_pwd: new_pwd })
         }
 
-        static async forgetPassByEmail(uid: string, email: string, code: string, new_pwd: string) {
-            return this.common('user_email.mod_pwd', { uid: uid, email: email, code: code, new_pwd: new_pwd })
+        static async forgetPassByEmail(email: string, code: string, new_pwd: string) {
+            return this.common('user_email.mod_pwd', { email: email, code: code, new_pwd: new_pwd })
         }
 
-        static async getForgetCodeByPhone(uid: string, phone_raw: string) {
-            return this.common('user_phone.get_forget_code', { uid: uid, phone: phone_raw })
+        static async getTrustNncs(uid: string, token: string, g_id: string) {
+            return this.common('user_nncs.get_nncs', {uid: uid, token: token, g_id: g_id})
         }
 
-        static async getForgetCodeByEmail(uid: string, email: string, lang:string) {
-            return this.common('user_email.get_forget_code', { uid: uid, email: email, lang: lang })
+        static async getTrustLists(uid: string, token: string, offset:number, num: number) {
+            return this.common('user_nncs.listss', {uid: uid, token: token, offset: offset, num: num})
+        }
+
+        static async delTrustNncs(uid: string, token: string, id: string) {
+            return this.common('user_nncs.del_nncs', {uid: uid, token:token, id:id})
+        }
+
+        static async addAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string) {
+            return this.common('user_addressbook.add_addr', {uid:uid, token:token, address_name:address_name, address_wallet:address_wallet, address_desc:address_desc})
+        }
+
+        static async delAddrbook(uid: string, token: string, id: string) {
+            return this.common('user_addressbook.del_addr', {uid:uid, token:token, id:id})
+        }
+
+        static async getAddrbook(uid: string, token: string) {
+            return this.common('user_addressbook.get_addr', {uid:uid, token:token})
+        }
+
+        static async updateAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string, id:string) {
+            return this.common('user_addressbook.update_addr', {uid:uid, token:token, address_name:address_name, address_wallet:address_wallet, address_desc:address_desc, id: id})
         }
     }
 
-    export class StorageTool {
-        static setStorage(key: string, value: string) {
-            sessionStorage.setItem(key, value)
-        }
-        static getStorage(key: string): string {
-            return sessionStorage.getItem(key);
-        }
-
-    }
+    // export class StorageTool {
+    //     static setStorage(key: string, value: string) {
+    //         sessionStorage.setItem(key, value)
+    //     }
+    //     static getStorage(key: string): string {
+    //         return sessionStorage.getItem(key);
+    //     }
+    // }
 }

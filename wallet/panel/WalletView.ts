@@ -5,8 +5,6 @@ namespace BlackCat {
     // 导入&创建钱包视图
     export class WalletView extends ViewBase {
 
-        private divCreate: HTMLDivElement;
-
         create() {
             // console.log('[Bla Cat]', '[WalletView] 创建 ...")
 

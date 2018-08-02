@@ -20,7 +20,11 @@ namespace BlackCat {
             // 提示内容
             var alterText = this.objCreate("div")
             alterText.classList.add("pc_altertext")
-            alterText.textContent = Main.langMgr.get(ViewToast.content) // "内容"
+            var lang_content = Main.langMgr.get(ViewToast.content);
+            if (!lang_content) {
+                lang_content = ViewToast.content
+            }
+            alterText.textContent = lang_content  // "内容"
             this.ObjAppend(toast, alterText)
         }
 

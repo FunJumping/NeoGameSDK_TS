@@ -155,6 +155,7 @@ namespace BlackCat {
                 }
                 catch (e) {
                     Main.viewMgr.viewLoading.remove()
+                    console.log('[Bla Cat]', '[WalletCreateView]', 'doCreate, ThinNeo.Helper.GetNep2FromPrivateKey error => ', e.toString())
                 }
 
             }, 300);
