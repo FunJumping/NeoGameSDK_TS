@@ -5,7 +5,7 @@ namespace BlackCat {
     // 我的信息
     export class AutoLogoutWalletView extends ViewBase {
 
-        private logoutTime = [ 1, 5, 10, 30, 60, 120, 0 ]
+        private logoutTime = [1, 5, 10, 30, 60, 120, 0]
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
@@ -46,7 +46,7 @@ namespace BlackCat {
                     if (ts * 60 * 1000 == liveTimeMax) {
                         liTime.classList.add("pc_active")
                     }
-                    liTime.textContent = Main.viewMgr.securityCenterView.getWalletOutTimeMaxMsg(ts*60*1000)
+                    liTime.textContent = Main.viewMgr.securityCenterView.getWalletOutTimeMaxMsg(ts * 60 * 1000)
                     liTime.onclick = () => {
                         Main.setLiveTimeMax(ts)
                         ulSecurity.getElementsByClassName("pc_active")[0].classList.remove("pc_active")

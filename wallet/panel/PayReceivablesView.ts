@@ -1,9 +1,6 @@
 /// <reference path="../main.ts" />
 /// <reference path="./ViewBase.ts" />
 
-declare const QRCode;
-declare const QrCodeWithLogo
-
 
 namespace BlackCat {
     // 收款视图
@@ -14,7 +11,7 @@ namespace BlackCat {
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_maillist")
-            
+
             // header  
             var header = this.objCreate("div")
             header.classList.add("pc_header")
@@ -57,7 +54,7 @@ namespace BlackCat {
             //二维码容器
             var divObj = this.objCreate("div")
             divObj.classList.add("pc_qrcode")
-            divObj.style.marginTop="100px"
+            divObj.style.marginTop = "100px"
             this.ObjAppend(this.div, divObj)
 
             // QrCodeWithLogo
@@ -66,17 +63,17 @@ namespace BlackCat {
             QrCodeWithLogo.toImage({
                 image: qrObj,
                 content: Main.user.info.wallet
-            }).then( () => {
+            }).then(() => {
                 var url = URL.createObjectURL(this.base64ToBlob(qrObj.src));
                 qr_download.setAttribute('href', url)
-                qr_download.setAttribute("download", Main.user.info.wallet+".png")
+                qr_download.setAttribute("download", Main.user.info.wallet + ".png")
             })
             this.ObjAppend(divObj, qrObj)
 
-            // 下载按钮
+            // 下载二维码"
             var qr_download = this.objCreate("a")
             qr_download.classList.add("iconfont", "icon-xiazai")
-            qr_download.textContent =Main.langMgr.get("pc_receivables_download") // "下载二维码"
+            qr_download.textContent = Main.langMgr.get("pc_receivables_download") // "下载二维码"
             this.ObjAppend(divObj, qr_download)
 
             //转账容器
@@ -92,9 +89,9 @@ namespace BlackCat {
             butCopy.classList.add("pc_receivablescopy")
             butCopy.textContent = Main.langMgr.get("copy") //"复制"
             butCopy.onclick = () => {
-                var inputCooy=this.objCreate("input") as HTMLInputElement
-                inputCooy.value=this.divAddress.innerText
-                this.ObjAppend(divObj,inputCooy)
+                var inputCooy = this.objCreate("input") as HTMLInputElement
+                inputCooy.value = this.divAddress.innerText
+                this.ObjAppend(divObj, inputCooy)
 
                 inputCooy.select();
                 document.execCommand("Copy");
@@ -117,14 +114,14 @@ namespace BlackCat {
             let contentType = parts[0].split(':')[1];
             let raw = window.atob(parts[1]);
             let rawLength = raw.length;
-    
+
             let uInt8Array = new Uint8Array(rawLength);
-    
+
             for (let i = 0; i < rawLength; ++i) {
-              uInt8Array[i] = raw.charCodeAt(i);
+                uInt8Array[i] = raw.charCodeAt(i);
             }
-            return new Blob([uInt8Array], {type: contentType});
-          }
+            return new Blob([uInt8Array], { type: contentType });
+        }
 
     }
 }

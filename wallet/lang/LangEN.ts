@@ -9,6 +9,7 @@
             more: "More",
             info: "Information",
             content: "Content",
+            retry: "Retry",
 
             // 地区代码
             area_code_CN: 'China',
@@ -229,9 +230,11 @@
             area_code_ZM: 'Zambia',
             area_code_ZW: 'Zimbabwe',
 
-            main_uid_format_err: "Username format is incorrect! Only use 4-16 digits of English letters, numbers, underscores!",
+            main_user_format_err: "Username format is incorrect! Only use 4-16 digits of English letters, numbers, underscores!",
             main_email_format_err: "Email address format is incorrect!",
             main_phone_format_err: "Phone number format is incorrect!",
+            main_vcode_format_err: "Verification code format is incorrect!",
+            main_walletaddr_format_err: "Wallet address format is incorrect!",
             main_phone: "Phone",
             main_email: "Email",
             main_user: "UserName",
@@ -393,8 +396,8 @@
             pay_transfer: "Transfer",
             pay_transferType: "Token：GAS",
             pay_transferBalance: "Balance:",
-            pay_transferToAddr: "Address:",
-            pay_transferCount: "Amounts:",
+            pay_transferToAddr: "Address",
+            pay_transferCount: "Amounts",
             pay_transferToAddrError: "The transfer address is incorrect!",
             pay_transferCountError: "The number of transfers is incorrect!",
             pay_transferDoSucc: "Transfer success",
@@ -402,9 +405,10 @@
 
             // PayView
             pay_wallet: "My Wallet",
-            pay_refresh: "Refresh&#xe604;",
-            pay_wallet_detail: "Details&#xe605;",
+            pay_refresh: "Refresh",
+            pay_wallet_detail: "Details",
             pay_coin_name: "Token",
+            pay_coin_old: "SGAS(old)Withdraw",
             pay_gas: "Gas",
             pay_gas_desc: "GAS is a digital currency on NEO chain that can be obtained through exchanges",
             pay_sgas: "SGas",
@@ -448,19 +452,25 @@
             addressbook_det_download: "Download QR Code",
             addressbook_det_describe: "Describe",
             addressbook_det_empty: "Empty",
+            addressbook_det_del: "Delete Contact",
+            addressbook_det_del_title: "Delete",
+            addressbook_det_del_tips: "Confirm to delete this contact?",
+            addressbook_det_del_succ: "Delete success",
 
-            // AddressbookAddView
-            addressbook_add_button: "Complete",
-            addressbook_add_name: "Memo name",
-            addressbook_add_inputName: "Please input memo name",
-            addressbook_add_inputName_err: "Please input memo name",
-            addressbook_add_address: "Wallet address",
-            addressbook_add_inputAddress: "Please input wallet address",
-            addressbook_add_inputAddress_err: "Please input wallet address",
-            addressbook_add_describe: "Describe",
-            addressbook_add_inputDescribe: "Please input Describe",
-            addressbook_add_inputDescribe_err: "Please input Describe",
-            addressbook_add_succ: "Contact added success",
+
+            // AddressbookOpView
+            addressbook_op_button: "Complete",
+            addressbook_op_name: "Contacts",
+            addressbook_op_inputName: "Please input Contacts",
+            addressbook_op_inputName_err: "Please input Contacts",
+            addressbook_op_address: "Wallet address",
+            addressbook_op_inputAddress: "Please input wallet address",
+            addressbook_op_inputAddress_err: "Please input wallet address",
+            addressbook_op_describe: "Describe",
+            addressbook_op_inputDescribe: "Please input Describe",
+            addressbook_op_inputDescribe_err: "Please input Describe",
+            addressbook_op_addSucc: "Contact added success",
+            addressbook_op_updateSucc: "Contact modify success",
 
 
             // ViewAlert
@@ -485,6 +495,7 @@
             pay_transCount_err: "Please input correct sums of amounts",
             pay_sgas2gas: "SGas &#xe6a8; Gas",
             pay_gas2sgas: "Gas &#xe6a8; SGas",
+            pay_old: "SGAS(old)Amounts：",
 
             // ViewWalletOpen
             pay_walletOpen_password: "password",
@@ -554,6 +565,7 @@
             errCode_8100004: "Incorrect format!",
             errcode_8100005: "Upload failed!",
             errcode_8100006: "Image size must be less than 100Kb.",
+            errCode_8100007: "The contact already exists!",
 
             errCode_default: "Unknown error! Error code: %errCode%",
 
@@ -564,7 +576,9 @@
 
             // NetMgr
             netmgr_select_api_slow: "Connection to the server is abnormal or slow, please check the network and try it again!",
-            netmgr_select_node_slow: "Communication with the nodes on the chain is abnormal or slow, please try it later!",
+            netmgr_select_node_slow: "Communication with the nodes on the chain is abnormal or slow, please check the network and try it later!",
+            netmgr_connecting: "Connecting ...",
+            netmgr_connecting_fail: "Connection failed. Please check the network and try it again!",
         }
     }
 }

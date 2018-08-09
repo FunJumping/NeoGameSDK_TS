@@ -55,7 +55,7 @@ namespace BlackCat {
                 var h1Obj = this.objCreate("h1")
                 h1Obj.textContent = Main.platName
                 this.ObjAppend(headerTitle, h1Obj)
-                
+
                 this.ObjAppend(this.div, headerTitle)
 
                 var contentObj = this.objCreate("div")

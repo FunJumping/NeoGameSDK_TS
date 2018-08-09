@@ -340,7 +340,7 @@ namespace BlackCat {
                 Main.showErrMsg(("register_input" + this.accountType + "_err"))
                 return false;
             }
-            if (Main.validateFormat(this.accountType, this.inputAccount) == false) {
+            if ( (await Main.validateFormat(this.accountType, this.inputAccount)) == false) {
                 return false;
             }
             return await this.checkAccountFromApi()
@@ -353,7 +353,7 @@ namespace BlackCat {
                 return false;
             }
 
-            if (Main.validateFormat("user", this.inputUid) == false) {
+            if ( (await Main.validateFormat("user", this.inputUid)) == false) {
                 return false;
             }
             return await this.checkUidFromApi()
@@ -364,7 +364,7 @@ namespace BlackCat {
                 Main.showErrMsg(("register_inputCode_err"))
                 return false
             }
-            return true;
+            return await Main.validateFormat("vcode", this.inputCode)
         }
 
         private async validatePass() {
@@ -482,7 +482,7 @@ namespace BlackCat {
             // 检查账号是否输入
             if (this.empty(this.inputAccount.value)) {
                 // "请输入手机号码"
-                Main.showErrMsg(("register_input"+this.accountType+"_err"), () => {
+                Main.showErrMsg(("register_input" + this.accountType + "_err"), () => {
                     this.inputAccount.focus()
                 })
                 return;

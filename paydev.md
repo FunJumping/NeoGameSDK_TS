@@ -236,6 +236,7 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
 |count     |是  |string | 支付sgas数量    |
 |tm     |是  |string | 请求时间戳，单位秒    |
 |params|是|String|请求参数params，JSON|
+|net_type|是|String|网络类型。主网：1，测试网：2|
 |sign     |是  |string | 请求签名    |
 
 
@@ -248,18 +249,18 @@ NEOGAMESDK支持两种回调方式，一种是初始化SDK时注册回调函数�
 
 交易确认通知POST参数按照字典升序排列
 ```
-count=0.001&from=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT&g_id=1&tm=1528374108&txid=0x900936d8e34d6dfc89bedcbba1f160bcfad8702d1f0c4a8cfa1fafcc1d51025c
+count=0.001&from=AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU&g_id=6&net_type=2&params=%7B%22count%22%3A%220.001%22%2C%22extString%22%3A%22makeRecharge%22%2C%22nnc%22%3A%220x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54%22%2C%22sbParamJson%22%3A%5B%22%28address%29AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU%22%2C%22%28address%29AFuzEa913voSXEenPqPCDgEuvhB3dAenqw%22%2C%22%28integer%29100000%22%5D%2C%22sbPushString%22%3A%22transfer%22%7D&tm=1533559801&txid=0xce91599a94e405e09ed3e02e782c57fd32578769e11ff75382fd033c0fca5a71
 ```
 添加应用签名`支付key`（NEOGAME分配）
 ```
-count=0.001&from=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT&g_id=1&tm=1528374108&txid=0x900936d8e34d6dfc89bedcbba1f160bcfad8702d1f0c4a8cfa1fafcc1d51025c&key=222
+count=0.001&from=AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU&g_id=6&net_type=2&params=%7B%22count%22%3A%220.001%22%2C%22extString%22%3A%22makeRecharge%22%2C%22nnc%22%3A%220x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54%22%2C%22sbParamJson%22%3A%5B%22%28address%29AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU%22%2C%22%28address%29AFuzEa913voSXEenPqPCDgEuvhB3dAenqw%22%2C%22%28integer%29100000%22%5D%2C%22sbPushString%22%3A%22transfer%22%7D&tm=1533559801&txid=0xce91599a94e405e09ed3e02e782c57fd32578769e11ff75382fd033c0fca5a71&key=222
 ```
 计算md5（小写）
 ```
-md5("count=0.001&from=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT&g_id=1&tm=1528374108&txid=0x900936d8e34d6dfc89bedcbba1f160bcfad8702d1f0c4a8cfa1fafcc1d51025c&key=222")
+md5("count=0.001&from=AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU&g_id=6&net_type=2&params=%7B%22count%22%3A%220.001%22%2C%22extString%22%3A%22makeRecharge%22%2C%22nnc%22%3A%220x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54%22%2C%22sbParamJson%22%3A%5B%22%28address%29AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU%22%2C%22%28address%29AFuzEa913voSXEenPqPCDgEuvhB3dAenqw%22%2C%22%28integer%29100000%22%5D%2C%22sbPushString%22%3A%22transfer%22%7D&tm=1533559801&txid=0xce91599a94e405e09ed3e02e782c57fd32578769e11ff75382fd033c0fca5a71&key=222")
 ```
 得出sign
-`58441125ece2f2747c2e1b5324488262`
+`bda7145c6d139ec3149bea6140aae883`
 
 
 ### 四、登录游戏说明

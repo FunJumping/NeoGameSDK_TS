@@ -7,6 +7,7 @@ namespace BlackCat {
 
         private doDragMove: boolean;
         private processDiv: HTMLDivElement;
+        private stateDiv: HTMLElement;
 
         start() {
             if (this.isCreated === false) {
@@ -30,6 +31,7 @@ namespace BlackCat {
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_icon")
+            this.showFail()
 
             this.div.onclick = () => {
                 console.log('[Bla Cat]', '[IconView]', 'onclick, this.doDragMove => ', this.doDragMove)
@@ -51,12 +53,50 @@ namespace BlackCat {
 
             this.processDiv = this.objCreate("div") as HTMLDivElement
             this.ObjAppend(this.div, this.processDiv)
+
+            // 登录状态
+            this.showState()
         }
 
         remove() {
             this.bodyRemove(this.div)
         }
 
+        // 显示icon处理状态
+        showState() {
+            if (!this.stateDiv) {
+                this.stateDiv = this.objCreate("div")
+                this.stateDiv.classList.add("pc_iconstate")
+    
+                var imgStateIcon = this.objCreate("img") as HTMLImageElement
+                imgStateIcon.src = Main.resHost + "res/img/BlackCaticon.gif"
+    
+                this.ObjAppend(this.stateDiv, imgStateIcon)
+    
+                this.ObjAppend(this.div, this.stateDiv)
+            }
+            this.stateDiv.style.display = ""
+        }
+        // 移除icon状态
+        removeState() {
+            if (this.stateDiv) this.objRemove(this.div, this.stateDiv)
+        }
+        // 影藏icon状态
+        hiddenState() {
+            if (this.stateDiv) this.stateDiv.style.display = "none"
+        }
+
+        // icon正常色
+
+
+        // 连接失败 -- icon灰色
+        showFail() {
+            this.div.classList.add("pc_iconfail")
+        }
+        // 连接成功
+        showSucc() {
+            this.div.classList.remove("pc_iconfail")
+        }
 
         flushProcess(count) {
             console.log('[Bla Cat]', '[IconView]', 'flushProcess, count => ', count)

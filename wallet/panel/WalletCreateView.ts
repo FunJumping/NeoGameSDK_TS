@@ -114,9 +114,9 @@ namespace BlackCat {
             }
 
             Main.viewMgr.change("ViewLoading")
-            
+
             setTimeout(() => {
-    
+
                 var array = new Uint8Array(32);
                 var key = Neo.Cryptography.RandomNumberGenerator.getRandomValues<Uint8Array>(array)
                 var pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(key);
@@ -159,7 +159,7 @@ namespace BlackCat {
                 }
 
             }, 300);
-            
+
         }
 
         private async doBindWallet() {

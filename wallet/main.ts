@@ -1,14 +1,11 @@
 ﻿
+declare const QrCodeWithLogo
+
 namespace BlackCat {
 
     var BC_scriptSrc = document.getElementsByTagName('script')[document.getElementsByTagName('script').length - 1].src;
     var BC_scriptName = BC_scriptSrc.split('/')[BC_scriptSrc.split('/').length - 1];
     var BC_path = BC_scriptSrc.replace(BC_scriptName, '');
-
-    // window.onclick = () => {
-    //     //console.log('[Bla Cat]', 'window.onclick ...')
-    //     Main.setLiveTime()
-    // }
 
     export class Main {
 
@@ -16,7 +13,6 @@ namespace BlackCat {
 
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
-
 
         // 资源图标前缀路径
         static resHost = BC_path + "../"
@@ -83,9 +79,11 @@ namespace BlackCat {
 
             Main.isCreated = false;
 
+            // NEO的随机数生成器
             Neo.Cryptography.RandomNumberGenerator.startCollectors();
         }
 
+        // 复位
         static reset(type = 0): void {
             Main.appWalletLogId = 0;
             Main.appWalletNotifyId = 0;
@@ -140,6 +138,11 @@ namespace BlackCat {
                 // 选择BlaCat节点
                 Main.netMgr.selectApi(() => {
                     Main.netMgr.change(() => {
+                        // icon颜色
+                        Main.viewMgr.iconView.showSucc()
+                        // icon状态
+                        Main.viewMgr.iconView.removeState()
+                        // 底色
                         Main.viewMgr.mainView.changNetType()
                         // 创建定时器
                         Main.update();
@@ -389,8 +392,42 @@ namespace BlackCat {
             // 判断后台有没有配置地址，没有配置返回错误
             if (!Main.app_recharge_addr) {
                 // Main.showErrMsg("应用没有配置收款钱包地址，无法充值")
-                Main.showErrMsg(("main_no_app_wallet"))
+                Main.showErrMsg("main_no_app_wallet")
+
+                var res = new Result()
+                res.err = true
+                res.info = "app_wallet_not_config"
+
+                // function回调
+                callback(res);
+
+                // listener回调
+                var callback_data = {
+                    params: params,
+                    res: res
+                }
+                Main.listenerCallback("makeRechargeRes", callback_data);
                 return;
+            }
+
+            // 判断sgas余额
+            if (Main.viewMgr.payView && Main.viewMgr.payView.sgas < Number(params.count)) {
+                Main.showErrMsg('pay_not_enough_money')
+
+                var res = new Result()
+                res.err = true
+                res.info = "not_enough_sgas"
+
+                // function回调
+                callback(res);
+
+                // listener回调
+                var callback_data = {
+                    params: params,
+                    res: res
+                }
+                Main.listenerCallback("makeRechargeRes", callback_data);
+                return
             }
 
             if (Main.isWalletOpen()) {
@@ -401,6 +438,21 @@ namespace BlackCat {
                     // 已经有请求在处理，返回
                     // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
                     Main.showErrMsg(("main_wait_for_last_tran"))
+
+                    var res = new Result()
+                    res.err = true
+                    res.info = "wait_for_last_tran"
+
+                    // function回调
+                    callback(res);
+                    
+                    // listener回调
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    Main.listenerCallback("makeRechargeRes", callback_data);
+
                     return;
                 }
                 Main.transCallback = callback;
@@ -508,6 +560,26 @@ namespace BlackCat {
                 Main.viewMgr.iconView.hidden()
             }
 
+            // 判断gas余额
+            if (Main.viewMgr.payView && Main.viewMgr.payView.gas < Number(params.count)) {
+                Main.showErrMsg('pay_not_enough_money')
+
+                var res = new Result()
+                res.err = true
+                res.info = "not_enough_gas"
+
+                // function回调
+                callback(res);
+                
+                // listener回调
+                var callback_data = {
+                    params: params,
+                    res: res
+                }
+                Main.listenerCallback("makeGasTransferRes", callback_data);
+                return
+            }
+
             if (Main.isWalletOpen()) {
                 // 打开钱包了
                 // 记录回调，锁定状态，当前不接收makeGasTransfer请求了
@@ -515,6 +587,21 @@ namespace BlackCat {
                     // 已经有请求在处理，返回
                     // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
                     Main.showErrMsg(("main_wait_for_last_tran"))
+
+                    var res = new Result()
+                    res.err = true
+                    res.info = "wait_for_last_tran"
+
+                    // function回调
+                    callback(res);
+                    
+                    // listener回调
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    Main.listenerCallback("makeGasTransferRes", callback_data);
+
                     return;
                 }
                 Main.transGasCallback = callback;
@@ -638,6 +725,32 @@ namespace BlackCat {
                 Main.viewMgr.iconView.hidden()
             }
 
+            // 计算交易金额
+            var _count: number = 0;
+            for (let i = 0; i < params.length; i++) {
+                _count += Number(params[i].count)
+            }
+
+            // 判定余额
+            if (Main.viewMgr.payView && Main.viewMgr.payView.gas < Number(_count)) {
+                Main.showErrMsg('pay_not_enough_money')
+
+                var res = new Result()
+                res.err = true
+                res.info = "not_enough_gas"
+
+                // function回调
+                callback(res);
+                
+                // listener回调
+                var callback_data = {
+                    params: params,
+                    res: res
+                }
+                Main.listenerCallback("makeGasTransferMultiRes", callback_data);
+                return
+            }
+
             if (Main.isWalletOpen()) {
                 // 打开钱包了
                 // 记录回调，锁定状态，当前不接收makeGasTransferMulti请求了
@@ -650,12 +763,6 @@ namespace BlackCat {
                 Main.transGasMultiCallback = callback;
 
                 // 打开确认页
-
-                // 计算交易金额
-                var _count: number = 0;
-                for (let i = 0; i < params.length; i++) {
-                    _count += Number(params[i].count)
-                }
 
                 var list = new walletLists();
 
@@ -862,6 +969,7 @@ namespace BlackCat {
 
 
 
+        // 主定时器
         static async update() {
             // console.log('[Bla Cat]', '[main]', 'update ...')
 
@@ -1081,7 +1189,16 @@ namespace BlackCat {
 
             //sign and broadcast
             //做智能合约的签名
-            var r = await tools.WWW.api_getcontractstate(tools.CoinTool.id_SGAS);
+            // 考虑到老的sgas合约，这里合约地址应该是记录的合约地址
+            let id_SGAS = tools.CoinTool.id_SGAS;
+            try {
+                let params_decode = JSON.parse(params.params)
+                if (params_decode && params_decode.hasOwnProperty("nnc")) {
+                    id_SGAS = params_decode.nnc
+                }
+            }
+            catch (e) { }
+            var r = await tools.WWW.api_getcontractstate(id_SGAS);
 
             if (r && r["script"]) {
                 var sgasScript = r["script"].hexToBytes();
@@ -1215,18 +1332,16 @@ namespace BlackCat {
                 console.log('[Bla Cat]', '[main]', '***getPlatNotifys, 执行后，是否获取: ' + Main.needGetPlatNotifys
                     + ', 最近记录ID: ' + Main.platWalletLogId
                     + ', 最近处理ID: ' + Main.platWalletNotifyId)
-
                 return true;
             }
             return false;
         }
 
+        // 切换网络
         static changeNetType(type: number) {
-
             Main.netMgr.change(() => {
-
+                // 切换回调
                 Main.listenerCallback('changeNetTypeRes', type);
-
                 // 替换底色
                 Main.viewMgr.mainView.changNetType()
                 // 刷新视图
@@ -1236,6 +1351,7 @@ namespace BlackCat {
             }, type)
         }
 
+        // 从url地址获取参数
         static getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
             var r = window.location.search.substr(1).match(reg);  //匹配目标参数
@@ -1245,6 +1361,7 @@ namespace BlackCat {
             return null; //返回参数值
         }
 
+        // 验证登录信息
         static async validateLogin() {
             // 判断是否从页面登录
             var uid = Main.getUrlParam('uid');
@@ -1286,6 +1403,7 @@ namespace BlackCat {
             }
         }
 
+        // 通过错误码显示错误信息
         static async showErrCode(errCode: number, callback = null) {
             var msgId = "errCode_" + errCode.toString();
 
@@ -1309,7 +1427,7 @@ namespace BlackCat {
             }
             this.showErrMsg(msgId, callback)
         }
-
+        // 显示错误信息
         static async showErrMsg(errMsgKey: string, callback = null, content_ext = null) {
             // alert(errMsg)
             ViewAlert.content = errMsgKey;
@@ -1317,14 +1435,14 @@ namespace BlackCat {
             ViewAlert.callback = callback
             Main.viewMgr.change("ViewAlert")
         }
-
+        // 显示toast信息
         static async showToast(msgKey: string, showTime: number = 2500) {
             // alert(msg)
             ViewToast.content = msgKey;
             ViewToast.showTime = showTime;
             Main.viewMgr.change("ViewToast")
         }
-
+        // 显示信息
         static async showInfo(msgKey: string, callback = null, content_ext = null) {
             // alert(msg)
             ViewAlert.content = msgKey;
@@ -1332,70 +1450,91 @@ namespace BlackCat {
             ViewAlert.callback = callback
             Main.viewMgr.change("ViewAlert")
         }
+        // 显示确认
         static async showConFirm(msgKey: string) {
             // alert(errMsg)
             ViewConfirm.content = msgKey;
             Main.viewMgr.change("ViewConfirm")
         }
+        // 显示Loading
         static async showLoading(msgKey: string) {
             // alert(errMsg)
             ViewLoading.content = msgKey;
             Main.viewMgr.change("ViewLoading")
         }
 
+        // 判断钱包是否打开
         static isWalletOpen(): boolean {
             if (Main.wallet.isOpen() && Main.user.info.wallet == Main.wallet.wallet_addr) {
                 return true;
             }
             return false;
         }
-
-        private static validateEmail(email: HTMLInputElement): boolean {
-            var regex = /^([0-9A-Za-z\-_\.]+)@([0-9A-Za-z]+\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?)$/g;
-            if (regex.test(email.value)) {
-                return true;
+        // 判断是否在登录初始化中
+        static isLoginInit(): boolean {
+            if (tools.WWW.api) {
+                return false
             }
-            Main.showErrMsg('main_email_format_err', () => {
-                email.focus()
-            })
-            return false;
+            return true
         }
 
-        private static validatePhone(phone: HTMLInputElement): boolean {
-            var regex = /^\d{4,}$/
-            if (regex.test(phone.value)) {
-                return true;
-            }
-            Main.showErrMsg('main_phone_format_err', () => {
-                phone.focus()
-            })
-            return false;
-        }
-
-        private static validateUid(uid: HTMLInputElement): boolean {
-            var regex = /^[a-zA-Z0-9_]{4,16}$/
-            if (regex.test(uid.value)) {
-                return true;
-            }
-            Main.showErrMsg('main_uid_format_err', () => {
-                uid.focus()
-            })
-            return false;
-        }
-
-        static validateFormat(accountType: string, accountElement: HTMLInputElement) {
-            switch (accountType) {
+        // 验证数据格式，=== false表示失败；成功可能是true，也可能是其他（例如钱包地址）
+        static async validateFormat(type: string, inputElement: HTMLInputElement | HTMLTextAreaElement) {
+            var regex;
+            switch (type) {
                 case "user":
-                    return Main.validateUid(accountElement)
+                    regex = /^[a-zA-Z0-9_]{4,16}$/
+                    break;
                 case "email":
-                    return Main.validateEmail(accountElement)
+                    regex = /^([0-9A-Za-z\-_\.]+)@([0-9A-Za-z]+\.[a-zA-Z]{2,3}(\.[a-zA-Z]{2})?)$/g;
+                    break;
                 case "phone":
-                    return Main.validatePhone(accountElement)
-                default:
-                    return false
+                    regex = /^\d{4,}$/
+                    break;
+                case "vcode":
+                    regex = /^\d{6}$/
+                    break;
+                case "walletaddr":
+                    let isAddress = tools.NNSTool.verifyAddr(inputElement.value);
+                    if (isAddress) {
+                        try {
+                            if (tools.neotools.verifyPublicKey(inputElement.value)) {
+                                return true;
+                            }
+                        }
+                        catch (e) {
+                            
+                        }
+                    }
+                    else {
+                        let isDomain = tools.NNSTool.verifyDomain(inputElement.value);
+                        if (isDomain) {
+                            try {
+                                inputElement.value = inputElement.value.toLowerCase();
+                                let addr = await tools.NNSTool.resolveData(inputElement.value);
+                                if (addr) {
+                                    return addr;
+                                }
+                            }
+                            catch (e) {
+                                
+                            }
+                        }
+                    }
+                    break;
             }
+            if (regex) {
+                if (regex.test(inputElement.value)) {
+                    return true;
+                }
+            }
+            Main.showErrMsg('main_' + type + '_format_err', () => {
+                inputElement.focus()
+            })
+            return false;
         }
 
+        // 获取带地区代码的手机号码
         static getPhone(selectArea: string, phone: string) {
             // 多地区支持，转换手机号码
             var area = AreaView.getByCodeName(selectArea)
@@ -1404,6 +1543,7 @@ namespace BlackCat {
             return phoneMerge;
         }
 
+        // 通过时间戳获取日期
         static getDate(timeString: string) {
             if (timeString != "0" && timeString != "") {
                 var date = new Date(parseInt(timeString) * 1000);
@@ -1435,6 +1575,7 @@ namespace BlackCat {
             return "";
         }
 
+        // 获取obj类名
         static getObjectClass(obj) {
             if (obj && obj.constructor && obj.constructor.toString()) {
                 /*
@@ -1466,6 +1607,7 @@ namespace BlackCat {
             return undefined;
         };
 
+        // 获取未信任合约
         static getUnTrustNnc(params): Array<string> {
             var result = []
             if (params.hasOwnProperty('nnc')) {
@@ -1495,7 +1637,7 @@ namespace BlackCat {
             }
             return result;
         }
-
+        // 信任合约重新获取
         static async updateTrustNnc(): Promise<void> {
             try {
                 var res_nncs = await ApiTool.getTrustNncs(Main.user.info.uid, Main.user.info.token, Main.appid)
@@ -1513,7 +1655,7 @@ namespace BlackCat {
                 console.log('[Bla Cat]', '[main]', 'updateTrustNnc, ApiTool.getTrustNncs error => ', e.toString())
             }
         }
-
+        // 信任合约移除
         static removeTrustNnc(nnc: string) {
             if (Main.app_trust.length > 0) {
                 for (let k = 0; k < Main.app_trust.length; k++) {
@@ -1526,16 +1668,17 @@ namespace BlackCat {
             }
         }
 
+        // 设置存活时间
         static setLiveTime() {
             Main.liveTime = new Date().getTime()
             // console.log('[Bla Cat]', '[main]', 'liveTime => ', Main.liveTime)
         }
-
+        // 设置存活时间最大值
         static setLiveTimeMax(minutes: number) {
             Main.liveTimeMax = minutes * 60 * 1000;
             //console.log('[Bla Cat]', '[main]', 'liveTimeMax => ', Main.liveTimeMax)
         }
-
+        // 获取存活时间
         static getLiveTimeMax(): number {
             return Main.liveTimeMax;
         }

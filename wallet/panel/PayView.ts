@@ -104,29 +104,23 @@ namespace BlackCat {
             paycard.classList.add("pc_card")
             this.ObjAppend(this.div, paycard)
 
-            //我的钱包
-            var divMyWallet=this.objCreate("div")
-            divMyWallet.classList.add("pc_mywallet","iconfont", "icon-qianbao")
-            // divMyWallet.onclick=()=>{
-            //     this.hidden()
-            //     AddressbookView.refer = "PayView"
-            //     Main.viewMgr.change("AddressbookView")
-            // }
-            this.ObjAppend(paycard, divMyWallet)
-
-            this.payMyWallet = this.objCreate("label")
-            this.payMyWallet.textContent = Main.user.info.name // "昵称"
-            this.ObjAppend(divMyWallet, this.payMyWallet)
-
-            //刷新
-            var payRefresh = this.objCreate("a")
-            payRefresh.classList.add("iconfont")
-            payRefresh.innerHTML = Main.langMgr.get("pay_refresh") //"刷新&#xe604;"
-            payRefresh.onclick = () => {
-                this.doGetBalances()
-                this.doGetWalletLists()
+            // 详情
+            var aWalletDetail = this.objCreate("a")
+            aWalletDetail.classList.add("pc_mydetail", "iconfont", "icon-xiangqing")
+            aWalletDetail.onclick = () => {
+                this.wallet_detail()
             }
-            this.ObjAppend(divMyWallet, payRefresh)
+            this.ObjAppend(paycard, aWalletDetail)
+
+            // 通讯录
+            var payAddressbook = this.objCreate("a")
+            payAddressbook.classList.add("pc_mydetail", "iconfont", "icon-tongxunlu")
+            payAddressbook.onclick = () => {
+                this.hidden()
+                AddressbookView.refer = "PayView"
+                Main.viewMgr.change("AddressbookView")
+            }
+            this.ObjAppend(paycard, payAddressbook)
 
             // 我的(缩略)钱包地址
             var divWallet = this.objCreate("div")
@@ -136,18 +130,20 @@ namespace BlackCat {
 
 
 
-            // 详情
-            var divWalletDetail = this.objCreate("div")
-            divWalletDetail.classList.add("pc_carddetail")
-            this.ObjAppend(paycard, divWalletDetail)
-
-            var spanWalletDetail = this.objCreate("span")
-            spanWalletDetail.classList.add("iconfont")
-            spanWalletDetail.innerHTML = Main.langMgr.get("pay_wallet_detail") // "详情&#xe605;"
-            spanWalletDetail.onclick = () => {
-                this.wallet_detail()
+            // 刷新
+            var payRefresh = this.objCreate("div")
+            payRefresh.classList.add("pc_cardrefresh")
+            payRefresh.textContent = Main.langMgr.get("pay_refresh") // "刷新"
+            payRefresh.onclick = () => {
+                this.doGetBalances()
+                this.doGetWalletLists()
             }
-            this.ObjAppend(divWalletDetail, spanWalletDetail)
+            this.ObjAppend(paycard, payRefresh)
+
+            //刷新图标            
+            var iRefresh = this.objCreate("i")
+            iRefresh.classList.add("iconfont", "icon-shuaxin")
+            this.ObjAppend(payRefresh, iRefresh)
 
 
             //收款及转账
@@ -183,10 +179,19 @@ namespace BlackCat {
             var divCurrencyNumber = this.objCreate("div")
             divCurrencyNumber.classList.add("pc_currencynumber")
             this.ObjAppend(divCurrency, divCurrencyNumber)
-            var spanCurrencyNumber = this.objCreate("span")
+            var spanCurrencyNumber = this.objCreate("div")
             spanCurrencyNumber.innerText = Main.langMgr.get("pay_coin_name") //"代币"
             this.ObjAppend(divCurrencyNumber, spanCurrencyNumber)
 
+            // SGAS(旧)提现
+            if (tools.CoinTool.id_SGAS_OLD && tools.CoinTool.id_SGAS_OLD.length > 0) {
+                var bntCurrencyNumber = this.objCreate("button")
+                bntCurrencyNumber.textContent = Main.langMgr.get("pay_coin_old") //"SGAS(旧)提现"
+                bntCurrencyNumber.onclick = () => {
+                    this.doMakeRefundOld()
+                }
+                this.ObjAppend(divCurrencyNumber, bntCurrencyNumber)
+            }
 
             // NEOGas余额
             var divGas = this.objCreate("div")
@@ -318,6 +323,40 @@ namespace BlackCat {
                 this.spanSgas.textContent = "0";
             }
         }
+        private async doMakeRefundOld(){
+            if (Main.isWalletOpen()) {
+                // 打开钱包了
+
+                // 获取sgas合约地址
+                // 暂时以第一个合约地址为准，后续如果多个，新开view显示
+                let id_SGAS = tools.CoinTool.id_SGAS_OLD[0]
+                // 获取sgas余额
+                let id_SGAS_balance = "0"
+                let id_SGAS_balances = await tools.WWW.api_getnep5balanceofaddress(id_SGAS, Main.user.info.wallet);
+                if (id_SGAS_balances) {
+                    id_SGAS_balance = id_SGAS_balances[0]['nep5balance'].toString();
+                }
+
+                // 打开输入数量
+                ViewTransCount.transType = "old"
+                ViewTransCount.transBalances = id_SGAS_balance
+                ViewTransCount.refer = "PayView"
+                ViewTransCount.callback = () => {
+                    this.makeRefundTransaction(id_SGAS)
+                }
+                Main.viewMgr.change("ViewTransCount")
+
+            } else {
+                // 未打开钱包
+                ViewWalletOpen.refer = "PayView"
+                ViewWalletOpen.callback = () => {
+                    this.doMakeRefundOld()
+                }
+                Main.viewMgr.change("ViewWalletOpen")
+                // this.hidden()
+            }
+
+        }
 
         private async doMakeMintToken() {
             if (Main.isWalletOpen()) {
@@ -372,7 +411,7 @@ namespace BlackCat {
             // liRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
             this.ObjAppend(this.divLists, liRecord)
 
-            var spanRecord = this.objCreate("span")
+            var spanRecord = this.objCreate("div")
             spanRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
             this.ObjAppend(liRecord, spanRecord)
 
@@ -388,7 +427,7 @@ namespace BlackCat {
             this.ObjAppend(liRecord, this.divListsMore)
 
             var iListsMore = this.objCreate("i")
-            iListsMore.classList.add("iconfont","icon-sanjiaoxing")
+            iListsMore.classList.add("iconfont", "icon-sanjiaoxing")
             this.ObjAppend(this.divListsMore, iListsMore)
 
 
@@ -855,7 +894,7 @@ namespace BlackCat {
             var signdata = ThinNeo.Helper.Sign(msg, login.prikey);
             tran.AddWitness(signdata, login.pubkey, login.address);
 
-            var txid = tran.GetHash().clone().reverse().toHexString();
+            // var txid = tran.GetHash().clone().reverse().toHexString();
 
             var data = tran.GetRawData();
             var r = await tools.WWW.api_postRawTransaction(data);
@@ -898,7 +937,7 @@ namespace BlackCat {
                     //     "\r\n充值合约执行失败！\r\n" +
                     //     "请等待上次充值确认后再操作！"
                     // );
-                    Main.showErrMsg(("pay_makeMintDoFail"))
+                    Main.showErrMsg("pay_makeMintDoFail")
                 }
             } else {
                 // 失败
@@ -909,47 +948,54 @@ namespace BlackCat {
                 //     "]sgas失败！" +
                 //     "\r\n发送充值请求失败！请检查网络，稍候重试！"
                 // );
-                Main.showErrMsg(("pay_makeMintDoFail2"))
+                Main.showErrMsg("pay_makeMintDoFail2")
             }
         }
 
         // sgas -> gas
-        private async makeRefundTransaction() {
+        private async makeRefundTransaction(id_SGAS: string = tools.CoinTool.id_SGAS) {
             Main.viewMgr.change("ViewLoading")
 
             var refundCount = Main.viewMgr.viewTransCount.inputCount.value;
 
             // 查询SGAS余额
-            var scriptaddress = tools.CoinTool.id_SGAS.hexToBytes().reverse();
+            var scriptaddress = id_SGAS.hexToBytes().reverse();
 
             var login = tools.LoginInfo.getCurrentLogin();
 
             //获取sgas合约地址的资产列表
-            var utxos_assets = await tools.CoinTool.getsgasAssets();
+            var utxos_assets = await tools.CoinTool.getsgasAssets(id_SGAS);
             var us = utxos_assets[tools.CoinTool.id_GAS];
             if (us == undefined) {
                 Main.viewMgr.viewLoading.remove()
                 // Main.showErrMsg("Sgas余额不足");
-                Main.showErrMsg(("pay_makeRefundSgasNotEnough"))
+                Main.showErrMsg("pay_makeRefundSgasNotEnough")
                 return;
             }
 
             console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, us.before => ', us);
 
             //检查sgas地址拥有的gas的utxo是否有被标记过
+            var count: Neo.Fixed8 = Neo.Fixed8.Zero;
+            var sendCount = Neo.Fixed8.fromNumber(Number(refundCount))
             for (var i = us.length - 1; i >= 0; i--) {
-                if (us[i].n > 0) {
-                    continue;
+
+                if (count.compareTo(sendCount) > 0) {
+                    // 足够数量了，后面的直接剔除了
+                    console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, enough us[' + i + '].delete => ', us[i]);
+                    delete us[i];
+                    continue
                 }
 
-                let script = null;
+                if (us[i].n > 0) {
+                    count = count.add(us[i].count)
+                    continue;
+                }
 
                 var sb = new ThinNeo.ScriptBuilder();
                 sb.EmitParamJson(["(hex256)" + us[i].txid.toString()]);
                 sb.EmitPushString("getRefundTarget");
                 sb.EmitAppCall(scriptaddress);
-
-                script = sb.ToArray();
 
                 var data = sb.ToArray();
                 var r = await tools.WWW.rpc_getInvokescript(data);
@@ -959,6 +1005,9 @@ namespace BlackCat {
                     if (value.length > 0) {
                         console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, us[' + i + '].delete => ', us[i]);
                         delete us[i];
+                    }
+                    else {
+                        count = count.add(us[i].count)
                     }
                 }
             }
@@ -980,7 +1029,7 @@ namespace BlackCat {
             catch (e) {
                 Main.viewMgr.viewLoading.remove()
                 // Main.showErrMsg("SGAS余额不足");
-                Main.showErrMsg(("pay_makeRefundSgasNotEnough"))
+                Main.showErrMsg("pay_makeRefundSgasNotEnough")
                 return;
             }
 
@@ -989,7 +1038,7 @@ namespace BlackCat {
                 makeTranRes
             );
 
-            var r = await tools.WWW.api_getcontractstate(tools.CoinTool.id_SGAS);
+            var r = await tools.WWW.api_getcontractstate(id_SGAS);
             if (r && r["script"]) {
                 var sgasScript = r["script"].hexToBytes();
 
@@ -1045,7 +1094,7 @@ namespace BlackCat {
                             "0",
                             refundCount,
                             "2",
-                            '{"sbParamJson":"' + paramJson_tmp + '", "sbPushString": "refund", "nnc": "' + tools.CoinTool.id_SGAS + '"}',
+                            '{"sbParamJson":"' + paramJson_tmp + '", "sbPushString": "refund", "nnc": "' + id_SGAS + '"}',
                             Main.netMgr.type
                         );
                         if (logRes.r) {
@@ -1075,20 +1124,20 @@ namespace BlackCat {
                 else {
                     Main.viewMgr.viewLoading.remove()
                     // Main.showErrMsg("发送提取交易失败！请检查网络，稍候重试！");
-                    Main.showErrMsg(("pay_makeRefundDoFail2"))
+                    Main.showErrMsg("pay_makeRefundDoFail2")
                 }
             }
             else {
                 Main.viewMgr.viewLoading.remove()
                 // Main.showErrMsg("获取提取合约失败！");
-                Main.showErrMsg(("pay_makeRefundGetScriptFail"))
+                Main.showErrMsg("pay_makeRefundGetScriptFail")
             }
         }
 
         //收款
         private async doMakeReceivables() {
             this.hidden()
-            PayReceivablesView.refer="PayView"
+            PayReceivablesView.refer = "PayView"
             Main.viewMgr.change("PayReceivablesView")
         }
 

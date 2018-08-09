@@ -43,7 +43,9 @@ namespace BlackCat {
 
         addressbookView: AddressbookView; //通讯录
         addressbookDetailsView: AddressbookDetailsView; //通讯录详情
-        addressbookAddView: AddressbookAddView; //通讯录添加联系人
+        addressbookOpView: AddressbookOpView; //通讯录操作联系人信息
+
+        viewConnecting: ViewConnecting; // 连接中
 
 
         constructor() {
@@ -303,14 +305,23 @@ namespace BlackCat {
                     }
                     this.addressbookDetailsView.start()
                     break;
-                case "AddressbookAddView":
-                    console.log('[Bla Cat]', '[ViewMgr]', '显示通讯录添加联系人(' + type + ') ...')
-                    if (!this.addressbookAddView) {
-                        this.addressbookAddView = new AddressbookAddView();
-                        this.views[type] = this.addressbookAddView
+                case "AddressbookOpView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示通讯录操作联系人信息(' + type + ') ...')
+                    if (!this.addressbookOpView) {
+                        this.addressbookOpView = new AddressbookOpView();
+                        this.views[type] = this.addressbookOpView
                     }
-                    this.addressbookAddView.start()
+                    this.addressbookOpView.start()
                     break;
+                case "ViewConnecting":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示连接中(' + type + ') ...')
+                    if (!this.viewConnecting) {
+                        this.viewConnecting = new ViewConnecting();
+                        this.views[type] = this.viewConnecting
+                    }
+                    this.viewConnecting.start()
+                    break;
+                
             }
         }
 

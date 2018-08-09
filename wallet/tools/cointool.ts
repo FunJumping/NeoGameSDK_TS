@@ -9,6 +9,7 @@ namespace BlackCat.tools
         static readonly id_GAS: string = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
         static readonly id_NEO: string = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
         static id_SGAS: string = "";
+        static id_SGAS_OLD: Array<string> = [];
         
         // static readonly id_SGAS_RATE: number = 100000000;
         static assetID2name: { [ id: string ]: string } = {};
@@ -623,11 +624,11 @@ namespace BlackCat.tools
         /**
          * 获得utxos
          */
-        static async getsgasAssets(): Promise<{ [ id: string ]: UTXO[] }>
+        static async getsgasAssets(id_SGAS: string = this.id_SGAS): Promise<{ [ id: string ]: UTXO[] }>
         {
             //获得高度
             var height = await tools.WWW.api_getHeight();
-            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(this.id_SGAS.hexToBytes().reverse())
+            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_SGAS.hexToBytes().reverse())
             var utxos = await tools.WWW.api_getUTXO(scriptHash);   //获得utxo
 
             var olds = OldUTXO.getOldutxos();       //获得以标记的utxo(交易过的utxo 存储在本地的标记)

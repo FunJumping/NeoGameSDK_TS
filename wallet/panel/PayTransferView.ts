@@ -7,13 +7,16 @@ namespace BlackCat {
 
         private inputGasCount: HTMLInputElement;
         private inputTransferAddr: HTMLInputElement;
+        private divTransferAddr: HTMLDivElement;
+        private labelName: HTMLLabelElement;
 
         private gasBalance: string;
         private toaddress: string;
 
-        constructor() {
-            super();
+        static address: string = "";
+        static contact: contact;
 
+        reset() {
             this.gasBalance = '0';
             this.toaddress = "";
         }
@@ -28,7 +31,13 @@ namespace BlackCat {
             this.gasBalance = balanceAmount;
 
             super.start()
-            this.inputTransferAddr.focus()
+
+            if (!this.toaddress) {
+                this.inputTransferAddr.focus()
+            }
+            else {
+                this.inputGasCount.focus()
+            }
         }
 
         create() {
@@ -70,14 +79,41 @@ namespace BlackCat {
 
 
             //输入钱包地址
-            var divTransferAddr = this.objCreate("div")
-            divTransferAddr.classList.add("pc_transfertype")
+            this.divTransferAddr = this.objCreate("div") as HTMLDivElement
+            this.divTransferAddr.classList.add("pc_transfertype")
             // divTransferAddr.innerText= Main.langMgr.get("pay_transferToAddr") //"转账地址："
-            this.ObjAppend(divtransfer, divTransferAddr)
+            this.ObjAppend(divtransfer, this.divTransferAddr)
+
+            //对方用户名
+            this.labelName = this.objCreate("label") as HTMLLabelElement
+            this.labelName.classList.add("pc_transfername")
+            this.ObjAppend(this.divTransferAddr, this.labelName)
 
             this.inputTransferAddr = this.objCreate("input") as HTMLInputElement
+            this.inputTransferAddr.classList.add("pc_transaddress")
             this.inputTransferAddr.placeholder = Main.langMgr.get("pay_transferToAddr") //"转账地址："
-            this.ObjAppend(divTransferAddr, this.inputTransferAddr)
+            this.inputTransferAddr.value = this.getAddress()
+            this.inputTransferAddr.onfocus=()=>{
+                this.inputTransferAddr.select()
+            }
+            this.inputTransferAddr.onchange=()=>{
+                this.divTransferAddr.classList.remove("pc_transfer_active")
+                this.inputTransferAddr.style.padding="0 35px 0 5px"
+                this.inputTransferAddr.style.width="230px"
+            }
+            this.ObjAppend(this.divTransferAddr, this.inputTransferAddr)
+
+            //跳到通讯录选择入口
+            var aAddresbook = this.objCreate("a")
+            aAddresbook.classList.add("pc_transferaddressbook", "iconfont", "icon-tongxunlu")
+            aAddresbook.onclick = () => {
+                this.hidden()
+                Main.viewMgr.payView.hidden()
+                AddressbookView.select = "select"
+                Main.viewMgr.change("AddressbookView")
+            }
+            this.ObjAppend(this.divTransferAddr, aAddresbook)
+
 
             // 转账数量
             var divGasCount = this.objCreate("div")
@@ -120,12 +156,39 @@ namespace BlackCat {
             }
         }
 
+        private getAddress() {
+            if (PayTransferView.address) {
+                this.toaddress = PayTransferView.address
+                PayTransferView.address = ""
+            }
+            return this.toaddress
+        }
+
+        gatSelect() {
+            this.divTransferAddr.classList.add("pc_transfer_active")
+            this.labelName.textContent = PayTransferView.contact.address_name+":"
+            this.inputTransferAddr.value = PayTransferView.contact.address_wallet
+
+            var labelNameW=this.labelName.clientWidth+10;
+            var inputTransferAddrw=270-labelNameW-35;
+
+            this.inputTransferAddr.style.width=inputTransferAddrw+"px"
+            this.inputTransferAddr.style.padding="0 35px 0 "+labelNameW+"px"
+            if(this.labelName){
+                this.inputGasCount.focus()
+            }
+        }
+
         private async doTransfer() {
-            if (!await this.verify_addr()) {
-                Main.showErrMsg("pay_transferToAddrError", () => {
-                    this.inputTransferAddr.focus()
-                })
-                return;
+            var wallet_res = await Main.validateFormat("walletaddr", this.inputTransferAddr)
+            if (wallet_res === false) {
+                return
+            }
+            else if (wallet_res !== true) {
+                this.toaddress = wallet_res
+            }
+            else {
+                this.toaddress = this.inputTransferAddr.value;
             }
 
             if (!Main.viewMgr.payView.checkTransCount(this.inputGasCount.value)) {
@@ -183,56 +246,5 @@ namespace BlackCat {
             }
         }
 
-        // 验证地址
-        private async verify_addr() {
-            let isDomain = tools.NNSTool.verifyDomain(this.inputTransferAddr.value);
-            let isAddress = tools.NNSTool.verifyAddr(this.inputTransferAddr.value);
-            if (isDomain) {
-                try {
-                    this.inputTransferAddr.value = this.inputTransferAddr.value.toLowerCase();
-                    let addr = await tools.NNSTool.resolveData(this.inputTransferAddr.value);
-                    if (addr) {
-                        this.toaddress = addr;
-                        return true;
-                    }
-                    else {
-                        this.toaddress = "";
-                        return false;
-                    }
-                }
-                catch (e) {
-                    console.log('[Bla Cat]', '[PayTransferView]', 'verify_addr, isDomain, 钱包地址错误 => ', e)
-                    return false;
-                }
-
-            }
-            else if (isAddress) {
-                try {
-                    if (tools.neotools.verifyPublicKey(this.inputTransferAddr.value)) {
-                        this.toaddress = this.inputTransferAddr.value;
-                        return true;
-                    }
-                }
-                catch (e) {
-                    console.log('[Bla Cat]', '[PayTransferView]', 'verify_addr, isAddress, 钱包地址错误 => ', e)
-                    return false;
-                }
-            }
-            else {
-                this.toaddress = "";
-                return false;
-            }
-        }
-
-        // 验证数量
-        private verify_Amount() {
-            let balancenum = Neo.Fixed8.parse(this.gasBalance + '');
-            let inputamount = Neo.Fixed8.parse(this.inputGasCount.value);
-            let compare = balancenum.compareTo(inputamount);
-            if (compare >= 1) {
-                return true;
-            }
-            return false;
-        }
     }
 }

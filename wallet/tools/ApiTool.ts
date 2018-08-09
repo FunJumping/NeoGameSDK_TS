@@ -136,40 +136,31 @@ namespace BlackCat {
         }
 
         static async getTrustNncs(uid: string, token: string, g_id: string) {
-            return this.common('user_nncs.get_nncs', {uid: uid, token: token, g_id: g_id})
+            return this.common('user_nncs.get_nncs', { uid: uid, token: token, g_id: g_id })
         }
 
-        static async getTrustLists(uid: string, token: string, offset:number, num: number) {
-            return this.common('user_nncs.listss', {uid: uid, token: token, offset: offset, num: num})
+        static async getTrustLists(uid: string, token: string, offset: number, num: number) {
+            return this.common('user_nncs.listss', { uid: uid, token: token, offset: offset, num: num })
         }
 
         static async delTrustNncs(uid: string, token: string, id: string) {
-            return this.common('user_nncs.del_nncs', {uid: uid, token:token, id:id})
+            return this.common('user_nncs.del_nncs', { uid: uid, token: token, id: id })
         }
 
         static async addAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string) {
-            return this.common('user_addressbook.add_addr', {uid:uid, token:token, address_name:address_name, address_wallet:address_wallet, address_desc:address_desc})
+            return this.common('user_addressbook.add_addr', { uid: uid, token: token, address_name: address_name, address_wallet: address_wallet, address_desc: address_desc })
         }
 
         static async delAddrbook(uid: string, token: string, id: string) {
-            return this.common('user_addressbook.del_addr', {uid:uid, token:token, id:id})
+            return this.common('user_addressbook.del_addr', { uid: uid, token: token, id: id })
         }
 
         static async getAddrbook(uid: string, token: string) {
-            return this.common('user_addressbook.get_addr', {uid:uid, token:token})
+            return this.common('user_addressbook.get_addr', { uid: uid, token: token })
         }
 
-        static async updateAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string, id:string) {
-            return this.common('user_addressbook.update_addr', {uid:uid, token:token, address_name:address_name, address_wallet:address_wallet, address_desc:address_desc, id: id})
+        static async updateAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string, id: string) {
+            return this.common('user_addressbook.update_addr', { uid: uid, token: token, address_name: address_name, address_wallet: address_wallet, address_desc: address_desc, id: id })
         }
     }
-
-    // export class StorageTool {
-    //     static setStorage(key: string, value: string) {
-    //         sessionStorage.setItem(key, value)
-    //     }
-    //     static getStorage(key: string): string {
-    //         return sessionStorage.getItem(key);
-    //     }
-    // }
 }

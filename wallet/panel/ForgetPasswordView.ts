@@ -282,31 +282,19 @@ namespace BlackCat {
                 Main.showErrMsg(("forgetpass_input" + this.accountType + "_err"))
                 return false;
             }
-            if (Main.validateFormat(this.accountType, this.inputAccount) == false) {
+            if ( (await Main.validateFormat(this.accountType, this.inputAccount)) == false) {
                 return false
             }
 
             return await this.checkAccountFromApi();
         }
 
-        // private async validateUid(emptySkip = true) {
-        //     if (this.empty(this.inputUid.value)) {
-        //         if (emptySkip) return false;
-        //         Main.showErrMsg(("forgetpass_inputUid_err"))
-        //         return false;
-        //     }
-        //     if (Main.validateFormat("user", this.inputAccount) == false) {
-        //         return false;
-        //     }
-        //     return true
-        // }
-
         private async validateCode() {
             if (this.empty(this.inputCode.value)) {
                 Main.showErrMsg(("forgetpass_inputCode_err"))
                 return false
             }
-            return true;
+            return await Main.validateFormat("vcode", this.inputCode)
         }
 
         private async validatePass() {
@@ -345,7 +333,7 @@ namespace BlackCat {
             }
             if (res.r) {
                 // 账号未注册
-                Main.showErrMsg('forgetpass_input'+this.accountType+'_notexist')
+                Main.showErrMsg('forgetpass_input' + this.accountType + '_notexist')
                 return false
             }
             return true

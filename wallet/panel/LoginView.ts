@@ -264,7 +264,7 @@ namespace BlackCat {
                 return;
             }
 
-            if (Main.validateFormat(this.accountType, this.inputAccount) == false) {
+            if ( (await Main.validateFormat(this.accountType, this.inputAccount)) == false) {
                 return
             }
 

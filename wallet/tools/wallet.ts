@@ -153,7 +153,7 @@ namespace BlackCat.tools {
         }
 
         // 合约交易
-        async makeRawTransaction(params: any, trust:string = "0") {
+        async makeRawTransaction(params: any, trust: string = "0") {
             var res: Result = new Result();
 
             var login = LoginInfo.getCurrentLogin();

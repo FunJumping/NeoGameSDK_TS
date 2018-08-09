@@ -9,6 +9,7 @@ namespace BlackCat {
             more: "更多",
             info: "提示",
             content: "内容",
+            retry: "重试",
 
             // 地区代码
             area_code_CN: "中国",
@@ -229,9 +230,11 @@ namespace BlackCat {
             area_code_ZM: '赞比亚',
             area_code_ZW: '津巴布韦',
 
-            main_uid_format_err: "用户名格式不正确！只能使用4-16位英文字母、数字、下划线！",
+            main_user_format_err: "用户名格式不正确！只能使用4-16位英文字母、数字、下划线！",
             main_email_format_err: "邮件地址格式不正确！",
             main_phone_format_err: "手机号码格式不正确！",
+            main_vcode_format_err: "验证码格式不正确！",
+            main_walletaddr_format_err: "钱包地址格式不正确！",
             main_phone: "手机",
             main_email: "邮箱",
             main_user: "用户名",
@@ -395,8 +398,8 @@ namespace BlackCat {
             pay_transfer: "转账",
             pay_transferType: "代币：GAS",
             pay_transferBalance: "余额：",
-            pay_transferToAddr: "转账地址：",
-            pay_transferCount: "转账金额：",
+            pay_transferToAddr: "转账地址",
+            pay_transferCount: "转账金额",
             pay_transferToAddrError: "转账地址错误",
             pay_transferCountError: "转账金额错误",
             pay_transferDoSucc: "转账操作成功",
@@ -404,9 +407,10 @@ namespace BlackCat {
 
             // PayView
             pay_wallet: "我的钱包",
-            pay_refresh: "刷新&#xe604;",
-            pay_wallet_detail: "详情&#xe605;",
+            pay_refresh: "刷新",
+            pay_wallet_detail: "详情",
             pay_coin_name: "代币",
+            pay_coin_old: "SGAS(旧)提现",
             pay_gas: "Gas",
             pay_gas_desc: "GAS是NEO链上的数字货币，可以通过交易所获取",
             pay_sgas: "SGas",
@@ -450,20 +454,26 @@ namespace BlackCat {
             addressbook_det_download: "下载二维码",
             addressbook_det_describe: "描述",
             addressbook_det_empty: "空",
+            addressbook_det_del: "删除联系人",
+            addressbook_det_del_title: "删除",
+            addressbook_det_del_tips: "您确认删除联系人？",
+            addressbook_det_del_succ: "删除成功",
 
 
-            // AddressbookAddView
-            addressbook_add_button: "完成",
-            addressbook_add_name: "备注名",
-            addressbook_add_inputName: "输入备注名",
-            addressbook_add_inputName_err: "请输入备注名",
-            addressbook_add_address: "钱包地址",
-            addressbook_add_inputAddress: "输入钱包地址",
-            addressbook_add_inputAddress_err: "请输入钱包地址",
-            addressbook_add_describe: "描述",
-            addressbook_add_inputDescribe: "输入描述",
-            addressbook_add_inputDescribe_err: "请输入描述",
-            addressbook_add_succ: "联系人添加成功",
+            // AddressbookOpView
+            addressbook_op_button: "完成",
+            addressbook_op_name: "联系人",
+            addressbook_op_inputName: "输入联系人",
+            addressbook_op_inputName_err: "请输入联系人",
+            addressbook_op_address: "钱包地址",
+            addressbook_op_inputAddress: "输入钱包地址",
+            addressbook_op_inputAddress_err: "请输入钱包地址",
+            addressbook_op_describe: "描述",
+            addressbook_op_inputDescribe: "输入描述",
+            addressbook_op_inputDescribe_err: "请输入描述",
+            addressbook_op_addSucc: "联系人添加成功",
+            addressbook_op_updateSucc: "联系人修改成功",
+
 
             // ViewAlert
 
@@ -486,6 +496,7 @@ namespace BlackCat {
             pay_transCount_err: "请输入正确的金额",
             pay_sgas2gas: "SGas &#xe6a8; Gas",
             pay_gas2sgas: "Gas &#xe6a8; SGas",
+            pay_old: "SGAS（旧）余额：",
 
             // ViewWalletOpen
             pay_walletOpen_password: "密码",
@@ -555,6 +566,7 @@ namespace BlackCat {
             errCode_8100004: "头像文件格式不支持！",
             errcode_8100005: "头像文件上传失败！",
             errcode_8100006: "头像文件大小不能超过100kb！",
+            errCode_8100007: "联系人已存在！",
 
             errCode_default: "未知错误！错误码： %errCode%",
 
@@ -565,7 +577,10 @@ namespace BlackCat {
 
             // NetMgr
             netmgr_select_api_slow: "与服务器连接异常或缓慢，请检查网络后重试！",
-            netmgr_select_node_slow: "与链上节点通讯异常或缓慢，请稍后重试！",
+            netmgr_select_node_slow: "与链上节点通讯异常或缓慢，请检查网络后重试！",
+            netmgr_connecting: "连接中，请稍候...",
+            netmgr_connecting_fail: "连接失败，请检查网络后重试。",
+
         }
     }
 }

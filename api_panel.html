@@ -23,6 +23,15 @@
 <body style="background-color: cadetblue">
     <button onclick="initSDK()">初始化SDK</button>
     <button onclick="login()" style="margin-left:20px">登录</button>
+    <button onclick="showDiv('makerechargediv')" style="margin-left:20px">充值</button>
+
+    <button onclick="getbalance()" style="margin-left:20px">余额</button>
+    <button onclick="getUserInfo()" style="margin-left:20px">用户信息</button>
+    <button onclick="getNetType()" style="margin-left:20px">网络类型</button>
+    
+    <hr>
+    <button onclick="showDiv('invokescriptdiv')">合约读取</button>
+    <button onclick="showDiv('makerawtransactiondiv')" style="margin-left:20px">合约交易</button>
 
     <hr>
     <button onclick="setLang('en')">英文</button>
@@ -33,32 +42,27 @@
     <button onclick="setDefaultNetType(1)" style="margin-left:20px">默认主网</button>
     <button onclick="setDefaultNetType(2)" style="margin-left:2px">默认测试网</button>
 
-    <hr>
-    <button onclick="getbalance()">余额</button>
-    <button onclick="getUserInfo()" style="margin-left:20px">用户信息</button>
-    <button onclick="getNetType()" style="margin-left:20px">网络类型</button>
+
 
     <hr>
-    <button onclick="showDiv('invokescriptdiv')">合约读取</button>
-    <button onclick="showDiv('makerawtransactiondiv')" style="margin-left:20px">合约交易</button>
-    <button onclick="showDiv('makerechargediv')" style="margin-left:20px">充值</button>
-    <button onclick="showDiv('makeGasTransferdiv')" style="margin-left:20px">Gas转账</button>
+    
+    <button onclick="showDiv('makeGasTransferdiv')" style="margin-left:0px">Gas转账</button>
     <button onclick="showDiv('makeGasTransferMultidiv')" style="margin-left:20px">Gas批量转账</button>
     <button onclick="showDiv('confirmNotifydiv')" style="margin-left:20px">确认通知</button>
 
     <hr>
 
     <div class="dis" id="invokescriptdiv" style="display:none">
-        nnc:
+        nnc（合约地址）:
         <input style="width: 100%" type="text" id="nnc" name="nnc" value="0xcfe8f6824365f70d382733a92d8f373ee4faf222">
-        <br/> sbParamJson:
+        <br/> sbParamJson（合约参数）:
         <br/>
         <input style="width: 100%" type="text" id="sbParamJson" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"]'
         />
-        <br/> sbPushString:
+        <br/> sbPushString（合约方法）:
         <br/>
         <input style="width: 100%" type="text" id="sbPushString" name="sbPushString" value="balanceOf" />
-        <br/> extString:
+        <br/> extString（透传参数）:
         <br/>
         <input style="width: 100%" type="text" id="extString" name="extString" value="invokeScript">
         <br/>
@@ -67,17 +71,17 @@
     </div>
 
     <div class="dis" id="makerawtransactiondiv" style="display: none">
-        nnc:
+        nnc（合约地址）:
         <br/>
         <input style="width: 100%" type="text" id="nnc2" name="nnc" value="0x3f7420285874867c30f32e44f304fd62ad1e9573">
-        <br/> sbParamJson:
+        <br/> sbParamJson（合约参数）:
         <br/>
         <input style="width: 100%" type="text" id="sbParamJson2" name="sbParamJson" value='["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a","(integer)100000"]'
         />
-        <br/> sbPushString:
+        <br/> sbPushString（合约方法）:
         <br/>
         <input style="width: 100%" type="text" id="sbPushString2" name="sbPushString" value="transfer" />
-        <br/> extString:
+        <br/> extString（透传参数）:
         <br/>
         <input style="width: 100%" type="text" id="extString2" name="extString2" value="makeRawTransaction">
         <br/>
@@ -86,10 +90,10 @@
     </div>
 
     <div class="dis" id="makerechargediv" style="display: none">
-        count:
+        count（充值金额）:
         <br/>
         <input style="width: 100%" type="text" id="count" name="count" value="0.001">
-        <br/> extString:
+        <br/> extString（透传参数）:
         <br/>
         <input style="width: 100%" type="text" id="extString3" name="extString3" value="makeRecharge">
         <br/>
@@ -98,50 +102,53 @@
     </div>
 
     <div class="dis" id="confirmNotifydiv" style="display: none">
-        txid:
+        txid（链上交易ID）:
         <br/>
         <input style="width: 100%" type="text" id="txid" name="txid" value="">
+        <br/>
         <br/>
         <button onclick="confirmappnotify()">确认</button>
     </div>
 
 
     <div class="dis" id="makeGasTransferdiv" style="display: none">
-        转账地址:
+        toaddr（转账地址）:
         <br/>
         <input style="width: 100%" type="text" id="toaddr" name="toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5">
-        <br/> 转账数量:
+        <br/> count（转账数量）:
         <br/>
         <input style="width: 100%" type="text" id="gascount" name="gascount" value="0.01">
-        <br/> extString:
+        <br/> extString（透传参数）:
         <br/>
         <input style="width: 100%" type="text" id="extString4" name="extString4" value="makeGasTransfer">
+        <br/>
         <br/>
         <button onclick="makeGasTransfer()">确认</button>
     </div>
 
     <div class="dis" id="makeGasTransferMultidiv" style="display: none">
-        转账地址1:
+        toaddr（转账地址1）:
         <br/>
         <input style="width: 100%" type="text" id="toaddrMulti1" name="toaddrMulti1" value="AbYR3eUbPUcnenEfmbJ7Fc4DUZLabKD6Cf">
-        <br/> 转账数量1:
+        <br/> count（转账数量1）:
         <br/>
         <input style="width: 100%" type="text" id="gascountMulti1" name="gascountMulti1" value="0.001">
-        <br/> extString1:
+        <br/> extString（透传参数1）:
         <br/>
         <input style="width: 100%" type="text" id="extStringMulti1" name="extStringMulti1" value="makeGasTransferMulti1">
         <br/>
 
-        <br/> 转账地址2:
-
+        <br/> 
+        toaddr（转账地址2）:
         <br/>
         <input style="width: 100%" type="text" id="toaddrMulti2" name="toaddrMulti2" value="AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT">
-        <br/> 转账数量2:
+        <br/> count（转账数量2）:
         <br/>
         <input style="width: 100%" type="text" id="gascountMulti2" name="gascountMulti2" value="0.002">
-        <br/> extString2:
+        <br/> extString（透传参数2）:
         <br/>
         <input style="width: 100%" type="text" id="extStringMulti2" name="extStringMulti2" value="makeGasTransferMulti2">
+        <br/>
         <br/>
         <button onclick="makeGasTransferMulti()">确认</button>
     </div>

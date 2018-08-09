@@ -6,12 +6,17 @@ namespace BlackCat {
     export class ViewTransCount extends ViewBase {
 
         static transType: string;
+        static transBalances: string;
 
         inputCount: HTMLInputElement
 
         start() {
             super.start()
             this.inputCount.focus()
+
+            if (ViewTransCount.transType == "old") {
+                this.div.classList.add("pc_old")
+            }
         }
 
         create() {
@@ -30,11 +35,11 @@ namespace BlackCat {
 
             // 类型
             var divtransfertype = this.objCreate("div")
-            divtransfertype.classList.add("pc_transfertype", "iconfont")
+            divtransfertype.classList.add("pc_transfertype", "pc_token", "iconfont")
             divtransfertype.innerHTML = Main.langMgr.get("pay_" + ViewTransCount.transType)
-            divtransfertype.style.textAlign = "center"
-            divtransfertype.style.fontSize = "20px"
-            divtransfertype.style.marginTop = "20px"
+            if (ViewTransCount.transType == "old") {
+                divtransfertype.innerHTML += ViewTransCount.transBalances
+            }
             this.ObjAppend(popupbox, divtransfertype)
 
             this.inputCount = this.objCreate("input") as HTMLInputElement
