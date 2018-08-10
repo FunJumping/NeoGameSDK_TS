@@ -720,7 +720,7 @@ BlackCat.SDK.makeGasTransferMulti(params, function(res){
 }
 ```
 
-## 三、辅助功能
+## 四、辅助功能
 ### 1、设置SDK语言（setLang）
 设置当前SDK语言，可选cn、en
 ``` 
