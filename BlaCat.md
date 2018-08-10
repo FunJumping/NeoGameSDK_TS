@@ -48,6 +48,8 @@ BlaCatSDK支持两种回调方式，一种是初始化SDK时（init）注册回�
 			case "loginRes": // 登录成功回调
 				// 此处需要发送接收到的数据到服务端验证后再登录应用
 				break;
+			case "logoutRes": // 登出回调
+				break;
 			case "makeRechargeRes": // 充值回调
 				break;
 			case "getAppNotifysRes": // 交易链上处理完成回调
