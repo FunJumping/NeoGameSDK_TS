@@ -119,7 +119,8 @@ namespace BlackCat {
 
             // 选择地区
             this.selectArea = this.objCreate("select") as HTMLSelectElement
-            AreaView.areaInfo.forEach(
+            var areaInfo = AreaView.getAreaByLang(Main.langMgr.type)
+            areaInfo.forEach(
                 area => {
                     var option = this.objCreate("option") as HTMLOptionElement;
                     option.setAttribute("value", area.codename);
@@ -129,7 +130,7 @@ namespace BlackCat {
                 }
             )
             this.selectArea.onchange = () => {
-                AreaView.areaInfo.forEach(
+                areaInfo.forEach(
                     area => {
                         if (area.codename == this.selectArea.value) {
                             this.divArea.textContent = area.areacode
@@ -142,7 +143,7 @@ namespace BlackCat {
             // 地区区号
             this.divArea = this.objCreate("div") as HTMLDivElement
             this.divArea.classList.add("pc_area")
-            AreaView.areaInfo.forEach(
+            areaInfo.forEach(
                 area => {
                     if (area.codename == this.selectArea.value) {
                         this.divArea.textContent = area.areacode

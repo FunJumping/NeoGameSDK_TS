@@ -32,6 +32,7 @@ namespace BlackCat {
         modifyImgView: ModifyImgView; //修改头像
         modifyNameView: ModifyNameView; //修改昵称
         modifySexView: ModifySexView; //修改性别
+        modifyAreaView: ModifyAreaView;//修改地区
 
         securityCenterView: SecurityCenterView; //安全中心
         trustContractView: TrustContractView; //信任合约
@@ -265,6 +266,14 @@ namespace BlackCat {
                     }
                     this.modifySexView.start()
                     break;
+                case "ModifyAreaView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示修改地区(' + type + ') ...')
+                    if (!this.modifyAreaView) {
+                        this.modifyAreaView = new ModifyAreaView()
+                        this.views[type] = this.modifyAreaView
+                    }
+                    this.modifyAreaView.start()
+                    break;
                 case "SecurityCenterView":
                     console.log('[Bla Cat]', '[ViewMgr]', '显示安全中心(' + type + ') ...')
                     if (!this.securityCenterView) {
@@ -321,7 +330,7 @@ namespace BlackCat {
                     }
                     this.viewConnecting.start()
                     break;
-                
+
             }
         }
 

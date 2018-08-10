@@ -408,6 +408,7 @@ declare namespace BlackCat {
             myinfo_sex_2: string;
             myinfo_uid: string;
             myinfo_area: string;
+            modifyArea_empty: string;
             myinfo_security: string;
             myinfo_set: string;
             myinfo_logout: string;
@@ -423,6 +424,8 @@ declare namespace BlackCat {
             modifyName_succ: string;
             modifySex: string;
             modifySex_succ: string;
+            modifyArea: string;
+            modifyArea_succ: string;
             security_title: string;
             security_trust: string;
             security_trust_admin: string;
@@ -563,16 +566,18 @@ declare namespace BlackCat {
             errCode_100606: string;
             errCode_100607: string;
             errCode_100608: string;
+            errCode_100700: string;
+            errCode_100701: string;
+            errCode_100702: string;
+            errCode_100707: string;
+            errCode_100708: string;
+            errCode_100709: string;
             errCode_100801: string;
             errcode_100802: string;
             errCode_100805: string;
             errCode_100806: string;
             errCode_100807: string;
             errCode_100808: string;
-            errCode_100700: string;
-            errCode_100701: string;
-            errCode_100702: string;
-            errCode_100707: string;
             errCode_8100000: string;
             errCode_8100001: string;
             errCode_8100002: string;
@@ -898,6 +903,7 @@ declare namespace BlackCat {
             myinfo_sex_2: string;
             myinfo_uid: string;
             myinfo_area: string;
+            modifyArea_empty: string;
             myinfo_security: string;
             myinfo_set: string;
             myinfo_logout: string;
@@ -913,6 +919,8 @@ declare namespace BlackCat {
             modifyName_succ: string;
             modifySex: string;
             modifySex_succ: string;
+            modifyArea: string;
+            modifyArea_succ: string;
             security_title: string;
             security_trust: string;
             security_trust_admin: string;
@@ -1053,16 +1061,18 @@ declare namespace BlackCat {
             errCode_100606: string;
             errCode_100607: string;
             errCode_100608: string;
+            errCode_100700: string;
+            errCode_100701: string;
+            errCode_100702: string;
+            errCode_100707: string;
+            errCode_100708: string;
+            errCode_100709: string;
             errCode_100801: string;
             errcode_100802: string;
             errCode_100805: string;
             errCode_100806: string;
             errCode_100807: string;
             errCode_100808: string;
-            errCode_100700: string;
-            errCode_100701: string;
-            errCode_100702: string;
-            errCode_100707: string;
             errCode_8100000: string;
             errCode_8100001: string;
             errCode_8100002: string;
@@ -1196,11 +1206,8 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class AreaView extends ViewBase {
-        static areaInfo: {
-            "area": string;
-            "areacode": string;
-            "codename": string;
-        }[];
+        private static areaInfo;
+        static getAreaByLang(lang: string): any[];
         static getByAreaCode(areaCode: string): any;
         static getByCodeName(codeName: string): any;
     }
@@ -1296,6 +1303,14 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class ModifyAreaView extends ViewBase {
+        private AreaObj;
+        create(): void;
+        toRefer(): void;
+        private doArea(area);
+    }
+}
+declare namespace BlackCat {
     class ModifyImgView extends ViewBase {
         private inputImg;
         private divImg;
@@ -1333,6 +1348,7 @@ declare namespace BlackCat {
         private myImg;
         private myName;
         private mySex;
+        private myArea;
         create(): void;
         toRefer(): void;
         private getImg();
@@ -1345,6 +1361,7 @@ declare namespace BlackCat {
         private modifyImg();
         private modifyName();
         private modifySex();
+        modifyArea(): void;
     }
 }
 declare namespace BlackCat {
@@ -1429,6 +1446,7 @@ declare namespace BlackCat {
         private doMakeRefund();
         private divLists_recreate();
         doGetWalletLists(force?: number): Promise<void>;
+        private getSgasIcon(v);
         getListImg(v: any): any;
         getListName(v: any): any;
         getListCtm(v: any): string;
@@ -1585,6 +1603,7 @@ declare namespace BlackCat {
         modifyImgView: ModifyImgView;
         modifyNameView: ModifyNameView;
         modifySexView: ModifySexView;
+        modifyAreaView: ModifyAreaView;
         securityCenterView: SecurityCenterView;
         trustContractView: TrustContractView;
         autoLogoutWalletView: AutoLogoutWalletView;
@@ -1902,6 +1921,7 @@ declare namespace BlackCat {
         static modUserIcon(uid: string, token: string, file: File): Promise<any>;
         static modUserName(uid: string, token: string, name: string): Promise<any>;
         static modUserSex(uid: string, token: string, sex: string): Promise<any>;
+        static modUserArea(uid: string, token: string, region: string): Promise<any>;
         static forgetPassByPhone(phone: string, code: string, new_pwd: string): Promise<any>;
         static forgetPassByEmail(email: string, code: string, new_pwd: string): Promise<any>;
         static getTrustNncs(uid: string, token: string, g_id: string): Promise<any>;

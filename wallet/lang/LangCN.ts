@@ -335,12 +335,13 @@ namespace BlackCat {
 
             myinfo_uid: "账号",
             myinfo_area: "地区",
+            modifyArea_empty: "请选择",
             myinfo_security: "安全中心",
             myinfo_set: "设置",
             myinfo_logout: "退出账号",
             myinfo_logoutConfirm: "确定要退出登录么",
 
-            // ModifyNameView
+            // Modify*View
             modifyImg: "头像",
             modifyImg_succ: "头像修改成功",
             modifyImg_select: "选择本地图片",
@@ -352,6 +353,8 @@ namespace BlackCat {
             modifyName_succ: "昵称修改成功！",
             modifySex: "性别",
             modifySex_succ: "性别修改成功",
+            modifyArea: "地区",
+            modifyArea_succ: "地区修改成功",
 
             //SecurityCenterView
             security_title: "安全中心",
@@ -547,17 +550,19 @@ namespace BlackCat {
             errCode_100607: "用户名或手机错误！",
             errCode_100608: "手机或密码错误！",
 
+            errCode_100700: "账号或密码错误！",
+            errCode_100701: "登录失效，请重新登录",
+            errCode_100702: "账号或密码错误，请重试",
+            errCode_100707: "用户名已存在！",
+            errCode_100708: "用户名格式不正确！",
+            errCode_100709: "地区代码错误！",
+
             errCode_100801: "获取邮箱验证码失败！",
             errcode_100802: "邮箱验证码错误！",
             errCode_100805: "邮箱已注册！",
             errCode_100806: "邮箱未注册，请先注册",
             errCode_100807: "用户名或邮箱错误！",
             errCode_100808: "邮箱或密码错误！",
-
-            errCode_100700: "账号或密码错误！",
-            errCode_100701: "登录失效，请重新登录",
-            errCode_100702: "账号或密码错误，请重试",
-            errCode_100707: "用户名已存在！",
 
             errCode_8100000: "已经绑定过钱包了，不需要再次绑定！",
             errCode_8100001: "上传绑定的钱包格式错误，请检查钱包文件！",

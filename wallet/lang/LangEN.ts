@@ -333,6 +333,7 @@
 
             myinfo_uid: "Account",
             myinfo_area: "Area",
+            modifyArea_empty: "Please choose",
             myinfo_security: "Security Center",
             myinfo_set: "Set",
             myinfo_logout: "Logout",
@@ -350,6 +351,8 @@
             modifyName_succ: "Nickname modified successfully!",
             modifySex: "Gender",
             modifySex_succ: "Gender modified successfully!",
+            modifyArea: "Area",
+            modifyArea_succ: "Area modified successfully!",
 
             //SecurityCenterView
             security_title: "Security Center",
@@ -546,17 +549,19 @@
             errCode_100607: "Wrong username or telephone number!",
             errCode_100608: "Wrong phone number or password!",
 
+            errCode_100700: "Incorrect account or password!",
+            errCode_100701: "Login is invalid, please log in again",
+            errCode_100702: "Incorrect account or password,please try it again",
+            errCode_100707: "Username already existed!",
+            errCode_100708: "Username format is incorrect!",
+            errCode_100709: "Area code is incorrect!",
+
             errCode_100801: "Failed to get email verification code!",
             errcode_100802: "Incorrect verification code!",
             errCode_100805: "This email address has been registered!",
             errCode_100806: "Please register first",
             errCode_100807: "Wrong username or email address!",
             errCode_100808: "Wrong email address or password!",
-
-            errCode_100700: "Incorrect account or password!",
-            errCode_100701: "Login is invalid, please log in again",
-            errCode_100702: "Incorrect account or password,please try it again",
-            errCode_100707: "Username already existed!",
 
             errCode_8100000: "Your have already bundled my wallet and don't need to bind again!",
             errCode_8100001: "The format of the uploaded wallet is incorrect. Please check the wallet file!",

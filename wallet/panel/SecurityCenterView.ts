@@ -57,7 +57,7 @@ namespace BlackCat {
             spanTrust.textContent = Main.langMgr.get("security_trust_admin") // "管理"
             this.ObjAppend(liTrust, spanTrust)
 
-            //  自动登出钱包
+            //  自动登出钱包设置时间
             var liSignOut = this.objCreate("li")
             liSignOut.style.cursor = "pointer"
             liSignOut.textContent = Main.langMgr.get("security_walletOut") // "自动登出钱包"
@@ -67,17 +67,17 @@ namespace BlackCat {
             }
             this.ObjAppend(ulSecurity, liSignOut)
 
-            // 自动登出钱包图标
+            // 自动登出钱包设置时间图标
             var iSignOut = this.objCreate("i")
             iSignOut.classList.add("iconfont", "icon-gengduo")
             this.ObjAppend(liSignOut, iSignOut)
 
-            // 自动登出钱包
+            // 自动登出钱包设置时间
             this.spanSignOut = this.objCreate("span")
             this.spanSignOut.textContent = this.getWalletOutTimeMaxMsg(Main.getLiveTimeMax()) // "N小时/分钟/永不"
             this.ObjAppend(liSignOut, this.spanSignOut)
 
-            // 自动登出钱包 提示
+            // 自动登出钱包设置时间 提示
             var divwalletOutTips = this.objCreate("div")
             divwalletOutTips.classList.add("pc_signout_tips")
             divwalletOutTips.textContent = Main.langMgr.get("security_walletOut_toast") // "当超过一定时间未操作钱包，将会自动登出，需要重新输入密码"

@@ -8,6 +8,8 @@ namespace BlackCat {
         private myImg: HTMLImageElement;
         private myName: HTMLElement;
         private mySex: HTMLElement;
+        private myArea: HTMLElement;
+
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
@@ -120,12 +122,21 @@ namespace BlackCat {
             //地区
             var liMyinfoArea = this.objCreate("li")
             liMyinfoArea.textContent = Main.langMgr.get("myinfo_area")
+            liMyinfoArea.onclick = () => {
+                this.hidden()
+                Main.viewMgr.change("ModifyAreaView")
+            }
             this.ObjAppend(ulMyinfo, liMyinfoArea)
 
+            //地区标签
+            var iMyinfoArea = this.objCreate("i")
+            iMyinfoArea.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfoArea, iMyinfoArea)
+
             // 地区内容
-            var spanMyinfoArea = this.objCreate("span")
-            spanMyinfoArea.textContent = this.getArea()
-            this.ObjAppend(liMyinfoArea, spanMyinfoArea)
+            this.myArea = this.objCreate("span")
+            this.myArea.textContent = this.getArea()
+            this.ObjAppend(liMyinfoArea, this.myArea)
 
             // 安全中心
             var liMyinfoTrust = this.objCreate("li")
@@ -183,7 +194,7 @@ namespace BlackCat {
         }
 
         private getArea() {
-            return Main.langMgr.get("area_code_" + Main.user.info.region)
+            return Main.langMgr.get("area_code_" + Main.user.info.region) ? Main.langMgr.get("area_code_" + Main.user.info.region) : Main.langMgr.get("modifyArea_empty")
         }
 
         private doLogout() {
@@ -221,6 +232,9 @@ namespace BlackCat {
                 this.mySex.textContent = this.getSex()
             }
             Main.viewMgr.change("ModifySexView")
+        }
+        modifyArea() {
+            this.myArea.textContent = this.getArea()
         }
 
 

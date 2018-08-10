@@ -53,8 +53,9 @@
 .pc_login_title{width: 70%;margin: 0 auto;position: relative;}
 .pc_login_title h1{font-size: 23px;color: #fff}
 .pc_title_switch{font-size: 12px;position: absolute;top: 10px;right: 0;}
-.pc_login_title a{float: left;padding: 0 3px;color: #9a9dac;cursor: pointer;-webkit-user-select: none;-ms-user-select: none; -moz-user-select: none; user-select: none;}
-.pc_login_title .pc_active{color: #c8ab73;border-bottom: 1px solid #c8ab73}
+.pc_login_title a{float: left;padding: 0 3px;color: #9a9dac;position: relative; cursor: pointer;-webkit-user-select: none;-ms-user-select: none; -moz-user-select: none; user-select: none;}
+.pc_login_title .pc_active{color: #c8ab73;}
+.pc_login_title .pc_active::after{content: "";position: absolute;bottom: -3px;left: 0;right: 0;margin: auto; width: 85%;height: 1px;background-color: #c8ab73}
 .pc_tiletmobile{border-left: 1px solid #9a9dac;border-right: 1px solid #9a9dac;}
 
 .pc_login_input{width: 70%;margin: 0 auto;color:#9c9ead;position: relative;}

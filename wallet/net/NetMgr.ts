@@ -172,9 +172,11 @@ namespace BlackCat {
                 this.type = 2;
                 // sgas合约地址
                 tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
+                // tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
                 // SGAS旧合约地址
                 tools.CoinTool.id_SGAS_OLD = []
                 // tools.CoinTool.id_SGAS_OLD.push("0x3f7420285874867c30f32e44f304fd62ad1e9573");
+                // tools.CoinTool.id_SGAS_OLD.push("0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54");
                 // 回调
                 callback()
             }, 2)

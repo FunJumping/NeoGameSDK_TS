@@ -323,7 +323,7 @@ namespace BlackCat {
                 this.spanSgas.textContent = "0";
             }
         }
-        private async doMakeRefundOld(){
+        private async doMakeRefundOld() {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
@@ -600,6 +600,28 @@ namespace BlackCat {
 
         }
 
+        private getSgasIcon(v): string {
+            try {
+                var params = JSON.parse(v.params)
+                if (params.hasOwnProperty("nnc")) {
+                    params = [params]
+                }
+                if (params instanceof Array) {
+                    for (let k in params) {
+                        if (params[k].hasOwnProperty('nnc')) {
+                            if (params[k].nnc == tools.CoinTool.id_SGAS) {
+                                return Main.resHost + "res/img/sgas.png";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (e) {
+                console.log('[Bla Cat]', '[PayView]', 'getListImg, v.type=' + v.type + ', error => ', e)
+            }
+            return Main.resHost + "res/img/oldsgas.png";
+        }
+
         getListImg(v) {
             if (v.state == "0") {
                 // 未确认，统一返回未确认图标
@@ -611,7 +633,7 @@ namespace BlackCat {
                 case "2": // sgas->gas
                 case "3": // sgas充值到游戏
                 case "4": // game->sgas退款
-                    return Main.resHost + "res/img/sgas.png";
+                    return this.getSgasIcon(v)
                 case "5": // 游戏交易
                     // 判断params里面是否有sgas合约，有的话标记成sgas图标
                     try {
@@ -620,10 +642,14 @@ namespace BlackCat {
                             params = [params]
                         }
                         if (params instanceof Array) {
-                            var nncs = new Array();
                             for (let k in params) {
-                                if (params[k].hasOwnProperty('nnc') && params[k].nnc == tools.CoinTool.id_SGAS) {
-                                    return Main.resHost + "res/img/sgas.png";
+                                if (params[k].hasOwnProperty('nnc')) {
+                                    if (params[k].nnc == tools.CoinTool.id_SGAS) {
+                                        return Main.resHost + "res/img/sgas.png";
+                                    }
+                                    else if (Number(v.cnts) > 0) {
+                                        return Main.resHost + "res/img/oldsgas.png";
+                                    }
                                 }
                             }
                         }
