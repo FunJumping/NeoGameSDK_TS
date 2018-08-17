@@ -137,9 +137,9 @@ namespace BlackCat.tools {
             sb.EmitAppCall(scriptaddress); //Asset contract
 
             var data = sb.ToArray();
-            var scripthash = data.toHexString();
+            // var scripthash = data.toHexString();
 
-            var r = await tools.WWW.rpc_getInvokescript(data);
+            var r = await tools.WWW.cli_getInvokescript(data);
             if (r) {
                 // 成功
                 res.err = false;
@@ -249,12 +249,15 @@ namespace BlackCat.tools {
 
             var signdata = ThinNeo.Helper.Sign(msg, prekey);
             tran.AddWitness(signdata, pubkey, addr);
-            // let txid = tran.GetHash().clone().reverse().toHexString();
+            let txid = tran.GetHash().clone().reverse().toHexString();
             var data: Uint8Array = tran.GetRawData();
 
-            var r = await tools.WWW.api_postRawTransaction(data);
+            var r = await tools.WWW.cli_postRawTransaction(data);
             if (r) {
-                if (r["txid"]) {
+                if (r["txid"] || r["sendrawtransactionresult"]) {
+                    if (!r["txid"] || r["txid"] == "") {
+                        r["txid"] = txid
+                    }
                     // 成功
                     res.err = false;
                     res.info = { txid: r["txid"] };

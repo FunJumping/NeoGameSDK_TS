@@ -4,31 +4,46 @@ namespace BlackCat {
         private types: Array<number>; // 网络类型
         private nodes: any; // nel节点
         private apis: any; // api节点
+        private clis: any; // cli节点
 
         private default_type: number; // 默认网络，1：主网；2:测试网
 
         type: number; // 当前网络
         private api_server: string; // 当前api_server
         private node_server: any; // 当前nelnode_server
+        private cli_server: any; // 当前neocli节点
+
+        private node_change_tmp: any; // 选择node节点
 
         constructor() {
             this.types = [1, 2]
 
+            this.clis = {}
+            this.clis[1] = [
+                // 主网cli
+                // 大陆
+                'https://clip01.9191wyx.com/api/mainnet',
+                // 其他地区
+                'https://neocli01.blacat.org/api/mainnet',
+            ]
+            this.clis[2] = []
+
             this.nodes = {}
             this.nodes[1] = [
-                // 主网
+                // 主网nel
 
-                // 国内
+                // 大陆
                 // "https://nelnode01.9191wyx.com/api/mainnet",
                 "https://api.nel.group/api/mainnet",
 
                 // 其他地区
                 "https://nelnode01.blacat.org/api/mainnet",
+                "http://nelnode01.blacat.org:82/api/mainnet",
             ]
             this.nodes[2] = [
-                // 测试网
+                // 测试网nel
 
-                // 国内
+                // 大陆
                 "https://nelnode00.9191wyx.com/api/testnet",
                 "https://api.nel.group/api/testnet",
 
@@ -44,7 +59,7 @@ namespace BlackCat {
                 
                 // 正式服
 
-                // 国内
+                // 大陆
                 // "//apip01.9191wyx.com/apic/",
 
                 // 其他地区
@@ -53,8 +68,10 @@ namespace BlackCat {
 
             this.node_server = {}
             this.default_type = 1;
+            this.cli_server = {}
         }
 
+        // 选择后台接口访问地址
         selectApi(callback) {
             if (this.api_server) {
                 ApiTool.base_url = this.api_server;
@@ -73,8 +90,8 @@ namespace BlackCat {
         private _selectApi(callback) {
             Main.viewMgr.viewConnecting.showConnecting()
             Main.viewMgr.iconView.showState()
-            var conn = new Connector(this.apis, "apic_test.php")
-            conn.getOne((res) => {
+            var conn = new Connector(this.apis, "apic_test.php", 'api')
+            conn.getOne((res, response) => {
                 if (res === false) {
                     // 失败提示
                     ViewConnecting.content = "netmgr_select_api_slow"
@@ -87,6 +104,7 @@ namespace BlackCat {
                     return
                 }
                 console.log('[Bla Cat]', '[NetMgr]', 'api => ', res)
+                console.log('[Bla Cat]', '[NetMgr]', 'api response => ', response)
                 this.api_server = res + "apic_user.php"
                 ApiTool.base_url = this.api_server
                 callback()
@@ -95,10 +113,13 @@ namespace BlackCat {
         }
         
 
-        private selectNode(callback, type) {
-            if (this.node_server && this.node_server.hasOwnProperty(type) && this.node_server[type]) {
-                tools.WWW.api = this.node_server[type];
-                callback()
+        // 选择nelnode节点，使用这个后，必须再使用selectCli
+        private selectNode(callback, type, force = 0) {
+            if (force == 0 && this.node_server && this.node_server.hasOwnProperty(type) && this.node_server[type]) {
+                // tools.WWW.api = this.node_server[type];
+                this.node_change_tmp = this.node_server[type]
+                // callback()
+                this.selectCli(callback, type, force)
                 return
             }
 
@@ -106,16 +127,16 @@ namespace BlackCat {
             Main.viewMgr.change("ViewConnecting")
             ViewConnecting.callback_retry = () => {
                 // 重试
-                this._selectNode(callback, type)
+                this._selectNode(callback, type, force)
             }
-            this._selectNode(callback, type)
+            this._selectNode(callback, type, force)
         }
 
-        private _selectNode(callback, type) {
+        private _selectNode(callback, type, force) {
             Main.viewMgr.viewConnecting.showConnecting()
             Main.viewMgr.iconView.showState()
-            var conn = new Connector(this.nodes[type], "?jsonrpc=2.0&id=1&method=getblockcount&params=[]")
-            conn.getOne((res) => {
+            var conn = new Connector(this.nodes[type], "?jsonrpc=2.0&id=1&method=getblockcount&params=[]", 'node')
+            conn.getOne((res, response) => {
                 if (res === false) {
                     // 失败提示
                     ViewConnecting.content = "netmgr_select_node_slow"
@@ -129,8 +150,99 @@ namespace BlackCat {
                     return
                 }
                 console.log('[Bla Cat]', '[NetMgr]', 'node => ', res)
-                this.node_server[type] = res
+                console.log('[Bla Cat]', '[NetMgr]', 'node response => ', response)
+
+                
+                // this.node_server[type] = res
+                // tools.WWW.api = this.node_server[type]
+                // callback()
+                // if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
+                // // 隐藏状态
+                // Main.viewMgr.iconView.hiddenState()
+                // // 显示正常
+                // Main.viewMgr.iconView.showSucc()
+
+                // 因为还需要选择cli节点，这里暂存一下结果
+                this.node_change_tmp = res
+                this.selectCli(callback, type, force)
+            })
+        }
+
+
+        private selectCli(callback, type, force = 0) {
+
+            if (!this.clis || !this.clis[type] || this.clis[type].length == 0) {
+                this.node_server[type] = this.node_change_tmp
                 tools.WWW.api = this.node_server[type]
+
+                this.cli_server[type] = null
+                tools.WWW.api_cli = null
+                callback()
+
+                if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
+                // 隐藏状态
+                Main.viewMgr.iconView.hiddenState()
+                // 显示正常
+                Main.viewMgr.iconView.showSucc()
+
+                return
+            }
+
+            if (force == 0 && this.cli_server && this.cli_server.hasOwnProperty(type) && this.cli_server[type]) {
+                // tools.WWW.api = this.node_server[type];
+
+                this.node_server[type] = this.node_change_tmp
+                tools.WWW.api = this.node_server[type]
+
+                tools.WWW.api_cli = this.cli_server[type]
+                
+                callback()
+
+                if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
+                // 隐藏状态
+                Main.viewMgr.iconView.hiddenState()
+                // 显示正常
+                Main.viewMgr.iconView.showSucc()
+                
+                return
+            }
+
+            // 连接中...
+            Main.viewMgr.change("ViewConnecting")
+            ViewConnecting.callback_retry = () => {
+                // 重试
+                this._selectCli(callback, type)
+            }
+            this._selectCli(callback, type)
+        }
+
+        private _selectCli(callback, type) {
+            Main.viewMgr.viewConnecting.showConnecting()
+            Main.viewMgr.iconView.showState()
+            var conn = new Connector(this.clis[type], "?jsonrpc=2.0&id=1&method=getblockcount&params=[]&uid="+Main.randNumber, 'cli')
+            conn.getOne((res, response) => {
+                if (res === false) {
+                    // 失败提示
+                    ViewConnecting.content = "netmgr_select_cli_slow"
+                    // 重试（返回）按钮
+                    var showReturn = !Main.isLoginInit()
+                    Main.viewMgr.viewConnecting.showRetry(showReturn)
+                    // 隐藏icon状态
+                    Main.viewMgr.iconView.hiddenState()
+                    // icon颜色（灰色）
+                    if (Main.isLoginInit() === true) Main.viewMgr.iconView.showFail()
+                    return
+                }
+                console.log('[Bla Cat]', '[NetMgr]', 'cli => ', res)
+                console.log('[Bla Cat]', '[NetMgr]', 'cli response => ', response)
+
+                // cli也选择成功，可都修改参数了
+                this.node_server[type] = this.node_change_tmp
+                tools.WWW.api = this.node_server[type]
+
+                this.cli_server[type] = res
+                tools.WWW.api_cli = this.cli_server[type]
+
                 callback()
                 if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
                 // 隐藏状态
@@ -171,12 +283,9 @@ namespace BlackCat {
                 // 测试网
                 this.type = 2;
                 // sgas合约地址
-                tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
-                // tools.CoinTool.id_SGAS = "0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54";
+                tools.CoinTool.id_SGAS = "0x961e628cc93d61bf636dc0443cf0548947a50dbe";
                 // SGAS旧合约地址
-                tools.CoinTool.id_SGAS_OLD = []
-                // tools.CoinTool.id_SGAS_OLD.push("0x3f7420285874867c30f32e44f304fd62ad1e9573");
-                // tools.CoinTool.id_SGAS_OLD.push("0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54");
+                tools.CoinTool.id_SGAS_OLD = ["0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54"]
                 // 回调
                 callback()
             }, 2)
@@ -188,10 +297,9 @@ namespace BlackCat {
                 // 主网
                 this.type = 1;
                 // 主网sgas合约
-                tools.CoinTool.id_SGAS = "";
+                tools.CoinTool.id_SGAS = "0x961e628cc93d61bf636dc0443cf0548947a50dbe";
                 // SGAS旧合约地址
                 tools.CoinTool.id_SGAS_OLD = []
-                // tools.CoinTool.id_SGAS_OLD.push("0x5956f9bba5189e1b0c063ed33893131efe694761");
                 // 回调
                 callback()
             }, 1)

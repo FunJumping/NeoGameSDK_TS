@@ -442,63 +442,63 @@ namespace BlackCat.tools
         /**
          * 领取gas
          */
-        static async claimgas()
-        {
-            let claimtxhex: string = await tools.WWW.api_getclaimtxhex(LoginInfo.getCurrentAddress());
+        // static async claimgas()
+        // {
+        //     let claimtxhex: string = await tools.WWW.api_getclaimtxhex(LoginInfo.getCurrentAddress());
 
-            //对象化交易体
-            var tran = new ThinNeo.Transaction();
-            var buf = claimtxhex.hexToBytes();
-            tran.Deserialize(new Neo.IO.BinaryReader(new Neo.IO.MemoryStream(buf.buffer, 0, buf.byteLength)));
-            var current = LoginInfo.getCurrentLogin();
-            var msg = tran.GetMessage().clone();
-            var signdata = ThinNeo.Helper.Sign(msg, current.prikey);
-            tran.AddWitness(signdata, current.pubkey, current.address);
+        //     //对象化交易体
+        //     var tran = new ThinNeo.Transaction();
+        //     var buf = claimtxhex.hexToBytes();
+        //     tran.Deserialize(new Neo.IO.BinaryReader(new Neo.IO.MemoryStream(buf.buffer, 0, buf.byteLength)));
+        //     var current = LoginInfo.getCurrentLogin();
+        //     var msg = tran.GetMessage().clone();
+        //     var signdata = ThinNeo.Helper.Sign(msg, current.prikey);
+        //     tran.AddWitness(signdata, current.pubkey, current.address);
 
-            var data: Uint8Array = tran.GetRawData();
+        //     var data: Uint8Array = tran.GetRawData();
 
-            var result = await tools.WWW.api_postRawTransaction(data);
-            return result
-        }
+        //     var result = await tools.WWW.api_postRawTransaction(data);
+        //     return result
+        // }
 
-        static async claimGas()
-        {
-            var current = LoginInfo.getCurrentLogin();
-            let claimsstr = await tools.WWW.api_getclaimgas(current.address, 0);
-            let claims = claimsstr[ "claims" ] as Claim[];
-            let sum = claimsstr[ "gas" ].toFixed(8);
+        // static async claimGas()
+        // {
+        //     var current = LoginInfo.getCurrentLogin();
+        //     let claimsstr = await tools.WWW.api_getclaimgas(current.address, 0);
+        //     let claims = claimsstr[ "claims" ] as Claim[];
+        //     let sum = claimsstr[ "gas" ].toFixed(8);
 
-            var tran = new ThinNeo.Transaction();
-            //交易类型为合约交易
-            tran.type = ThinNeo.TransactionType.ClaimTransaction;
-            tran.version = 0;//0 or 1
-            tran.extdata = new ThinNeo.ClaimTransData(); //JSON.parse(JSON.stringify(claims));
-            (tran.extdata as ThinNeo.ClaimTransData).claims = []
-            tran.attributes = [];
-            tran.inputs = [];
-            for (let i in claims)
-            {
-                let claim = (claims[ i ] as Claim);
-                var input = new ThinNeo.TransactionInput();
-                input.hash = (claim.txid).hexToBytes().reverse();
-                input.index = claim.n;
-                input[ "_addr" ] = claim.addr;
-                (tran.extdata as ThinNeo.ClaimTransData).claims.push(input);
-            }
-            var output = new ThinNeo.TransactionOutput();
-            output.assetId = (CoinTool.id_GAS).hexToBytes().reverse();
-            output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(current.address)
-            output.value = Neo.Fixed8.parse(sum);
-            tran.outputs = [];
-            tran.outputs.push(output);
-            var msg = tran.GetMessage().clone();
-            var signdata = ThinNeo.Helper.Sign(msg, current.prikey);
-            tran.AddWitness(signdata, current.pubkey, current.address);
+        //     var tran = new ThinNeo.Transaction();
+        //     //交易类型为合约交易
+        //     tran.type = ThinNeo.TransactionType.ClaimTransaction;
+        //     tran.version = 0;//0 or 1
+        //     tran.extdata = new ThinNeo.ClaimTransData(); //JSON.parse(JSON.stringify(claims));
+        //     (tran.extdata as ThinNeo.ClaimTransData).claims = []
+        //     tran.attributes = [];
+        //     tran.inputs = [];
+        //     for (let i in claims)
+        //     {
+        //         let claim = (claims[ i ] as Claim);
+        //         var input = new ThinNeo.TransactionInput();
+        //         input.hash = (claim.txid).hexToBytes().reverse();
+        //         input.index = claim.n;
+        //         input[ "_addr" ] = claim.addr;
+        //         (tran.extdata as ThinNeo.ClaimTransData).claims.push(input);
+        //     }
+        //     var output = new ThinNeo.TransactionOutput();
+        //     output.assetId = (CoinTool.id_GAS).hexToBytes().reverse();
+        //     output.toAddress = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(current.address)
+        //     output.value = Neo.Fixed8.parse(sum);
+        //     tran.outputs = [];
+        //     tran.outputs.push(output);
+        //     var msg = tran.GetMessage().clone();
+        //     var signdata = ThinNeo.Helper.Sign(msg, current.prikey);
+        //     tran.AddWitness(signdata, current.pubkey, current.address);
 
-            var data: Uint8Array = tran.GetRawData();
-            var result = await tools.WWW.api_postRawTransaction(data);
-            return result
-        }
+        //     var data: Uint8Array = tran.GetRawData();
+        //     var result = await tools.WWW.api_postRawTransaction(data);
+        //     return result
+        // }
 
         /**
          * invokeTrans 方式调用合约塞入attributes
@@ -530,8 +530,15 @@ namespace BlackCat.tools
             tran.AddWitness(signdata, pubkey, addr);
             var data: Uint8Array = tran.GetRawData();
 
+            let txid = tran.GetHash().clone().reverse().toHexString();
+
             var res: Result = new Result();
             var result = await tools.WWW.api_postRawTransaction(data);
+            if (result["sendrawtransactionresult"]) {
+                if (!result["txid"]) {
+                    result["txid"] = txid
+                }
+            }
             res.err = !result[ "sendrawtransactionresult" ];
             res.info = result[ "txid" ];
             return res;

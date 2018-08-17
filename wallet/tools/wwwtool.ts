@@ -9,7 +9,7 @@ namespace BlackCat.tools
         // Black Cat
         static api: string;
         static apiaggr: string;
-
+        static api_cli: string;
 
         static makeRpcUrl(url: string, method: string, ..._params: any[])
         {
@@ -38,20 +38,20 @@ namespace BlackCat.tools
             return body;
         }
 
-        static async gettransbyaddress(address: string, pagesize: number, pageindex: number)
-        {
-            var postdata =
-                WWW.makeRpcPostBody(
-                    "gettransbyaddress",
-                    address,
-                    pagesize,
-                    pageindex
-                );
-            var result = await fetch(WWW.apiaggr, { "method": "post", "body": JSON.stringify(postdata) });
-            var json = await result.json();
-            var r = json[ "result" ];
-            return r;
-        }
+        // static async gettransbyaddress(address: string, pagesize: number, pageindex: number)
+        // {
+        //     var postdata =
+        //         WWW.makeRpcPostBody(
+        //             "gettransbyaddress",
+        //             address,
+        //             pagesize,
+        //             pageindex
+        //         );
+        //     var result = await fetch(WWW.apiaggr, { "method": "post", "body": JSON.stringify(postdata) });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     return r;
+        // }
 
         static async  api_getHeight()
         {
@@ -62,15 +62,40 @@ namespace BlackCat.tools
             var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
             return height;
         }
-        static async api_getBlockInfo(index: number)
+
+        static async  api_getCliHeight()
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getblocktime");
+            var cli = 0;
+            if (WWW.api_cli && WWW.api_cli != "") {
+                cli = 1;
+            }
+
+            var api_url = WWW.api;
+            if (cli == 1) {
+                api_url = WWW.api_cli
+            }
+
+            var str = WWW.makeRpcUrl(api_url, "getblockcount");
+            if (cli == 1) {
+                str += "&uid=" + Main.randNumber
+            }
+
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             var r = json[ "result" ];
             var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
             return height;
         }
+        
+        // static async api_getBlockInfo(index: number)
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getblocktime");
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
+        //     return height;
+        // }
         static async api_getAllAssets()
         {
             var str = WWW.makeRpcUrl(WWW.api, "getallasset");
@@ -87,32 +112,32 @@ namespace BlackCat.tools
             var r = json[ "result" ];
             return r;
         }
-        static async api_getnep5Balance(address: string)
-        {
-            var str = WWW.makeRpcUrl(WWW.api, "getallnep5assetofaddress", address, 1);
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            var r = json[ "result" ];
-            return r;
-        }
+        // static async api_getnep5Balance(address: string)
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getallnep5assetofaddress", address, 1);
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     return r;
+        // }
 
-        static async api_getnep5balanceofaddress(scriptaddr: String, address: string, )
-        {
-            var str = WWW.makeRpcUrl(WWW.api, "getnep5balanceofaddress", scriptaddr.toString(), address);
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            var r = json[ "result" ];
-            return r;
-        }
+        // static async api_getnep5balanceofaddress(scriptaddr: String, address: string, )
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getnep5balanceofaddress", scriptaddr.toString(), address);
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     return r;
+        // }
 
-        static async api_getNep5TransferByTxid(txid: string)
-        {
-            var str = WWW.makeRpcUrl(WWW.api, "getnep5transferbytxid", txid.toString());
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            var r = json[ "result" ];
-            return r;
-        }
+        // static async api_getNep5TransferByTxid(txid: string)
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getnep5transferbytxid", txid.toString());
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     return r;
+        // }
 
         static async api_getBalance(address: string)
         {
@@ -132,12 +157,31 @@ namespace BlackCat.tools
             return r;
         }
 
-        static async api_getAddressTxs(address: string, size: number, page: number)
+        // static async api_getAddressTxs(address: string, size: number, page: number)
+        // {
+        //     var postdata = WWW.makeRpcPostBody("getaddresstxs", address, size, page);
+        //     var result = await fetch(WWW.api, { "method": "post", "body": JSON.stringify(postdata) });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     return r;
+        // }
+
+        static async cli_postRawTransaction(data: Uint8Array): Promise<boolean>
         {
-            var postdata = WWW.makeRpcPostBody("getaddresstxs", address, size, page);
-            var result = await fetch(WWW.api, { "method": "post", "body": JSON.stringify(postdata) });
+            var cli = 0;
+            if (WWW.api_cli && WWW.api_cli != "") {
+                cli = 1;
+            }
+
+            var api_url = WWW.api;
+            if (cli == 1) {
+                api_url = WWW.api_cli
+            }
+            var postdata = WWW.makeRpcPostBody("sendrawtransaction", data.toHexString());
+            if (cli == 1) postdata["uid"] = Main.randNumber
+            var result = await fetch(api_url, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
-            var r = json[ "result" ];
+            var r = json[ "result" ][ 0 ] as boolean;
             return r;
         }
 
@@ -150,52 +194,77 @@ namespace BlackCat.tools
             return r;
         }
 
-        static async api_getclaimgas(address: string, type: number)
-        {
-            if (type)
-                var str = WWW.makeRpcUrl(WWW.api, "getclaimgas", address, type);
-            else
-                var str = WWW.makeRpcUrl(WWW.api, "getclaimgas", address);
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            var r = json[ "result" ];
-            if (r == undefined)
-                return 0;
-            return r[ 0 ];
-        }
+        // static async api_getclaimgas(address: string, type: number)
+        // {
+        //     if (type)
+        //         var str = WWW.makeRpcUrl(WWW.api, "getclaimgas", address, type);
+        //     else
+        //         var str = WWW.makeRpcUrl(WWW.api, "getclaimgas", address);
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     if (r == undefined)
+        //         return 0;
+        //     return r[ 0 ];
+        // }
         //获得提币的交易体
-        static async api_getclaimtxhex(address: string): Promise<string>
-        {
-            var str = WWW.makeRpcUrl(WWW.api, "getclaimtxhex", address);
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            var r = json[ "result" ];
-            if (r == undefined)
-                return "";
-            return r[ 0 ][ "claimtxhex" ];
-        }
+        // static async api_getclaimtxhex(address: string): Promise<string>
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getclaimtxhex", address);
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     if (r == undefined)
+        //         return "";
+        //     return r[ 0 ][ "claimtxhex" ];
+        // }
         //获得高度
-        static async  rpc_getHeight()
-        {
-            var str = WWW.makeRpcUrl(WWW.api, "getblockcount");
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            var r = json[ "result" ];
-            var height = parseInt(r as string) - 1;
-            return height;
-        }
+        // static async  rpc_getHeight()
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getblockcount");
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     var height = parseInt(r as string) - 1;
+        //     return height;
+        // }
         //调用storage合约
-        static async  rpc_getStorage(scripthash: Uint8Array, key: Uint8Array): Promise<string>
+        // static async  rpc_getStorage(scripthash: Uint8Array, key: Uint8Array): Promise<string>
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api, "getstorage", scripthash.toHexString(), key.toHexString());
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     if (json[ "result" ] == null)
+        //         return null;
+        //     var r = json[ "result" ] as string;
+        //     return r;
+        // }
+        
+        // cli调用invoke合约
+        static async cli_getInvokescript(scripthash: Uint8Array): Promise<any>
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getstorage", scripthash.toHexString(), key.toHexString());
+            var cli = 0;
+            if (WWW.api_cli && WWW.api_cli != "") {
+                cli = 1;
+            }
+
+            var api_url = WWW.api;
+            if (cli == 1) {
+                api_url = WWW.api_cli
+            }
+            var str = WWW.makeRpcUrl(api_url, "invokescript", scripthash.toHexString());
+            if (cli == 1) {
+                str += "&uid=" + Main.randNumber
+            }
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             if (json[ "result" ] == null)
                 return null;
-            var r = json[ "result" ] as string;
+            var r = json[ "result" ][ 0 ]
             return r;
         }
-        //调用invoke合约
+
+        // nel调用invoke合约
         static async rpc_getInvokescript(scripthash: Uint8Array): Promise<any>
         {
             var str = WWW.makeRpcUrl(WWW.api, "invokescript", scripthash.toHexString());
@@ -228,47 +297,47 @@ namespace BlackCat.tools
         }
 
         //注册域名时塞值
-        static async setnnsinfo(address: string, name: string, time: number)
-        {
-            var str = WWW.makeRpcUrl(WWW.apiaggr, "setnnsinfo", address, name, time);
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            if (json[ "result" ] == null)
-                return null;
-            var r = json[ "result" ][ 0 ][ "result" ]
-            return r;
-        }
+        // static async setnnsinfo(address: string, name: string, time: number)
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.apiaggr, "setnnsinfo", address, name, time);
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     if (json[ "result" ] == null)
+        //         return null;
+        //     var r = json[ "result" ][ 0 ][ "result" ]
+        //     return r;
+        // }
         //获取地址下所有的域名
-        static async getnnsinfo(address: string): Promise<string[]>
-        {
+        // static async getnnsinfo(address: string): Promise<string[]>
+        // {
 
-            var postdata = WWW.makeRpcPostBody("getdomainbyaddress2", address);
-            var result = await fetch(WWW.apiaggr, { "method": "post", "body": JSON.stringify(postdata) });
-            var json = await result.json();
-            if (json[ "result" ] == null)
-                return null;
-            var r = json[ "result" ]
-            return r;
-        }
-        static async delnnsinfo(domain: string)
-        {
-            var str = WWW.makeRpcUrl(WWW.apiaggr, "delnnsinfo", domain);
-            var result = await fetch(str, { "method": "get" });
-            var json = await result.json();
-            if (json[ "result" ] == null)
-                return null;
-            var r = json[ "result" ][ 0 ][ "result" ]
-            return r;
-        }
+        //     var postdata = WWW.makeRpcPostBody("getdomainbyaddress2", address);
+        //     var result = await fetch(WWW.apiaggr, { "method": "post", "body": JSON.stringify(postdata) });
+        //     var json = await result.json();
+        //     if (json[ "result" ] == null)
+        //         return null;
+        //     var r = json[ "result" ]
+        //     return r;
+        // }
+        // static async delnnsinfo(domain: string)
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.apiaggr, "delnnsinfo", domain);
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     if (json[ "result" ] == null)
+        //         return null;
+        //     var r = json[ "result" ][ 0 ][ "result" ]
+        //     return r;
+        // }
         //nns（.neo） start
-        static async api_getBidListByAddress(address: string)
-        {
-            var postdata = WWW.makeRpcPostBody("getbidlistbyaddress", address);
-            var result = await fetch(WWW.apiaggr, { "method": "post", "body": JSON.stringify(postdata) });
-            var json = await result.json();
-            var r = json[ "result" ];
-            return r;
-        }
+        // static async api_getBidListByAddress(address: string)
+        // {
+        //     var postdata = WWW.makeRpcPostBody("getbidlistbyaddress", address);
+        //     var result = await fetch(WWW.apiaggr, { "method": "post", "body": JSON.stringify(postdata) });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     return r;
+        // }
 
     }
 }

@@ -31,7 +31,7 @@ namespace BlackCat {
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement;
-            this.div.classList.add("pc_login", "pc_register")
+            this.div.classList.add("pc_bj", "pc_login", "pc_register")
 
             // 找回密码logo
             var divLogo = this.objCreate("div")
@@ -436,7 +436,7 @@ namespace BlackCat {
                         res = await ApiTool.getEmailCode(this.inputAccount.value, Main.langMgr.type);
                         break;
                     case 'phone':
-                        res = await ApiTool.getPhoneCode(this.inputAccount.value);
+                        res = await ApiTool.getPhoneCode(this.getPhone());
                         break;
                     default:
                         return;

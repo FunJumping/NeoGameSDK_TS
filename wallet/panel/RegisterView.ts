@@ -33,7 +33,7 @@ namespace BlackCat {
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement;
-            this.div.classList.add("pc_login", "pc_register")
+            this.div.classList.add("pc_bj", "pc_login", "pc_register")
 
             // 注册logo
             var divLogo = this.objCreate("div")

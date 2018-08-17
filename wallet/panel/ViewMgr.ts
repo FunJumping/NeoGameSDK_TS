@@ -39,6 +39,8 @@ namespace BlackCat {
         autoLogoutWalletView: AutoLogoutWalletView; //自动登出钱包
 
         payWalletDetailView: PayWalletDetailView; // 钱包详情
+        payExchangeView: PayExchangeView; // 交易所
+        payExchangeDetailView: PayExchangeDetailView; //交易购买所详情
         payReceivablesView: PayReceivablesView;//收款
         payTransferView: PayTransferView; // 转账
 
@@ -170,6 +172,22 @@ namespace BlackCat {
                         this.views[type] = this.payWalletDetailView
                     }
                     this.payWalletDetailView.start()
+                    break;
+                case "PayExchangeView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示交易所(' + type + ') ...')
+                    if (!this.payExchangeView) {
+                        this.payExchangeView = new PayExchangeView();
+                        this.views[type] = this.payExchangeView
+                    }
+                    this.payExchangeView.start()
+                    break;
+                case "PayExchangeDetailView":
+                    console.log('[Bla Cat]', '[ViewMgr]', '显示交易所购买详情(' + type + ') ...')
+                    if (!this.payExchangeDetailView) {
+                        this.payExchangeDetailView = new PayExchangeDetailView();
+                        this.views[type] = this.payExchangeDetailView
+                    }
+                    this.payExchangeDetailView.start()
                     break;
                 case "PayReceivablesView":
                     console.log('[Bla Cat]', '[ViewMgr]', '显示收款(' + type + ') ...')

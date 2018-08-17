@@ -13,7 +13,7 @@ namespace BlackCat {
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_login","pc_connecting")
+            this.div.classList.add("pc_bj", "pc_connecting")
 
             if (this.showType == "connecting") {
                 this.showConnecting()
@@ -66,7 +66,7 @@ namespace BlackCat {
             descDiv.textContent = Main.langMgr.get(lang_key)
             this.ObjAppend(divRetry, descDiv)
 
-            
+
 
             // 返回
             if (showReturn) {
@@ -78,7 +78,7 @@ namespace BlackCat {
                 }
                 this.ObjAppend(divRetry, returnObj)
             }
-            
+
             // 重试
             var retryObj = this.objCreate("button")
             retryObj.textContent = Main.langMgr.get("retry")

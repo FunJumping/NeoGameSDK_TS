@@ -18,7 +18,7 @@ namespace BlackCat {
         create() {
 
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_listdetail")
+            this.div.classList.add("pc_bj", "pc_listdetail")
 
             if (PayListDetailView.list && PayListDetailView.list.hasOwnProperty("wallet")) {
                 // header // header标签创建比较麻烦
@@ -53,6 +53,7 @@ namespace BlackCat {
                     + '<div class="pc_cnts ' + Main.viewMgr.payView.getListCntsClass(PayListDetailView.list) + ' "><span>'
                     + this.getCnts()
                     + '</span>'
+                    + '<div class="pc_payheighet iconfont icon-diejia">' + Main.viewMgr.payView.getListBlockindex(PayListDetailView.list) + '</div>'
                     + Main.viewMgr.payView.getListState(PayListDetailView.list).outerHTML
                     // +           this.getStats()
                     + '</div>'

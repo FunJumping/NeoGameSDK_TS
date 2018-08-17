@@ -21,7 +21,7 @@ namespace BlackCat {
             this.getWalletInfo();
 
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_walletdetail")
+            this.div.classList.add("pc_bj", "pc_walletdetail")
 
             // header 
             var header = this.objCreate("div")

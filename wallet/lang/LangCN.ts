@@ -398,36 +398,39 @@ namespace BlackCat {
             pc_receivables_copy: "复制成功",
 
             // PayTransferView
-            pay_transfer: "转账",
+            pay_transfer: "提款",
             pay_transferType: "代币：GAS",
             pay_transferBalance: "余额：",
-            pay_transferToAddr: "转账地址",
-            pay_transferCount: "转账金额",
-            pay_transferToAddrError: "转账地址错误",
-            pay_transferCountError: "转账金额错误",
-            pay_transferDoSucc: "转账操作成功",
-            pay_transferDoFail: "转账失败",
+            pay_transferToAddr: "提款地址",
+            pay_transferCount: "提款金额",
+            pay_transferToAddrError: "提款地址错误",
+            pay_transferCountError: "提款金额错误",
+            pay_transferDoSucc: "提款操作成功",
+            pay_transferDoFail: "提款失败",
 
             // PayView
             pay_wallet: "我的钱包",
             pay_refresh: "刷新",
             pay_wallet_detail: "详情",
             pay_coin_name: "代币",
-            pay_coin_old: "SGAS(旧)提现",
-            pay_gas: "Gas",
+            pay_coin_old: "SGAS(old)兑换",
+            pay_gas: "GAS",
             pay_gas_desc: "GAS是NEO链上的数字货币，可以通过交易所获取",
-            pay_sgas: "SGas",
-            pay_sgas_desc: "SGas是Bla Cat提供给玩家消费用的通用筹码",
-            pay_refund: "提现",
+            pay_sgas: "SGAS",
+            pay_sgas_desc: "SGAS是Bla Cat提供给玩家消费用的通用筹码",
+            pay_send: "提款",
+            pay_purchase: "购买",
             pay_makeMint: "兑换",
             pay_recentLists: "近期记录",
             pay_makeMintGasNotEnough: "GAS余额不足",
-            pay_makeMintDoFail: "充值sgas失败！\r\n充值合约执行失败！\r\n请等待上次充值确认后再操作！",
-            pay_makeMintDoFail2: "充值sgas失败！\r\n发送充值请求失败！请检查网络，稍候重试！",
-            pay_makeRefundSgasNotEnough: "Sgas余额不足",
+            pay_makeMintDoFail: "充值SGAS失败！\r\n充值合约执行失败！\r\n请等待上次充值确认后再操作！",
+            pay_makeMintDoFail2: "充值SGAS失败！\r\n发送充值请求失败！请检查网络，稍候重试！",
+            pay_makeRefundSgasNotEnough: "SGAS余额不足",
             pay_makeRefundDoFail: "提取合约执行失败！请等待上个提现或兑换交易完成再操作！",
             pay_makeRefundDoFail2: "发送提取交易失败！请检查网络，稍候重试！",
             pay_makeRefundGetScriptFail: "获取提取合约失败！",
+            pay_makeRefundSgasOldNotEnough: "SGAS(旧)余额不足",
+            
 
             pay_not_enough_money: "余额不足",
             pay_not_enough_utxo: "请等待上次交易完成再执行！",
@@ -477,6 +480,11 @@ namespace BlackCat {
             addressbook_op_addSucc: "联系人添加成功",
             addressbook_op_updateSucc: "联系人修改成功",
 
+            //PayExchangeView
+            pay_exchange_gas: "购买GAS",
+            pay_exchange_purchase: "购买",
+            pay_exchange_price: "最新价",
+            pay_exchange_range: "24H涨跌",
 
             // ViewAlert
 
@@ -494,12 +502,14 @@ namespace BlackCat {
             pay_transferGas_count: "转账金额",
 
             // ViewTransCount
-            pay_transCount_count: "金额",
+            pay_transCount_count: "兑换",
             pay_transCount_inputCount: "请输入金额",
+            pay_transCount_inputSGASCount: "请输入SGAS金额",
+            pay_transCount_inputGASCount: "请输入GAS金额",
             pay_transCount_err: "请输入正确的金额",
-            pay_sgas2gas: "SGas &#xe6a8; Gas",
-            pay_gas2sgas: "Gas &#xe6a8; SGas",
-            pay_old: "SGAS（旧）余额：",
+            pay_transCountGAS: "GAS",
+            pay_transCountSGAS: "SGAS",
+            pay_transCountOLD: "SGAS(old)",
 
             // ViewWalletOpen
             pay_walletOpen_password: "密码",
@@ -583,6 +593,7 @@ namespace BlackCat {
             // NetMgr
             netmgr_select_api_slow: "与服务器连接异常或缓慢，请检查网络后重试！",
             netmgr_select_node_slow: "与链上节点通讯异常或缓慢，请检查网络后重试！",
+            netmgr_select_cli_slow: "与链上节点通讯异常，请检查网络后重试！",
             netmgr_connecting: "连接中，请稍候...",
             netmgr_connecting_fail: "连接失败，请检查网络后重试。",
 

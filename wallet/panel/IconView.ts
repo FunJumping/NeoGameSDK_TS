@@ -38,9 +38,16 @@ namespace BlackCat {
                 if (this.doDragMove == true) {
                     return false;
                 }
+
+                // 隐藏自身
                 this.hidden()
+                // 显示mainView
                 Main.viewMgr.mainView.div.classList.remove("pc_windowhide")
                 Main.viewMgr.mainView.show()
+                // 更新payView的height
+                if (Main.viewMgr.payView && Main.viewMgr.payView.isCreated) {
+                    Main.viewMgr.payView.getHeight()
+                }
             }
 
             this.div.onmousemove = () => {

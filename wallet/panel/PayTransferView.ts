@@ -22,13 +22,7 @@ namespace BlackCat {
         }
 
         start() {
-            this.gasBalance = Main.viewMgr.payView.gas.toString();
-            // 判断一下有没有减号，不用科学计数法表示
-            var balanceAmount = Main.viewMgr.payView.gas.toString();
-            if (balanceAmount.toString().indexOf('-') >= 0) {
-                balanceAmount = '0' + String(Number(balanceAmount) + 1).substr(1);
-            }
-            this.gasBalance = balanceAmount;
+            this.gasBalance = Main.getStringNumber(Main.viewMgr.payView.gas);
 
             super.start()
 

@@ -2,66 +2,96 @@
 /// <reference path="./ViewBase.ts" />
 
 namespace BlackCat {
-    // 通讯录详情
-    export class AddressbookDetailsView extends ViewBase {
+    // 交易所购买详情
+    export class PayExchangeDetailView extends ViewBase {
 
-        private divAddress: HTMLElement
-        static contact: contact;
-
-        constructor() {
-            super()
-
-            if (!AddressbookDetailsView.contact) {
-                AddressbookDetailsView.contact = new contact();
-            }
-        }
-
+        private ulExchange: HTMLUListElement;
+        private divAddress: HTMLDivElement;
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_bj", "pc_maillist_details")
+            this.div.classList.add("pc_bj", "pay_exchangedetail")
 
             var header = this.objCreate("div")
             header.classList.add("pc_header")
             this.ObjAppend(this.div, header)
 
             //返回
-            var headerReturn = this.objCreate("a")
-            headerReturn.classList.add("iconfont", "icon-fanhui")
-            headerReturn.textContent = Main.langMgr.get("return") // 返回
-            headerReturn.onclick = () => {
+            var returnA = this.objCreate("a")
+            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.textContent = Main.langMgr.get("return") // 返回
+            returnA.onclick = () => {
                 this.return()
             }
-            this.ObjAppend(header, headerReturn)
+            this.ObjAppend(header, returnA)
 
-            // 通讯录详情标题
-            var headerTitle = this.objCreate("h1")
-            headerTitle.textContent = Main.langMgr.get("addressbook_det_title") // "通讯录"
-            this.ObjAppend(header, headerTitle)
+            //标题
+            var headerH1 = this.objCreate("h1")
+            headerH1.textContent = Main.langMgr.get("pay_exchange_gas") // "购买GAS"
+            this.ObjAppend(header, headerH1)
 
-            // 通讯录详情 修改图标
-            var iHeader = this.objCreate("i")
-            iHeader.classList.add("pc_returngame", "iconfont", "icon-qianbi")
-            iHeader.onclick = () => {
-                this.hidden()
-                AddressbookOpView.refer = "AddressbookDetailsView"
-                AddressbookOpView.contact = AddressbookDetailsView.contact
-                AddressbookOpView.opType = "update"
-                Main.viewMgr.change("AddressbookOpView")
-            }
-            this.ObjAppend(header, iHeader)
+            //交易所类型
+            var divExchange = this.objCreate("div")
+            divExchange.classList.add("pc_exchangetitle")
+            this.ObjAppend(this.div, divExchange)
+
+            //购买
+            var divEcvhangeObj = this.objCreate("div")
+            divEcvhangeObj.classList.add("pc_exchangelist")
+            this.ObjAppend(divExchange, divEcvhangeObj)
+            //名称
+            var divExchangeName = this.objCreate("div")
+            divExchangeName.classList.add("pc_exchangename")
+
+            //名称内容
+            var labelExchangeName = this.objCreate("label")
+            labelExchangeName.textContent = "Bla Cat"
+            this.ObjAppend(divExchangeName, labelExchangeName)
+
+            //名称类型
+            var pExchangeName = this.objCreate("p")
+            pExchangeName.textContent = "GAS/NEO"
+            this.ObjAppend(divExchangeName, pExchangeName)
+
+            this.ObjAppend(divEcvhangeObj, divExchangeName)
+
+
+            //最新价
+            var divExchangePrice = this.objCreate("div")
+            divExchangePrice.classList.add("pc_exchangeprice")
+
+            //最新价内容
+            var labelExchangePrice = this.objCreate("label")
+            labelExchangePrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
+            this.ObjAppend(divExchangePrice, labelExchangePrice)
+
+            //最新价价格
+            var pExchangePrice = this.objCreate("p")
+            pExchangePrice.textContent = "1111111111111"
+            this.ObjAppend(divExchangePrice, pExchangePrice)
+
+            this.ObjAppend(divEcvhangeObj, divExchangePrice)
+
+            //最新价
+            var divExchangePrice = this.objCreate("div")
+            divExchangePrice.classList.add("pc_exchangeprice")
+
+            //最新价内容
+            var labelExchangePrice = this.objCreate("label")
+            labelExchangePrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
+            this.ObjAppend(divExchangePrice, labelExchangePrice)
+
+            //最新价价格
+            var pExchangePrice = this.objCreate("p")
+            pExchangePrice.textContent = "1111111111111"
+            this.ObjAppend(divExchangePrice, pExchangePrice)
+
+            this.ObjAppend(divEcvhangeObj, divExchangePrice)
+
 
             // 通讯录详情内容容器
             var divObj = this.objCreate("div")
             divObj.classList.add("pc_addressbookdet")
             this.ObjAppend(this.div, divObj)
-
-            // 联系人
-            var divName = this.objCreate("div")
-            divName.classList.add("pc_addressbookname")
-            divName.textContent = AddressbookDetailsView.contact.address_name  // "联系人"
-            this.ObjAppend(divObj, divName)
-
-
 
             // 钱包地址标题 容器
             var divAddressTitle = this.objCreate("div")
@@ -140,44 +170,16 @@ namespace BlackCat {
             divDescribeText.textContent = AddressbookDetailsView.contact.address_desc ? AddressbookDetailsView.contact.address_desc : Main.langMgr.get("addressbook_det_empty") // "空"
             this.ObjAppend(divObj, divDescribeText)
 
-            //删除联系人
-            var btnDel = this.objCreate("button")
-            btnDel.classList.add("pc_addressbookdel")
-            btnDel.textContent = Main.langMgr.get("addressbook_det_del") //删除联系人
-            btnDel.onclick = () => {
-                this.dodel()
-            }
-            this.ObjAppend(divObj, btnDel)
+
+
         }
 
         toRefer() {
-            if (AddressbookDetailsView.refer) {
-                Main.viewMgr.change(AddressbookDetailsView.refer)
-                AddressbookDetailsView.refer = null;
+            if (PayExchangeDetailView.refer) {
+                Main.viewMgr.change(PayExchangeDetailView.refer)
+                PayExchangeDetailView.refer = null;
             }
         }
-
-        private async dodel() {
-            ViewConfirm.callback = () => {
-                this.makedel()
-            }
-            Main.showConFirm("addressbook_det_del_tips")
-        }
-
-
-        private async makedel() {
-            var res = await ApiTool.delAddrbook(Main.user.info.uid, Main.user.info.token, AddressbookDetailsView.contact.id)
-
-            if (res.r) {
-                Main.showToast("addressbook_det_del_succ")
-                this.return()
-                Main.viewMgr.addressbookView.getAddressbook()
-            }
-            else {
-                Main.showErrCode(res.errCode)
-            }
-        }
-
 
         //转账
         private async doMakeTransfer() {

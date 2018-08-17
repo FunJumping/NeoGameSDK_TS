@@ -29,7 +29,7 @@ namespace BlackCat {
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_maillist", "pc_maillist_op")
+            this.div.classList.add("pc_bj", "pc_maillist_op")
 
             var header = this.objCreate("div")
             header.classList.add("pc_header")

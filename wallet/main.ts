@@ -13,6 +13,7 @@ namespace BlackCat {
 
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
+        static randNumber: number; // 随机数
 
         // 资源图标前缀路径
         static resHost = BC_path + "../"
@@ -71,6 +72,7 @@ namespace BlackCat {
             Main.wallet = new tools.wallet();
             Main.viewMgr = new ViewMgr();
             Main.langMgr = new LangMgr();
+            Main.randNumber = parseInt((Math.random() * 10000000).toString())
 
             Main.reset(0)
 
@@ -111,6 +113,30 @@ namespace BlackCat {
                 clearTimeout(Main.s_update)
                 Main.update()
             }
+        }
+
+        // 获取sgas余额
+        static async getSgasBalanceByAddress(id_SGAS: string, address: string) {
+            var params = {
+                sbParamJson: ["(addr)" + address],
+                sbPushString: "balanceOf",
+                nnc: id_SGAS
+            }
+            try {
+                let res = await Main.wallet.invokescript(params)
+                if (res.err == false) {
+                    let data = res.info
+                    if (data["stack"] && data["stack"].length > 0) {
+                        let balances = data["stack"][0]
+                        let balance = new Neo.BigInteger(balances.value.hexToBytes()).toString()
+                        return Number(balance) / 100000000
+                    }
+                }
+            }
+            catch (e) {
+                console.log('[Bla Cat]', '[main]', 'getSgasBalanceByAddress =>', e)
+            }
+            return 0
         }
 
 
@@ -195,7 +221,6 @@ namespace BlackCat {
             var sgas = 0;
             var gas = 0;
             var balances = (await tools.WWW.api_getBalance(Main.user.info.wallet)) as tools.BalanceInfo[];
-            var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
             if (balances) {
                 //余额不唯空
                 balances.map(item => (item.names = tools.CoinTool.assetID2name[item.asset])); //将列表的余额资产名称赋值
@@ -208,9 +233,13 @@ namespace BlackCat {
                     }
                 );
             }
-            if (nep5balances) {
-                sgas = Number(nep5balances[0]['nep5balance'])
-            }
+
+            // var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
+            // if (nep5balances) {
+            //     sgas = Number(nep5balances[0]['nep5balance'])
+            // }
+            sgas = await Main.getSgasBalanceByAddress(tools.CoinTool.id_SGAS, Main.user.info.wallet)
+
             var callback_data = {
                 sgas: sgas,
                 gas: gas
@@ -218,6 +247,7 @@ namespace BlackCat {
             Main.listenerCallback("getBalanceRes", callback_data);
             return callback_data;
         }
+        
         // 对外接口：SDK获取用户信息
         getUserInfo() {
             Main.listenerCallback("getUserInfoRes", Main.user.info)
@@ -445,7 +475,7 @@ namespace BlackCat {
 
                     // function回调
                     callback(res);
-                    
+
                     // listener回调
                     var callback_data = {
                         params: params,
@@ -570,7 +600,7 @@ namespace BlackCat {
 
                 // function回调
                 callback(res);
-                
+
                 // listener回调
                 var callback_data = {
                     params: params,
@@ -594,7 +624,7 @@ namespace BlackCat {
 
                     // function回调
                     callback(res);
-                    
+
                     // listener回调
                     var callback_data = {
                         params: params,
@@ -741,7 +771,7 @@ namespace BlackCat {
 
                 // function回调
                 callback(res);
-                
+
                 // listener回调
                 var callback_data = {
                     params: params,
@@ -1218,7 +1248,10 @@ namespace BlackCat {
                     console.log('[Bla Cat]', '[main]', 'doPlatNotiyRefund, api_postRawTransaction.r => ', r);
 
                     // 成功
-                    if (r.txid) {
+                    if (r["txid"] || r['sendrawtransactionresult']) {
+                        if (!r["txid"] || r["txid"] == "") {
+                            r["txid"] = txid
+                        }
                         console.log('[Bla Cat]', '[main]', 'doPlatNotiyRefund, txid => ', r.txid);
                         // 确认转换请求
                         // this.confirmPlatNotifyExt(params)
@@ -1231,7 +1264,7 @@ namespace BlackCat {
                         tools.OldUTXO.oldutxosPush(oldarr);
 
                         // 刷新payView的状态
-                        Main.viewMgr.payView.doGetWalletLists();
+                        Main.viewMgr.payView.doGetWalletLists(1);
 
                     } else {
                         // this.confirmPlatNotify(params)
@@ -1503,7 +1536,7 @@ namespace BlackCat {
                             }
                         }
                         catch (e) {
-                            
+
                         }
                     }
                     else {
@@ -1517,7 +1550,7 @@ namespace BlackCat {
                                 }
                             }
                             catch (e) {
-                                
+
                             }
                         }
                     }
@@ -1682,5 +1715,14 @@ namespace BlackCat {
         static getLiveTimeMax(): number {
             return Main.liveTimeMax;
         }
+        // JS科学计数转换string
+        static getStringNumber(num: number): string {
+            let num_str = num.toString()
+            if (num_str.indexOf('-') >= 0) {
+                num_str = '0' + (num + 1).toString().substr(1)
+            }
+            return num_str;
+        }
+        
     }
 }

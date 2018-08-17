@@ -396,36 +396,39 @@
             pc_receivables_copy: "Copy success",
 
             // PayTransferView
-            pay_transfer: "Transfer",
+            pay_transfer: "SEND",
             pay_transferType: "Token：GAS",
             pay_transferBalance: "Balance:",
             pay_transferToAddr: "Address",
             pay_transferCount: "Amounts",
-            pay_transferToAddrError: "The transfer address is incorrect!",
-            pay_transferCountError: "The number of transfers is incorrect!",
-            pay_transferDoSucc: "Transfer success",
-            pay_transferDoFail: "Transfer failed!",
+            pay_transferToAddrError: "The SEND address is incorrect!",
+            pay_transferCountError: "The number of SEND is incorrect!",
+            pay_transferDoSucc: "SEND success",
+            pay_transferDoFail: "SEND failed!",
 
             // PayView
             pay_wallet: "My Wallet",
             pay_refresh: "Refresh",
             pay_wallet_detail: "Details",
             pay_coin_name: "Token",
-            pay_coin_old: "SGAS(old)Withdraw",
-            pay_gas: "Gas",
+            pay_coin_old: "SGAS(old)Exchange",
+            pay_gas: "GAS",
             pay_gas_desc: "GAS is a digital currency on NEO chain that can be obtained through exchanges",
-            pay_sgas: "SGas",
-            pay_sgas_desc: "SGas is a universal chip that Bla Cat offers to players.",
-            pay_refund: "Withdraw",
+            pay_sgas: "SGAS",
+            pay_sgas_desc: "SGAS is a universal chip that Bla Cat offers to players.",
+            pay_send: "SEND",
+            pay_purchase: "Purchase",
             pay_makeMint: "Exchange",
             pay_recentLists: "Recent records",
             pay_makeMintGasNotEnough: "GAS balance is insufficient",
-            pay_makeMintDoFail: "Recharge sgas failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
-            pay_makeMintDoFail2: "Recharge sgas failed! \r\nFailed to send recharge request! Please check network and try again later!",
-            pay_makeRefundSgasNotEnough: "Sgas balance is insufficient",
+            pay_makeMintDoFail: "Recharge SGAS failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
+            pay_makeMintDoFail2: "Recharge SGAS failed! \r\nFailed to send recharge request! Please check network and try again later!",
+            pay_makeRefundSgasNotEnough: "SGAS balance is insufficient",
             pay_makeRefundDoFail: "The extraction contract execution failed! Please wait for the last withdrawal or redemption transaction to complete!",
             pay_makeRefundDoFail2: "Sending an extraction transaction failed! Please check network and try again later!",
             pay_makeRefundGetScriptFail: "Getting extraction contract failed!",
+            pay_makeRefundSgasOldNotEnough: "SGAS(old) balance is insufficient",
+            
 
             pay_not_enough_money: "Insufficient balance",
             pay_not_enough_utxo: "Please wait for the last transaction to complete before executing!",
@@ -475,6 +478,11 @@
             addressbook_op_addSucc: "Contact added success",
             addressbook_op_updateSucc: "Contact modify success",
 
+            //PayExchangeView
+            pay_exchange_gas: "Exchange GAS",
+            pay_exchange_purchase: "Purchase",
+            pay_exchange_price: "Latest price",
+            pay_exchange_range: "24H Range",
 
             // ViewAlert
 
@@ -493,12 +501,14 @@
             pay_transferGas_count: "Transfer amounts",
 
             // ViewTransCount
-            pay_transCount_count: "Amounts",
-            pay_transCount_inputCount: "Please enter the amounts",
+            pay_transCount_count: "Exchange",
+            pay_transCount_inputCount: "Please input the amounts",
+            pay_transCount_inputSGASCount: "Please input the SGAS amounts",
+            pay_transCount_inputGASCount: "Please input the GAS amounts",
             pay_transCount_err: "Please input correct sums of amounts",
-            pay_sgas2gas: "SGas &#xe6a8; Gas",
-            pay_gas2sgas: "Gas &#xe6a8; SGas",
-            pay_old: "SGAS(old)Amounts：",
+            pay_transCountGAS: "GAS",
+            pay_transCountSGAS: "SGAS",
+            pay_transCountOLD: "SGAS(old)",
 
             // ViewWalletOpen
             pay_walletOpen_password: "password",
@@ -582,6 +592,7 @@
             // NetMgr
             netmgr_select_api_slow: "Connection to the server is abnormal or slow, please check the network and try it again!",
             netmgr_select_node_slow: "Communication with the nodes on the chain is abnormal or slow, please check the network and try it later!",
+            netmgr_select_cli_slow: "Communication with the nodes on the chain is abnormal, please check the network and try it later!",
             netmgr_connecting: "Connecting ...",
             netmgr_connecting_fail: "Connection failed. Please check the network and try it again!",
         }

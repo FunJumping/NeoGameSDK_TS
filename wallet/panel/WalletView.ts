@@ -9,7 +9,7 @@ namespace BlackCat {
             // console.log('[Bla Cat]', '[WalletView] 创建 ...")
 
             this.div = this.objCreate("div") as HTMLDivElement;
-            this.div.classList.add("pc_wallet")
+            this.div.classList.add("pc_bj", "pc_wallet")
 
             //标题
             var walletTitle = this.objCreate("div")

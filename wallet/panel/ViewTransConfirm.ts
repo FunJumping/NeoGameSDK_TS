@@ -38,7 +38,7 @@ namespace BlackCat {
         create() {
 
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_listdetail", "pc_tradeconfirm", "pc_trust")
+            this.div.classList.add("pc_bj", "pc_listdetail", "pc_tradeconfirm", "pc_trust")
 
             if (ViewTransConfirm.list && ViewTransConfirm.list.hasOwnProperty("wallet")) {
                 // header标签创建比较麻烦

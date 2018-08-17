@@ -12,10 +12,13 @@ namespace BlackCat {
         sgas: number;
         listPageNum: number;
         payMyWallet: HTMLElement;
+        // cli高度
+        height: number;
 
 
         private spanGas: HTMLElement;
         private spanSgas: HTMLElement;
+        private spanHeight: HTMLElement;
 
         private divLists: HTMLDivElement;
         private divListsMore: HTMLElement;
@@ -34,7 +37,9 @@ namespace BlackCat {
 
             this.listPageNum = 10;
 
-            this.getWalletListsTimeout = 3000;
+            this.height = 0;
+
+            this.getWalletListsTimeout = 20000; // 15s出块，所以最小间隔20s
             this.WalletListsNeedConfirm = false;
             this.WalletListsHashString = "";
 
@@ -55,7 +60,7 @@ namespace BlackCat {
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_pay")
+            this.div.classList.add("pc_bj", "pc_pay")
 
             //钱包标题
             var headerTitle = this.objCreate("div")
@@ -71,6 +76,11 @@ namespace BlackCat {
                 Main.viewMgr.change("MyInfoView")
             }
             this.ObjAppend(headerTitle, myinfo_a)
+
+            this.spanHeight = this.objCreate("div")
+            this.spanHeight.classList.add("pc_payheighet", "iconfont", "icon-diejia")
+            this.spanHeight.textContent = "0"
+            this.ObjAppend(headerTitle, this.spanHeight)
 
             // 钱包标题
             var headerh1 = this.objCreate("h1")
@@ -136,7 +146,7 @@ namespace BlackCat {
             payRefresh.textContent = Main.langMgr.get("pay_refresh") // "刷新"
             payRefresh.onclick = () => {
                 this.doGetBalances()
-                this.doGetWalletLists()
+                this.doGetWalletLists(1)
             }
             this.ObjAppend(paycard, payRefresh)
 
@@ -160,9 +170,9 @@ namespace BlackCat {
             }
             this.ObjAppend(divWalletUser, butReceivables)
 
-            // 转账
+            // 提现
             var makeTransferObj = this.objCreate("button")
-            makeTransferObj.textContent = Main.langMgr.get("pay_transfer") //"转账"
+            makeTransferObj.textContent = Main.langMgr.get("pay_send") //"提现"
             makeTransferObj.onclick = () => {
                 this.doMakeTransfer()
             }
@@ -240,16 +250,20 @@ namespace BlackCat {
 
 
             // 提现
-            var makeRefundObj = this.objCreate("button")
-            makeRefundObj.textContent = Main.langMgr.get("pay_refund") //"提现"
-            makeRefundObj.onclick = () => {
-                this.doMakeRefund()
-            }
-            this.ObjAppend(divGas, makeRefundObj)
+            // var makeRefundObj = this.objCreate("button")
+            // makeRefundObj.textContent = Main.langMgr.get("pay_refund") //"提现"
+            // makeRefundObj.onclick = () => {
+            //     this.doMakeRefund()
+            // }
+            // this.ObjAppend(divGas, makeRefundObj)
 
-
-
-
+            // 购买
+            // var makePurchaseObj = this.objCreate("button")
+            // makePurchaseObj.textContent = Main.langMgr.get("pay_purchase") //"购买"
+            // makePurchaseObj.onclick = () => {
+            //     this.doMakePurchase()
+            // }
+            // this.ObjAppend(divGas, makePurchaseObj)
 
             // 兑换
             var makeMintTokenObj = this.objCreate("button")
@@ -269,7 +283,9 @@ namespace BlackCat {
 
 
             this.doGetBalances()
-            this.doGetWalletLists()
+            this.doGetWalletLists(1)
+            // 获取高度
+            this.getHeight()
         }
 
         update() {
@@ -288,8 +304,6 @@ namespace BlackCat {
 
             // 获得balance列表(gas)
             var balances = (await tools.WWW.api_getBalance(Main.user.info.wallet)) as tools.BalanceInfo[];
-            var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
-
             if (balances) {
                 //余额不唯空
                 balances.map(item => (item.names = tools.CoinTool.assetID2name[item.asset])); //将列表的余额资产名称赋值
@@ -299,11 +313,7 @@ namespace BlackCat {
                         if (balance.asset == tools.CoinTool.id_GAS) {
                             this.gas = balance.balance;
                             // 判断一下有没有减号，不用科学计数法表示
-                            var balanceAmount = balance.balance.toString();
-                            if (balanceAmount.toString().indexOf('-') >= 0) {
-                                balanceAmount = '0' + String(Number(balanceAmount) + 1).substr(1);
-                            }
-                            this.spanGas.textContent = balanceAmount;
+                            this.spanGas.textContent = Main.getStringNumber(this.gas)
                         }
                     }
                 );
@@ -314,14 +324,20 @@ namespace BlackCat {
             }
 
             // 获取sgas余额
-            if (nep5balances) {
-                this.sgas = nep5balances[0]['nep5balance'];
-                this.spanSgas.textContent = nep5balances[0]['nep5balance'].toString();
-            }
-            else {
-                this.sgas = 0;
-                this.spanSgas.textContent = "0";
-            }
+            // var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
+            // if (nep5balances) {
+            //     this.sgas = nep5balances[0]['nep5balance'];
+            //     this.spanSgas.textContent = nep5balances[0]['nep5balance'].toString();
+            // }
+            // else {
+            //     this.sgas = 0;
+            //     this.spanSgas.textContent = "0";
+            // }
+
+            this.sgas = await Main.getSgasBalanceByAddress(tools.CoinTool.id_SGAS, Main.user.info.wallet)
+            // 判断一下有没有减号，不用科学计数法表示
+            this.spanSgas.textContent = Main.getStringNumber(this.sgas)
+
         }
         private async doMakeRefundOld() {
             if (Main.isWalletOpen()) {
@@ -331,14 +347,18 @@ namespace BlackCat {
                 // 暂时以第一个合约地址为准，后续如果多个，新开view显示
                 let id_SGAS = tools.CoinTool.id_SGAS_OLD[0]
                 // 获取sgas余额
-                let id_SGAS_balance = "0"
-                let id_SGAS_balances = await tools.WWW.api_getnep5balanceofaddress(id_SGAS, Main.user.info.wallet);
-                if (id_SGAS_balances) {
-                    id_SGAS_balance = id_SGAS_balances[0]['nep5balance'].toString();
-                }
+                // let id_SGAS_balance = "0"
+                // let id_SGAS_balances = await tools.WWW.api_getnep5balanceofaddress(id_SGAS, Main.user.info.wallet);
+                // if (id_SGAS_balances) {
+                //     id_SGAS_balance = id_SGAS_balances[0]['nep5balance'].toString();
+                // }
+                let sgas = await Main.getSgasBalanceByAddress(id_SGAS, Main.user.info.wallet)
+                let id_SGAS_balance = sgas.toString()
 
                 // 打开输入数量
-                ViewTransCount.transType = "old"
+                ViewTransCount.transTypename1 = "OLD"
+                ViewTransCount.transTypename2 = "GAS"
+                ViewTransCount.transAmountsType = "GASCount"
                 ViewTransCount.transBalances = id_SGAS_balance
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
@@ -358,15 +378,40 @@ namespace BlackCat {
 
         }
 
-        private async doMakeMintToken() {
+        private async doMakePurchase() {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
                 // 打开输入数量
-                ViewTransCount.transType = "gas2sgas"
+                PayExchangeView.refer = "PayView"
+                this.hidden()
+                Main.viewMgr.change("PayExchangeView")
+
+            } else {
+                // 未打开钱包
+                ViewWalletOpen.refer = "PayView"
+                ViewWalletOpen.callback = () => {
+                    this.doMakePurchase()
+                }
+                Main.viewMgr.change("ViewWalletOpen")
+                // this.hidden()
+            }
+        }
+
+        private async doMakeMintToken() {
+            if (Main.isWalletOpen()) {
+                // 打开钱包了
+                // 打开输入数量
+                ViewTransCount.transTypename1 = "GAS"
+                ViewTransCount.transTypename2 = "SGAS"
+                ViewTransCount.transAmountsType = "SGASCount"
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
-                    this.makeMintTokenTransaction()
+                    if (ViewTransCount.transTypename2 == "SGAS") {
+                        this.makeMintTokenTransaction()
+                    } else if (ViewTransCount.transTypename2 == "GAS") {
+                        this.makeRefundTransaction()
+                    }
                 }
                 Main.viewMgr.change("ViewTransCount")
 
@@ -386,7 +431,9 @@ namespace BlackCat {
                 // 打开钱包了
 
                 // 打开输入数量
-                ViewTransCount.transType = "sgas2gas"
+                ViewTransCount.transTypename1 = "SGAS"
+                ViewTransCount.transTypename2 = "GAS"
+                ViewTransCount.transAmountsType = "GASCount"
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
                     this.makeRefundTransaction()
@@ -567,6 +614,7 @@ namespace BlackCat {
                             var state_cnts_div = this.objCreate("div")
                             state_cnts_div.classList.add("pc_cnts")
 
+
                             //时间
                             var content_ctm_span = this.objCreate("div")
                             content_ctm_span.classList.add("pc_listdate", "listCtm") // listCtm不要随便修改，后面刷新时间(flushListCtm)用到了这个class
@@ -647,10 +695,10 @@ namespace BlackCat {
                                     if (params[k].nnc == tools.CoinTool.id_SGAS) {
                                         return Main.resHost + "res/img/sgas.png";
                                     }
-                                    else if (Number(v.cnts) > 0) {
-                                        return Main.resHost + "res/img/oldsgas.png";
-                                    }
                                 }
+                            }
+                            if (Number(v.cnts) > 0) {
+                                return Main.resHost + "res/img/oldsgas.png";
                             }
                         }
                     }
@@ -847,6 +895,13 @@ namespace BlackCat {
             }
         }
 
+        getListBlockindex(v) {
+            if (v.hasOwnProperty('blockindex')) {
+                return v["blockindex"]
+            }
+            return 0
+        }
+
         private wallet_detail() {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
@@ -920,12 +975,15 @@ namespace BlackCat {
             var signdata = ThinNeo.Helper.Sign(msg, login.prikey);
             tran.AddWitness(signdata, login.pubkey, login.address);
 
-            // var txid = tran.GetHash().clone().reverse().toHexString();
+            var txid = tran.GetHash().clone().reverse().toHexString();
 
             var data = tran.GetRawData();
             var r = await tools.WWW.api_postRawTransaction(data);
             if (r) {
-                if (r["txid"]) {
+                if (r["txid"] || r["sendrawtransactionresult"]) {
+                    if (!r["txid"] || r["txid"] == "") {
+                        r["txid"] = txid
+                    }
                     // 成功，上报
                     var logRes = await ApiTool.addUserWalletLogs(
                         Main.user.info.uid,
@@ -949,7 +1007,7 @@ namespace BlackCat {
 
                     // 重新获取记录
                     Main.viewMgr.viewLoading.remove()
-                    this.doGetWalletLists();
+                    this.doGetWalletLists(1);
 
                     // TODO: 更新记录状态
                     //this.makeMintTokenTransaction_confirm(txid);
@@ -1110,7 +1168,10 @@ namespace BlackCat {
                 r = await tools.WWW.api_postRawTransaction(trandata);
 
                 if (r) {
-                    if (r.txid) {
+                    if (r.txid || r['sendrawtransactionresult']) {
+                        if (!r["txid"] || r["txid"] == "") {
+                            r["txid"] = txid
+                        }
                         var paramJson_tmp = "(bytes)" + scriptHash.toHexString();
                         // 上报钱包操作记录
                         var logRes = await ApiTool.addUserWalletLogs(
@@ -1137,7 +1198,7 @@ namespace BlackCat {
 
                         // 刷新钱包记录，显示当前交易信息
                         Main.viewMgr.viewLoading.remove()
-                        this.doGetWalletLists()
+                        this.doGetWalletLists(1)
 
                     } else {
                         Main.viewMgr.viewLoading.remove()
@@ -1176,7 +1237,7 @@ namespace BlackCat {
                 // 打开转账页
                 PayTransferView.refer = "PayView"
                 PayTransferView.callback = () => {
-                    this.doGetWalletLists()
+                    this.doGetWalletLists(1)
                 }
                 Main.viewMgr.change("PayTransferView")
 
@@ -1239,5 +1300,10 @@ namespace BlackCat {
             return true
         }
 
+        async getHeight() {
+            var height = await tools.WWW.api_getCliHeight()
+            this.spanHeight.textContent = height.toString()
+            this.height = height
+        }
     }
 }
