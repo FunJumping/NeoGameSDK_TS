@@ -156,13 +156,13 @@ namespace BlackCat {
             else {
                 ViewWalletOpen.tasks[type] = params;
             }
-            console.log('[Bla Cat]', '[ViewWalletOpen]', 'addTask, tasks => ', ViewWalletOpen.tasks)
+            console.log("[BlaCat]", '[ViewWalletOpen]', 'addTask, tasks => ', ViewWalletOpen.tasks)
         }
         static removeTask(type: string) {
             delete ViewWalletOpen.tasks[type]
         }
         private doOpenTasks() {
-            console.log('[Bla Cat]', '[ViewWalletOpen]', 'doOpenTasks, tasks => ', ViewWalletOpen.tasks)
+            console.log("[BlaCat]", '[ViewWalletOpen]', 'doOpenTasks, tasks => ', ViewWalletOpen.tasks)
             for (let k in ViewWalletOpen.tasks) {
                 if (ViewWalletOpen.tasks[k]) {
                     switch (k) {

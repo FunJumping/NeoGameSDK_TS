@@ -8,7 +8,7 @@ namespace BlackCat {
 
         // SDK初始化
         static init(appid, appkey, listener, lang = "cn"): void {
-            console.log('[Bla Cat]', '[SDK]', 'init ...')
+            console.log("[BlaCat]", '[SDK]', 'init ...')
 
             if (SDK.is_init === false) {
                 SDK.main = new Main();
@@ -18,10 +18,10 @@ namespace BlackCat {
         }
         // 设置界面语言
         static setLang(type: string) {
-            console.log('[Bla Cat]', '[SDK]', 'setLang ...')
+            console.log("[BlaCat]", '[SDK]', 'setLang ...')
 
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             this.main.setLang(type);
@@ -29,7 +29,7 @@ namespace BlackCat {
         // 显示主界面
         static showMain() {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             this.main.showMain()
@@ -37,7 +37,7 @@ namespace BlackCat {
         // 显示icon
         static showIcon() {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             this.main.showIcon()
@@ -45,7 +45,7 @@ namespace BlackCat {
         // 登录
         static login(callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             SDK.main.start(callback);
@@ -53,11 +53,11 @@ namespace BlackCat {
         // 合约读取
         static async invokescript(params, callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 this.showMain()
                 return;
             }
@@ -67,11 +67,11 @@ namespace BlackCat {
         // 合约交易
         static async makeRawTransaction(params, callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 this.showMain()
                 return;
             }
@@ -80,11 +80,11 @@ namespace BlackCat {
         // 充值到游戏
         static async makeRecharge(params, callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 this.showMain()
                 return;
             }
@@ -93,11 +93,11 @@ namespace BlackCat {
         // app确认notify
         static async confirmAppNotify(params, callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 return;
             }
             var res = await SDK.main.confirmAppNotify(params)
@@ -106,11 +106,11 @@ namespace BlackCat {
         // 获取余额
         static async getBalance(callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 return;
             }
             var res = await SDK.main.getBalance();
@@ -119,10 +119,10 @@ namespace BlackCat {
         // 获取登录用户信息
         static async getUserInfo(callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
             }
             var res = await SDK.main.getUserInfo();
             if (callback) callback(res)
@@ -130,11 +130,11 @@ namespace BlackCat {
         // gas转账
         static async makeGasTransfer(params, callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 this.showMain()
                 return;
             }
@@ -143,11 +143,11 @@ namespace BlackCat {
         // gas转账（批量）
         static async makeGasTransferMulti(params, callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             if (!SDK.main.isLogined()) {
-                console.log('[Bla Cat]', '[SDK]', '请先登录')
+                console.log("[BlaCat]", '[SDK]', '请先登录')
                 this.showMain()
                 return;
             }
@@ -156,7 +156,7 @@ namespace BlackCat {
         // 查询网络类型
         static async getNetType(callback = null) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             var res = await SDK.main.getNetType();
@@ -165,7 +165,7 @@ namespace BlackCat {
         // 设置默认网络
         static async setDefaultNetType(type) {
             if (SDK.is_init === false) {
-                console.log('[Bla Cat]', '[SDK]', '请先初始化init')
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
                 return;
             }
             SDK.main.setDefaultNetType(type)

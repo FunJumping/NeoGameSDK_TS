@@ -115,8 +115,8 @@ namespace BlackCat {
                     var option = this.objCreate("option") as HTMLOptionElement;
                     option.setAttribute("value", area.codename);
                     option.textContent = Main.langMgr.get("area_code_" + area.codename)
-                    if(area.codename=="CN"){
-                        option.setAttribute("selected","selected")
+                    if (area.codename == "CN") {
+                        option.setAttribute("selected", "selected")
                     }
                     this.selectArea.options.add(option)
 
@@ -354,6 +354,14 @@ namespace BlackCat {
 
             if (!(await this.validateVpass())) return
 
+            if (this.inputPass.value.length > 32) {
+                // 设置密码不能超过32个字符
+                Main.showErrMsg(("forgetpass_exceed"), () => {
+                    this.inputPass.focus()
+                })
+                return;
+            }
+
             var res: any;
             switch (this.accountType) {
                 case 'email':
@@ -443,7 +451,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-                console.log('[Bla Cat]', '[ForgetPasswordView]', 'doGetCode, ApiTool ' + this.accountType + 'error => ', e.toString())
+                console.log("[BlaCat]", '[ForgetPasswordView]', 'doGetCode, ApiTool ' + this.accountType + 'error => ', e.toString())
             }
 
             Main.viewMgr.viewLoading.remove()

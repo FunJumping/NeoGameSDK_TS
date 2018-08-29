@@ -51,7 +51,7 @@ namespace BlackCat.tools
         static async getassets(): Promise<{ [ id: string ]: UTXO[] }>
         {
             //获得高度
-            var height = await tools.WWW.api_getHeight();
+            var height = await tools.WWW.api_getHeight_nodes();
             var utxos = await tools.WWW.api_getUTXO(tools.StorageTool.getStorage("current-address"));   //获得utxo
             var olds = OldUTXO.getOldutxos();       //获得以标记的utxo(交易过的utxo 存储在本地的标记)
 
@@ -105,8 +105,9 @@ namespace BlackCat.tools
          * @param targetaddr 对方地址
          * @param assetid 资产id
          * @param sendcount 金额
+         * @param net_fee 网络手续费
          */
-        static makeTran(utxos: { [ id: string ]: UTXO[] }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): Result
+        static makeTran(utxos: { [ id: string ]: UTXO[] }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8, net_fee: Neo.Fixed8 = Neo.Fixed8.Zero): Result
         {
             //if (sendcount.compareTo(Neo.Fixed8.Zero) <= 0)
             //    throw new Error("can not send zero.");
@@ -135,6 +136,9 @@ namespace BlackCat.tools
             var count: Neo.Fixed8 = Neo.Fixed8.Zero;
             var clonearr = [].concat(us);       //用于返回剩余可用的utxo
             var old: OldUTXO[] = []
+            var sendcounts = sendcount.add(net_fee); // 加入手续费
+
+
             for (var i = 0; i < us.length; i++)
             {
                 var input = new ThinNeo.TransactionInput();
@@ -146,14 +150,14 @@ namespace BlackCat.tools
                 scraddr = us[ i ].addr;
                 clonearr.shift();               //删除已塞入的utxo
                 old.push(new OldUTXO(us[ i ].txid, us[ i ].n));
-                if (count.compareTo(sendcount) > 0) //判断输入是否足够
+                if (count.compareTo(sendcounts) > 0) //判断输入是否足够
                 {
                     break;      //如果足够则跳出循环
                 }
             }
 
 
-            if (count.compareTo(sendcount) >= 0)//输入大于等于输出
+            if (count.compareTo(sendcounts) >= 0)//输入大于等于输出
             {
                 tran.outputs = [];
                 //输出
@@ -167,7 +171,7 @@ namespace BlackCat.tools
                 }
 
                 //找零
-                var change = count.subtract(sendcount);
+                var change = count.subtract(sendcounts);
                 if (change.compareTo(Neo.Fixed8.Zero) > 0)
                 {
                     var outputchange = new ThinNeo.TransactionOutput();
@@ -175,12 +179,11 @@ namespace BlackCat.tools
                     outputchange.value = change;
                     outputchange.assetId = assetid.hexToBytes().reverse();
                     tran.outputs.push(outputchange);
-
                 }
                 res.err = false;
                 res.info = { "tran": tran, "oldarr": old };
 
-                // console.log("[Bla Cat]", "[cointool]", "oldarr => ", old)
+                // console.log("[BlaCat]", "[cointool]", "oldarr => ", old)
 
                 // if (tran.inputs) {
                 //     for (let i in tran.inputs) {
@@ -286,7 +289,7 @@ namespace BlackCat.tools
                 res.err = false;
                 res.info = { "tran": tran, "oldarr": old };
 
-                // console.log("[Bla Cat]", "[cointool]", "oldarr => ", old)
+                // console.log("[BlaCat]", "[cointool]", "oldarr => ", old)
 
                 // if (tran.inputs) {
                 //     for (let i in tran.inputs) {
@@ -350,7 +353,7 @@ namespace BlackCat.tools
                 var data: Uint8Array = tran.GetRawData();
 
                 var res: Result = new Result();
-                var height = await tools.WWW.api_getHeight();
+                var height = await tools.WWW.api_getHeight_nodes();
                 var result = await tools.WWW.api_postRawTransaction(data);
                 if (result[ "sendrawtransactionresult" ])
                 {
@@ -418,7 +421,7 @@ namespace BlackCat.tools
                 var data: Uint8Array = tran.GetRawData();
 
                 var res: Result = new Result();
-                var height = await tools.WWW.api_getHeight();
+                var height = await tools.WWW.api_getHeight_nodes();
                 var result = await tools.WWW.api_postRawTransaction(data);
                 if (result[ "sendrawtransactionresult" ])
                 {
@@ -611,7 +614,7 @@ namespace BlackCat.tools
             catch (e)
             {
                 var math_rand = parseInt((Math.random() * 10000000).toString());
-                console.log('[Bla Cat]', '[cointool]', '[nep5Transaction] random_int from js random => ', math_rand)
+                console.log("[BlaCat]", '[cointool]', '[nep5Transaction] random_int from js random => ', math_rand)
                 random_int = new Neo.BigInteger(math_rand);
             }
 
@@ -634,9 +637,62 @@ namespace BlackCat.tools
         static async getsgasAssets(id_SGAS: string = this.id_SGAS): Promise<{ [ id: string ]: UTXO[] }>
         {
             //获得高度
-            var height = await tools.WWW.api_getHeight();
+            var height = await tools.WWW.api_getHeight_nodes();
             var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_SGAS.hexToBytes().reverse())
             var utxos = await tools.WWW.api_getUTXO(scriptHash);   //获得utxo
+
+            var olds = OldUTXO.getOldutxos();       //获得以标记的utxo(交易过的utxo 存储在本地的标记)
+            var olds2 = new Array<OldUTXO>();       //
+            for (let n = 0; n < olds.length; n++)
+            {
+                const old = olds[ n ];
+                let findutxo = false;
+                for (let i = 0; i < utxos.length; i++)
+                {
+                    let utxo = utxos[ i ];
+                    if (utxo.txid == old.txid && old.n == utxo.n && height - old.height <= 2)
+                    {
+                        findutxo = true;
+                        utxos.splice(i, 1);
+                    }
+                }
+                if (findutxo)
+                {
+                    olds2.push(old);
+                }
+            }
+            OldUTXO.setOldutxos(olds2);
+            var assets = {};        //对utxo进行归类，并且将count由string转换成 Neo.Fixed8
+            for (var i in utxos)
+            {
+                var item = utxos[ i ];
+                var asset = item.asset;
+                if (assets[ asset ] == undefined || assets[ asset ] == null)
+                {
+                    assets[ asset ] = [];
+                }
+                let utxo = new UTXO();
+                utxo.addr = item.addr;
+                utxo.asset = item.asset;
+                utxo.n = item.n;
+                utxo.txid = item.txid;
+                utxo.count = Neo.Fixed8.parse(item.value);
+                assets[ asset ].push(utxo);
+            }
+
+            return assets;
+        }
+
+        /**
+         * 获得utxos
+         */
+        static async getSgasAssetsByAmount(id_SGAS: string = this.id_SGAS, amount: number): Promise<{ [ id: string ]: UTXO[] }>
+        {
+            //获得高度
+            var height = await tools.WWW.api_getHeight_nodes();
+            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_SGAS.hexToBytes().reverse())
+            // var utxos = await tools.WWW.api_getUTXO(scriptHash);   //获得utxo
+            var utxos = await tools.WWW.api_getUTXOsToPay(scriptHash, tools.CoinTool.id_GAS, amount)
 
             var olds = OldUTXO.getOldutxos();       //获得以标记的utxo(交易过的utxo 存储在本地的标记)
             var olds2 = new Array<OldUTXO>();       //

@@ -10,6 +10,8 @@ namespace BlackCat {
             info: "提示",
             content: "内容",
             retry: "重试",
+            sgas: "SGAS",
+            gas: "GAS",
 
             // 地区代码
             area_code_CN: "中国",
@@ -259,6 +261,8 @@ namespace BlackCat {
             register_getCode: "获取验证码",
             register_getCodecount: "重新获取(60)",
             register_getCodecountRetry: "重新获取",
+            register_exceed: "设置密码不能超过32个字符",
+
 
             register_doLogin: "<<返回登录",
             register_doRegister: "立即注册",
@@ -318,6 +322,8 @@ namespace BlackCat {
             forgetpass_getCode: "获取验证码",
             forgetpass_getCodecount: "重新获取(60)",
             forgetpass_getCodecountRetry: "重新获取",
+            forgetpass_exceed: "设置密码不能超过32个字符",
+
 
             forgetpass_doLogin: "<<返回登录",
             forgetpass_do: "确定",
@@ -355,6 +361,11 @@ namespace BlackCat {
             modifySex_succ: "性别修改成功",
             modifyArea: "地区",
             modifyArea_succ: "地区修改成功",
+
+            // ModifyNetworkLineView
+            modifyNet: "网络线路",
+            modifyNet_succ: "网络线路修改成功",
+            modifyNet_node_err: "该网络线路不可用，请选择其他线路！",
 
             //SecurityCenterView
             security_title: "安全中心",
@@ -420,6 +431,7 @@ namespace BlackCat {
             pay_sgas_desc: "SGAS是Bla Cat提供给玩家消费用的通用筹码",
             pay_send: "提款",
             pay_purchase: "购买",
+            pay_purchase_testnet_cant_buy: "请切换到主网购买GAS！",
             pay_makeMint: "兑换",
             pay_recentLists: "近期记录",
             pay_makeMintGasNotEnough: "GAS余额不足",
@@ -429,8 +441,8 @@ namespace BlackCat {
             pay_makeRefundDoFail: "提取合约执行失败！请等待上个提现或兑换交易完成再操作！",
             pay_makeRefundDoFail2: "发送提取交易失败！请检查网络，稍候重试！",
             pay_makeRefundGetScriptFail: "获取提取合约失败！",
-            pay_makeRefundSgasOldNotEnough: "SGAS(旧)余额不足",
-            
+            pay_makeRefundSgasOldNotEnough: "SGAS(old)余额不足",
+
 
             pay_not_enough_money: "余额不足",
             pay_not_enough_utxo: "请等待上次交易完成再执行！",
@@ -503,13 +515,18 @@ namespace BlackCat {
 
             // ViewTransCount
             pay_transCount_count: "兑换",
-            pay_transCount_inputCount: "请输入金额",
-            pay_transCount_inputSGASCount: "请输入SGAS金额",
-            pay_transCount_inputGASCount: "请输入GAS金额",
+            pay_transCount_inputCount: "请输入需要兑换的金额",
             pay_transCount_err: "请输入正确的金额",
-            pay_transCountGAS: "GAS",
-            pay_transCountSGAS: "SGAS",
-            pay_transCountOLD: "SGAS(old)",
+            pay_transCountSGAS2GAS: "GAS",
+            pay_transCountGAS2SGAS: "SGAS",
+            pay_transCountSGASOLD2OLD: "SGAS(old)",
+            pay_transCountTips_free: "免费",
+            pay_transCountTips_slow: "慢",
+            pay_transCountTips_fast: "快",
+            pay_transCount_speed: "交易速度",
+            pay_transCount_cost: "手续费：",
+            pay_transCount_tips: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选择您要兑换的代币",
+            pay_transCount_tips_err: "选择您要兑换的代币",
 
             // ViewWalletOpen
             pay_walletOpen_password: "密码",
@@ -526,6 +543,7 @@ namespace BlackCat {
             walletCreate_doCreate: "创建",
             walletCreate_check_pass: "请检查输入密码",
             walletCreate_check_vpass: "请检查确认密码",
+            walletCreate_check_exceed: "设置密码不能超过32个字符",
 
 
             // WalletImportView

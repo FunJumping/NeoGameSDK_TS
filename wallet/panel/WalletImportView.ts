@@ -40,7 +40,7 @@ namespace BlackCat {
         }
 
         create() {
-            // console.log('[Bla Cat]', '[WalletImportView] 创建 ...")
+            // console.log("[BlaCat]", '[WalletImportView] 创建 ...")
 
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_popup")

@@ -14,6 +14,8 @@ namespace BlackCat {
         static readonly platName = "Bla Cat"
         static platLoginType = 0; // 0，SDK；1：PAGE
         static randNumber: number; // 随机数
+        static tsOffset: number; // 和服务器时间差
+        static urlHead: string; // url的主机头, 当是本地访问有效，取值http: 或者https
 
         // 资源图标前缀路径
         static resHost = BC_path + "../"
@@ -73,6 +75,7 @@ namespace BlackCat {
             Main.viewMgr = new ViewMgr();
             Main.langMgr = new LangMgr();
             Main.randNumber = parseInt((Math.random() * 10000000).toString())
+            Main.urlHead = Main.getUrlHead()
 
             Main.reset(0)
 
@@ -134,7 +137,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-                console.log('[Bla Cat]', '[main]', 'getSgasBalanceByAddress =>', e)
+                console.log("[BlaCat]", '[main]', 'getSgasBalanceByAddress =>', e)
             }
             return 0
         }
@@ -247,7 +250,7 @@ namespace BlackCat {
             Main.listenerCallback("getBalanceRes", callback_data);
             return callback_data;
         }
-        
+
         // 对外接口：SDK获取用户信息
         getUserInfo() {
             Main.listenerCallback("getUserInfoRes", Main.user.info)
@@ -282,7 +285,7 @@ namespace BlackCat {
                 let unTrust = Main.getUnTrustNnc(params);
                 if (unTrust.length == 0) {
                     // 信任合约，直接操作
-                    console.log('[Bla Cat]', '[main]', 'makeRawTransaction, trust nnc ...')
+                    console.log("[BlaCat]", '[main]', 'makeRawTransaction, trust nnc ...')
                     this._makeRawTransaction(params, "0", callback)
                     return
                 }
@@ -318,7 +321,7 @@ namespace BlackCat {
                 ViewTransConfirm.callback_params = params;
 
                 ViewTransConfirm.callback = async (params, trust) => {
-                    console.log('[Bla Cat]', '[main]', 'makeRawTransaction交易确认..')
+                    console.log("[BlaCat]", '[main]', 'makeRawTransaction交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
@@ -327,13 +330,13 @@ namespace BlackCat {
                             await this._makeRawTransaction(params, trust, Main.transCallback)
                         }
                         catch (e) {
-                            console.log('[Bla Cat]', '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'error => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'error => ', e.toString())
                         }
                         Main.viewMgr.viewLoading.remove()
                     }, 300);
                 }
                 ViewTransConfirm.callback_cancel = () => {
-                    console.log('[Bla Cat]', '[main]', 'makeRawTransaction交易取消..')
+                    console.log("[BlaCat]", '[main]', 'makeRawTransaction交易取消..')
 
                     var res = new Result();
                     res.err = true;
@@ -393,7 +396,7 @@ namespace BlackCat {
                 res.err = true
                 res.info = e.toString()
 
-                console.log('[Bla Cat]', '[main]', '_makeRawTransaction, Main.wallet.makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'e => ', e.toString())
+                console.log("[BlaCat]", '[main]', '_makeRawTransaction, Main.wallet.makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'e => ', e.toString())
             }
 
             // function回调
@@ -508,7 +511,7 @@ namespace BlackCat {
                 ViewTransConfirm.callback_params = params;
 
                 ViewTransConfirm.callback = async (params) => {
-                    console.log('[Bla Cat]', '[main]', 'makeRecharge交易确认..')
+                    console.log("[BlaCat]", '[main]', 'makeRecharge交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
@@ -521,7 +524,7 @@ namespace BlackCat {
                             res.err = true
                             res.info = e.toString()
 
-                            console.log('[Bla Cat]', '[main]', 'makeRecharge, Main.wallet.makeRecharge(params) error, params => ', params, 'e => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeRecharge, Main.wallet.makeRecharge(params) error, params => ', params, 'e => ', e.toString())
                         }
 
                         // function回调
@@ -542,7 +545,7 @@ namespace BlackCat {
 
                 }
                 ViewTransConfirm.callback_cancel = () => {
-                    console.log('[Bla Cat]', '[main]', 'makeRecharge交易取消..')
+                    console.log("[BlaCat]", '[main]', 'makeRecharge交易取消..')
                     var res = new Result();
                     res.err = true;
                     res.info = 'cancel';
@@ -657,7 +660,7 @@ namespace BlackCat {
                 ViewTransConfirmGas.callback_params = params;
 
                 ViewTransConfirmGas.callback = async (params) => {
-                    console.log('[Bla Cat]', '[main]', 'makeGasTransfer交易确认..')
+                    console.log("[BlaCat]", '[main]', 'makeGasTransfer交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
@@ -688,7 +691,7 @@ namespace BlackCat {
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
 
-                            console.log('[Bla Cat]', '[main]', 'makeGasTransfer, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeGasTransfer, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
                         }
 
                         // function回调
@@ -705,7 +708,7 @@ namespace BlackCat {
                     }, 300);
                 }
                 ViewTransConfirmGas.callback_cancel = () => {
-                    console.log('[Bla Cat]', '[main]', 'makeGasTransfer交易取消..')
+                    console.log("[BlaCat]", '[main]', 'makeGasTransfer交易取消..')
 
                     var res = new Result();
                     res.err = true;
@@ -813,7 +816,7 @@ namespace BlackCat {
                 ViewTransConfirmGas.callback_params = params;
 
                 ViewTransConfirmGas.callback = async (params) => {
-                    console.log('[Bla Cat]', '[main]', 'makeGasTransferMulti交易确认..')
+                    console.log("[BlaCat]", '[main]', 'makeGasTransferMulti交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
@@ -843,7 +846,7 @@ namespace BlackCat {
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
 
-                            console.log('[Bla Cat]', '[main]', 'makeGasTransferMulti, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeGasTransferMulti, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
                         }
 
                         // function回调
@@ -860,7 +863,7 @@ namespace BlackCat {
                     }, 300);
                 }
                 ViewTransConfirmGas.callback_cancel = () => {
-                    console.log('[Bla Cat]', '[main]', 'makeGasTransfer交易取消..')
+                    console.log("[BlaCat]", '[main]', 'makeGasTransfer交易取消..')
 
                     var res = new Result();
                     res.err = true;
@@ -938,6 +941,8 @@ namespace BlackCat {
                 if (res.r) {
                     Main.setGameInfo(res.data.gameParam);
 
+                    Main.setTsOffset(res.data.loginParam);
+
                     var res_nncs = await ApiTool.getTrustNncs(Main.user.info.uid, Main.user.info.token, Main.appid)
                     if (res_nncs.r) {
                         Main.app_trust = res_nncs.data;
@@ -957,7 +962,7 @@ namespace BlackCat {
                     // 首次登录，获取平台notify
                     Main.needGetPlatNotifys = true;
 
-                    console.log('[Bla Cat]', '[main]', 'loginCallback，轮询平台notify和应用notify')
+                    console.log("[BlaCat]", '[main]', 'loginCallback，轮询平台notify和应用notify')
                 }
                 else {
                     Main.showErrCode(res.errCode);
@@ -1001,14 +1006,14 @@ namespace BlackCat {
 
         // 主定时器
         static async update() {
-            // console.log('[Bla Cat]', '[main]', 'update ...')
+            // console.log("[BlaCat]", '[main]', 'update ...')
 
             // 获取app交易notify
             try {
                 await Main.getAppNotifys();
             }
             catch (e) {
-                console.log('[Bla Cat]', '[main]', 'update, Main.getAppNotifys() error => ', e.toString())
+                console.log("[BlaCat]", '[main]', 'update, Main.getAppNotifys() error => ', e.toString())
             }
 
 
@@ -1017,7 +1022,7 @@ namespace BlackCat {
                 await Main.getPlatNotifys();
             }
             catch (e) {
-                console.log('[Bla Cat]', '[main]', 'update, Main.getPlatNotifys() error => ', e.toString())
+                console.log("[BlaCat]", '[main]', 'update, Main.getPlatNotifys() error => ', e.toString())
             }
 
 
@@ -1027,7 +1032,7 @@ namespace BlackCat {
                     Main.viewMgr.payView.flushListCtm()
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[main]', 'update, Main.viewMgr.payView.flushListCtm() error => ', e.toString())
+                    console.log("[BlaCat]", '[main]', 'update, Main.viewMgr.payView.flushListCtm() error => ', e.toString())
                 }
             }
 
@@ -1054,7 +1059,7 @@ namespace BlackCat {
         static async getAppNotifys(): Promise<boolean> {
             // 开启获取、已经有上报记录，并且没有获取到notify时开启
             if (Main.needGetAppNotifys == true || (Main.appWalletLogId && Main.appWalletLogId > Main.appWalletNotifyId)) {
-                console.log('[Bla Cat]', '[main]', 'getAppNotifys, 执行前，是否获取: ' + Main.needGetAppNotifys
+                console.log("[BlaCat]", '[main]', 'getAppNotifys, 执行前，是否获取: ' + Main.needGetAppNotifys
                     + ", 最近记录ID: " + Main.appWalletLogId
                     + ", 最近通知ID: " + Main.appWalletNotifyId)
 
@@ -1073,7 +1078,7 @@ namespace BlackCat {
                     }
                     else {
                         // 没有pending数据，定时获取关闭
-                        console.log('[Bla Cat]', '[main]', 'getAppNotifys, 没有等待确认的数据，关闭轮询')
+                        console.log("[BlaCat]", '[main]', 'getAppNotifys, 没有等待确认的数据，关闭轮询')
                         Main.needGetAppNotifys = false;
                     }
 
@@ -1099,14 +1104,14 @@ namespace BlackCat {
                         )
 
                         if (new_app_notifys.length > 0) {
-                            console.log('[Bla Cat]', '[main]', 'getAppNotifys, 需要回调数据 => ', new_app_notifys)
+                            console.log("[BlaCat]", '[main]', 'getAppNotifys, 需要回调数据 => ', new_app_notifys)
                             // 有新数据
                             Main.listenerCallback("getAppNotifysRes", new_app_notifys);
                         }
                     }
                 }
 
-                console.log('[Bla Cat]', '[main]', 'getAppNotifys，执行后，是否获取: ' + Main.needGetAppNotifys
+                console.log("[BlaCat]", '[main]', 'getAppNotifys，执行后，是否获取: ' + Main.needGetAppNotifys
                     + ", 最近记录ID: " + Main.appWalletLogId
                     + ", 最近通知ID: " + Main.appWalletNotifyId)
 
@@ -1115,7 +1120,7 @@ namespace BlackCat {
             return false;
         }
         private static async doPlatNotify(params: Array<any>) {
-            console.log('[Bla Cat]', '[main]', 'doPlatNotify, params => ', params)
+            console.log("[BlaCat]", '[main]', 'doPlatNotify, params => ', params)
             var openTask = null; // 打开钱包任务
             for (let k in params) {
                 switch (params[k].type) {
@@ -1127,7 +1132,7 @@ namespace BlackCat {
                             }
                             else {
                                 if (!Main.isWalletOpen()) {
-                                    console.log('[Bla Cat]', '[main]', '***getPlatNotifys，钱包未打开，收集数据')
+                                    console.log("[BlaCat]", '[main]', '***getPlatNotifys，钱包未打开，收集数据')
 
                                     if (!openTask) {
                                         openTask = new Array();
@@ -1176,6 +1181,7 @@ namespace BlackCat {
             // 钱包未打开，有需要打开钱包的操作
             ViewConfirm.callback = () => {
                 // 确认打开钱包，去打开钱包
+                ViewWalletOpen.refer = null
                 Main.viewMgr.change("ViewWalletOpen")
             }
             // Main.showConFirm("提现操作需要打开钱包，是否立即打开？")
@@ -1195,7 +1201,7 @@ namespace BlackCat {
             utxos_assets[tools.CoinTool.id_GAS] = [];
             utxos_assets[tools.CoinTool.id_GAS].push(utxo);
 
-            console.log('[Bla Cat]', '[main]', 'doPlatNotiyRefund, utxos_assets => ', utxos_assets);
+            console.log("[BlaCat]", '[main]', 'doPlatNotiyRefund, utxos_assets => ', utxos_assets);
 
             try {
                 var makeTranRes: Result = tools.CoinTool.makeTran(
@@ -1245,21 +1251,21 @@ namespace BlackCat {
                 // 发送转换请求
                 r = await tools.WWW.api_postRawTransaction(trandata);
                 if (r) {
-                    console.log('[Bla Cat]', '[main]', 'doPlatNotiyRefund, api_postRawTransaction.r => ', r);
+                    console.log("[BlaCat]", '[main]', 'doPlatNotiyRefund, api_postRawTransaction.r => ', r);
 
                     // 成功
                     if (r["txid"] || r['sendrawtransactionresult']) {
                         if (!r["txid"] || r["txid"] == "") {
                             r["txid"] = txid
                         }
-                        console.log('[Bla Cat]', '[main]', 'doPlatNotiyRefund, txid => ', r.txid);
+                        console.log("[BlaCat]", '[main]', 'doPlatNotiyRefund, txid => ', r.txid);
                         // 确认转换请求
                         // this.confirmPlatNotifyExt(params)
                         var res = await Main.confirmPlatNotifyExt(params, r.txid);
                         // 轮询请求r.txid的交易状态
                         this.doPlatNotifyRefundRes(params, r.txid)
                         // 记录使用的utxo，后面不再使用，需要记录高度
-                        var height = await tools.WWW.api_getHeight();
+                        var height = await tools.WWW.api_getHeight_nodes();
                         oldarr.map(old => old.height = height);
                         tools.OldUTXO.oldutxosPush(oldarr);
 
@@ -1283,7 +1289,7 @@ namespace BlackCat {
         private static async doPlatNotifyRefundRes(params, txid) {
             var r = await tools.WWW.getrawtransaction(txid)
             if (r) {
-                console.log('[Bla Cat]', '[main]', 'doPlatNotifyRefundRes, txid: ' + txid + ", r => ", r)
+                console.log("[BlaCat]", '[main]', 'doPlatNotifyRefundRes, txid: ' + txid + ", r => ", r)
                 await Main.confirmPlatNotify(params)
                 // 刷新payview交易状态
                 Main.viewMgr.payView.doGetWalletLists()
@@ -1310,7 +1316,7 @@ namespace BlackCat {
         static async getPlatNotifys(): Promise<boolean> {
             // 开启获取、已经有上报记录，并且没有获取到notify时开启
             if (Main.needGetPlatNotifys == true || (Main.platWalletLogId && Main.platWalletLogId > Main.platWalletNotifyId)) {
-                console.log('[Bla Cat]', '[main]', '***getPlatNotifys, 执行前，是否获取: ' + Main.needGetPlatNotifys
+                console.log("[BlaCat]", '[main]', '***getPlatNotifys, 执行前，是否获取: ' + Main.needGetPlatNotifys
                     + ', 最近记录ID: ' + Main.platWalletLogId
                     + ', 最近处理ID: ' + Main.platWalletNotifyId)
 
@@ -1328,7 +1334,7 @@ namespace BlackCat {
                     }
                     else {
                         // 没有pending数据，定时获取关闭
-                        console.log('[Bla Cat]', '[main]', 'getPlatNotifys, 没有等待确认的数据，关闭轮询')
+                        console.log("[BlaCat]", '[main]', 'getPlatNotifys, 没有等待确认的数据，关闭轮询')
                         Main.needGetPlatNotifys = false;
                     }
 
@@ -1352,7 +1358,7 @@ namespace BlackCat {
                             }
                         )
                         if (new_plat_notifys.length > 0) {
-                            console.log('[Bla Cat]', '[main]', '***getPlatNotifys, 有新数据 => ', new_plat_notifys)
+                            console.log("[BlaCat]", '[main]', '***getPlatNotifys, 有新数据 => ', new_plat_notifys)
                             // 有新数据
                             Main.doPlatNotify(new_plat_notifys)
 
@@ -1362,7 +1368,7 @@ namespace BlackCat {
                     }
                 }
 
-                console.log('[Bla Cat]', '[main]', '***getPlatNotifys, 执行后，是否获取: ' + Main.needGetPlatNotifys
+                console.log("[BlaCat]", '[main]', '***getPlatNotifys, 执行后，是否获取: ' + Main.needGetPlatNotifys
                     + ', 最近记录ID: ' + Main.platWalletLogId
                     + ', 最近处理ID: ' + Main.platWalletNotifyId)
                 return true;
@@ -1420,17 +1426,17 @@ namespace BlackCat {
             switch (res) {
                 case 0:
                     // 登录
-                    console.log('[Bla Cat]', '[main]', '未登录 ...');
+                    console.log("[BlaCat]", '[main]', '未登录 ...');
                     Main.viewMgr.change("LoginView");
                     break;
                 case 1:
                     // 主页
-                    console.log('[Bla Cat]', '[main]', '已登录，已绑定钱包 ...')
+                    console.log("[BlaCat]", '[main]', '已登录，已绑定钱包 ...')
                     Main.viewMgr.change("PayView");
                     break;
                 case -1:
                     // 绑定&导入钱包
-                    console.log('[Bla Cat]', '[main]', '已登录，未绑定钱包 ...')
+                    console.log("[BlaCat]", '[main]', '已登录，未绑定钱包 ...')
                     Main.viewMgr.change("WalletView");
                     break;
             }
@@ -1469,7 +1475,7 @@ namespace BlackCat {
             Main.viewMgr.change("ViewAlert")
         }
         // 显示toast信息
-        static async showToast(msgKey: string, showTime: number = 2500) {
+        static async showToast(msgKey: string, showTime: number = 1500) {
             // alert(msg)
             ViewToast.content = msgKey;
             ViewToast.showTime = showTime;
@@ -1505,7 +1511,7 @@ namespace BlackCat {
         }
         // 判断是否在登录初始化中
         static isLoginInit(): boolean {
-            if (tools.WWW.api) {
+            if (tools.WWW.api_nodes) {
                 return false
             }
             return true
@@ -1685,7 +1691,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-                console.log('[Bla Cat]', '[main]', 'updateTrustNnc, ApiTool.getTrustNncs error => ', e.toString())
+                console.log("[BlaCat]", '[main]', 'updateTrustNnc, ApiTool.getTrustNncs error => ', e.toString())
             }
         }
         // 信任合约移除
@@ -1704,12 +1710,12 @@ namespace BlackCat {
         // 设置存活时间
         static setLiveTime() {
             Main.liveTime = new Date().getTime()
-            // console.log('[Bla Cat]', '[main]', 'liveTime => ', Main.liveTime)
+            // console.log("[BlaCat]", '[main]', 'liveTime => ', Main.liveTime)
         }
         // 设置存活时间最大值
         static setLiveTimeMax(minutes: number) {
             Main.liveTimeMax = minutes * 60 * 1000;
-            //console.log('[Bla Cat]', '[main]', 'liveTimeMax => ', Main.liveTimeMax)
+            //console.log("[BlaCat]", '[main]', 'liveTimeMax => ', Main.liveTimeMax)
         }
         // 获取存活时间
         static getLiveTimeMax(): number {
@@ -1723,6 +1729,39 @@ namespace BlackCat {
             }
             return num_str;
         }
-        
+
+        private static setTsOffset(loginParam) {
+            let curr_ts = Math.round((new Date()).getTime() / 1000);
+            Main.tsOffset = (curr_ts - loginParam.time) * 1000
+            console.log('[BlaCat]', '[Main]', 'setTsOffset, tsOffset => ', Main.tsOffset)
+        }
+
+        private static getUrlHead() {
+            if (Main.urlHead === undefined) {
+                if (window.location.protocol == "file:") {
+                    Main.urlHead = "http:"
+                }
+                else {
+                    Main.urlHead = ""
+                }
+            }
+            return Main.urlHead
+        }
+
+        static randomSort(arr, newArr) {
+            // 如果原数组arr的length值等于1时，原数组只有一个值，其键值为0
+            // 同时将这个值push到新数组newArr中
+            if (arr.length == 1) {
+                newArr.push(arr[0]);
+                return newArr; // 相当于递归退出
+            }
+            // 在原数组length基础上取出一个随机数
+            var random = Math.ceil(Math.random() * arr.length) - 1;
+            // 将原数组中的随机一个值push到新数组newArr中
+            newArr.push(arr[random]);
+            // 对应删除原数组arr的对应数组项
+            arr.splice(random, 1);
+            return Main.randomSort(arr, newArr);
+        }
     }
 }

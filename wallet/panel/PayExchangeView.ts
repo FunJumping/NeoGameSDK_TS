@@ -5,8 +5,17 @@ namespace BlackCat {
     // 交易所
     export class PayExchangeView extends ViewBase {
 
-        private ulExchange: HTMLUListElement;
-        private titlelist = ["NEO", "BTC", "ETH", "USDT"];
+
+        private exchange_type_buy: HTMLElement
+        private exchange_typeObj: HTMLElement
+        private exchange_buyObj: HTMLElement
+
+        private exchange_detail: HTMLElement
+        private exchange_detail_ul: HTMLElement
+
+        private exchange_info: any // 兑换信息
+        private exchange_coin_type: number // 当前兑换币种ID
+        private exchange_coin_name: string // 当前兑换币种名称
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
@@ -30,269 +39,34 @@ namespace BlackCat {
             headerH1.textContent = Main.langMgr.get("pay_exchange_gas") // "购买GAS"
             this.ObjAppend(header, headerH1)
 
-            //交易所类型
-            var divExchange = this.objCreate("div")
-            divExchange.classList.add("pc_exchangetitle")
-            this.ObjAppend(this.div, divExchange)
 
-            this.ulExchange = this.objCreate("ul") as HTMLUListElement
-            this.ObjAppend(divExchange, this.ulExchange)
 
-            this.titlelist.forEach(
-                data => {
-                    var liExchange = this.objCreate("li")
-                    if (data == "NEO") {
-                        liExchange.classList.add("pc_active")
-                    }
-                    liExchange.textContent = data
-                    liExchange.onclick = () => {
-                        this.ulExchange.getElementsByClassName("pc_active")[0].classList.remove("pc_active")
-                        liExchange.classList.add("pc_active")
-                    }
-                    this.ObjAppend(this.ulExchange, liExchange)
-                }
-            )
+            //交易所显示
+            this.exchange_type_buy = this.objCreate("div")
+            this.exchange_type_buy.classList.add("pc_exchangetitle")
+            this.ObjAppend(this.div, this.exchange_type_buy)
 
-            //购买
-            var divEcvhangeObj = this.objCreate("div")
-            divEcvhangeObj.classList.add("pc_exchangelist")
-            this.ObjAppend(divExchange, divEcvhangeObj)
-            //名称
-            var divExchangeName = this.objCreate("div")
-            divExchangeName.classList.add("pc_exchangename")
+            // 各个交易所详情
+            this.exchange_detail = this.objCreate("div")
+            this.exchange_detail.classList.add("pc_exchangelist")
+            this.ObjAppend(this.div, this.exchange_detail)
 
-            //名称图标
-            var imgExchangeName = this.objCreate("img") as HTMLImageElement
-            imgExchangeName.src = Main.resHost + "res/img/game0.png"
-            this.ObjAppend(divExchangeName, imgExchangeName)
+            // 获取gas/btc行情
+            this.getExchangeInfo(0)
 
-            //名称内容
-            var labelExchangeName = this.objCreate("label")
-            labelExchangeName.textContent = "Bla Cat"
-            this.ObjAppend(divExchangeName, labelExchangeName)
+        }
 
-            //名称类型
-            var pExchangeName = this.objCreate("p")
-            pExchangeName.textContent = "GAS/NEO"
-            this.ObjAppend(divExchangeName, pExchangeName)
+        reset() {
+            this.exchange_type_buy = null
+            this.exchange_typeObj = null
+            this.exchange_buyObj = null
 
-            this.ObjAppend(divEcvhangeObj, divExchangeName)
+            this.exchange_detail = null
+            this.exchange_detail_ul = null
 
-
-            //最新价
-            var divExchangePrice = this.objCreate("div")
-            divExchangePrice.classList.add("pc_exchangeprice")
-
-            //最新价内容
-            var labelExchangePrice = this.objCreate("label")
-            labelExchangePrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
-            this.ObjAppend(divExchangePrice, labelExchangePrice)
-
-            //最新价价格
-            var pExchangePrice = this.objCreate("p")
-            pExchangePrice.textContent = "111111111111111111"
-            this.ObjAppend(divExchangePrice, pExchangePrice)
-
-            this.ObjAppend(divEcvhangeObj, divExchangePrice)
-
-            // 购买按钮
-            var divExchangeRange = this.objCreate("div")
-            divExchangeRange.classList.add("pc_exchangerange")
-
-            var btnExchange = this.objCreate("button")
-            btnExchange.textContent = Main.langMgr.get("pay_exchange_purchase") // "购买"
-            btnExchange.onclick = () => {
-                this.hidden()
-                PayExchangeDetailView.refer = "PayExchangeView"
-                Main.viewMgr.change("PayExchangeDetailView")
-            }
-            this.ObjAppend(divExchangeRange, btnExchange)
-
-            this.ObjAppend(divEcvhangeObj, divExchangeRange)
-
-
-
-
-
-            //交易所详情
-            var divDetail = this.objCreate("div")
-            divDetail.classList.add("pc_exchangelist")
-            this.ObjAppend(this.div, divDetail)
-            var ulDetaile = this.objCreate("ul")
-            this.ObjAppend(divDetail, ulDetaile)
-
-            var liDetail = this.objCreate("li")
-            this.ObjAppend(ulDetaile, liDetail)
-
-            //名称
-            var divDetailName = this.objCreate("div")
-            divDetailName.classList.add("pc_exchangename")
-
-            //名称图标
-            var imgDetailName = this.objCreate("img") as HTMLImageElement
-            imgDetailName.src = Main.resHost + "res/img/game0.png"
-            this.ObjAppend(divDetailName, imgDetailName)
-
-            //名称内容
-            var labelDetailName = this.objCreate("label")
-            labelDetailName.textContent = "Bla Cat"
-            this.ObjAppend(divDetailName, labelDetailName)
-
-            //名称类型
-            var pDetailName = this.objCreate("p")
-            pDetailName.textContent = "GAS/NEO"
-            this.ObjAppend(divDetailName, pDetailName)
-
-            this.ObjAppend(liDetail, divDetailName)
-
-
-            //最新价
-            var divDetailPrice = this.objCreate("div")
-            divDetailPrice.classList.add("pc_exchangeprice")
-
-            //最新价内容
-            var labelDetailPrice = this.objCreate("label")
-            labelDetailPrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
-            this.ObjAppend(divDetailPrice, labelDetailPrice)
-
-            //最新价价格
-            var pDetailPrice = this.objCreate("p")
-            pDetailPrice.textContent = "111111111111111111"
-            this.ObjAppend(divDetailPrice, pDetailPrice)
-
-            this.ObjAppend(liDetail, divDetailPrice)
-
-            //幅度
-            var divDetailRange = this.objCreate("div")
-            divDetailRange.classList.add("pc_exchangerange")
-
-            //幅度内容
-            var labelDetailRange = this.objCreate("label")
-            labelDetailRange.textContent = Main.langMgr.get("pay_exchange_range") // "24H涨跌"
-            this.ObjAppend(divDetailRange, labelDetailRange)
-
-            //幅度值
-            var pDetailRange = this.objCreate("p")
-            pDetailRange.textContent = "100%"
-            this.ObjAppend(divDetailRange, pDetailRange)
-
-            this.ObjAppend(liDetail, divDetailRange)
-            var liDetail = this.objCreate("li")
-            this.ObjAppend(ulDetaile, liDetail)
-
-            //名称
-            var divDetailName = this.objCreate("div")
-            divDetailName.classList.add("pc_exchangename")
-
-            //名称图标
-            var imgDetailName = this.objCreate("img") as HTMLImageElement
-            imgDetailName.src = Main.resHost + "res/img/game0.png"
-            this.ObjAppend(divDetailName, imgDetailName)
-
-            //名称内容
-            var labelDetailName = this.objCreate("label")
-            labelDetailName.textContent = "Bla Cat"
-            this.ObjAppend(divDetailName, labelDetailName)
-
-            //名称类型
-            var pDetailName = this.objCreate("p")
-            pDetailName.textContent = "GAS/NEO"
-            this.ObjAppend(divDetailName, pDetailName)
-
-            this.ObjAppend(liDetail, divDetailName)
-
-
-            //最新价
-            var divDetailPrice = this.objCreate("div")
-            divDetailPrice.classList.add("pc_exchangeprice")
-
-            //最新价内容
-            var labelDetailPrice = this.objCreate("label")
-            labelDetailPrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
-            this.ObjAppend(divDetailPrice, labelDetailPrice)
-
-            //最新价价格
-            var pDetailPrice = this.objCreate("p")
-            pDetailPrice.textContent = "111111111111111111"
-            this.ObjAppend(divDetailPrice, pDetailPrice)
-
-            this.ObjAppend(liDetail, divDetailPrice)
-
-            //幅度
-            var divDetailRange = this.objCreate("div")
-            divDetailRange.classList.add("pc_exchangerange")
-
-            //幅度内容
-            var labelDetailRange = this.objCreate("label")
-            labelDetailRange.textContent = Main.langMgr.get("pay_exchange_range") // "24H涨跌"
-            this.ObjAppend(divDetailRange, labelDetailRange)
-
-            //幅度值
-            var pDetailRange = this.objCreate("p")
-            pDetailRange.classList.add("pc_rise")
-            pDetailRange.textContent = "100%"
-            this.ObjAppend(divDetailRange, pDetailRange)
-
-            this.ObjAppend(liDetail, divDetailRange)
-            var liDetail = this.objCreate("li")
-            this.ObjAppend(ulDetaile, liDetail)
-
-            //名称
-            var divDetailName = this.objCreate("div")
-            divDetailName.classList.add("pc_exchangename")
-
-            //名称图标
-            var imgDetailName = this.objCreate("img") as HTMLImageElement
-            imgDetailName.src = Main.resHost + "res/img/game0.png"
-            this.ObjAppend(divDetailName, imgDetailName)
-
-            //名称内容
-            var labelDetailName = this.objCreate("label")
-            labelDetailName.textContent = "Bla Cat"
-            this.ObjAppend(divDetailName, labelDetailName)
-
-            //名称类型
-            var pDetailName = this.objCreate("p")
-            pDetailName.textContent = "GAS/NEO"
-            this.ObjAppend(divDetailName, pDetailName)
-
-            this.ObjAppend(liDetail, divDetailName)
-
-
-            //最新价
-            var divDetailPrice = this.objCreate("div")
-            divDetailPrice.classList.add("pc_exchangeprice")
-
-            //最新价内容
-            var labelDetailPrice = this.objCreate("label")
-            labelDetailPrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
-            this.ObjAppend(divDetailPrice, labelDetailPrice)
-
-            //最新价价格
-            var pDetailPrice = this.objCreate("p")
-            pDetailPrice.textContent = "111111111111111111"
-            this.ObjAppend(divDetailPrice, pDetailPrice)
-
-            this.ObjAppend(liDetail, divDetailPrice)
-
-            //幅度
-            var divDetailRange = this.objCreate("div")
-            divDetailRange.classList.add("pc_exchangerange")
-
-            //幅度内容
-            var labelDetailRange = this.objCreate("label")
-            labelDetailRange.textContent = Main.langMgr.get("pay_exchange_range") // "24H涨跌"
-            this.ObjAppend(divDetailRange, labelDetailRange)
-
-            //幅度值
-            var pDetailRange = this.objCreate("p")
-            pDetailRange.classList.add("pc_fall")
-            pDetailRange.textContent = "100%"
-            this.ObjAppend(divDetailRange, pDetailRange)
-
-            this.ObjAppend(liDetail, divDetailRange)
-
-
+            this.exchange_info = null
+            this.exchange_coin_type = null
+            this.exchange_coin_name = null
         }
 
         toRefer() {
@@ -300,6 +74,218 @@ namespace BlackCat {
                 Main.viewMgr.change(PayExchangeView.refer)
                 PayExchangeView.refer = null;
             }
+        }
+
+        private async getExchangeInfo(src_coin: number) {
+            try {
+                var res = await ApiTool.getExchangeInfo(Main.user.info.uid, Main.user.info.token, src_coin)
+                if (res.r) {
+                    let data = res.data;
+                    console.log("[BlaCat]", '[PayExchangeView]', 'getExchangeInfo, data =>', data)
+                    if (data && data.hasOwnProperty("info") && data.hasOwnProperty("coin") && data.hasOwnProperty("jys")) {
+                        this.exchange_info = data;
+                        this.showExchangeInfo()
+                    }
+                }
+                else {
+                    Main.showErrCode(res.errCode)
+                }
+            }
+            catch (e) {
+                // 获取数据失败
+            }
+        }
+
+        private showExchangeInfo() {
+
+            console.log("[BlaCat]", '[PayExchangeView]', 'showExchangeInfo ...')
+            // 当前币种
+            this.exchange_coin_type = this.exchange_info.coin[0][0];
+            // 兑换币种类显示
+            this.showCoinType()
+            // 购买栏显示
+            this.showBuy()
+            // 交易所详情
+            this.showDetail()
+        }
+
+        private showCoinType() {
+            this.exchange_typeObj = this.objCreate("ul") as HTMLUListElement
+            this.ObjAppend(this.exchange_type_buy, this.exchange_typeObj)
+
+            this.exchange_info.coin.forEach(
+                list => {
+                    var coinType_li = this.objCreate("li")
+                    coinType_li.textContent = list[1]
+                    if (Number(list[0]) == this.exchange_coin_type) {
+                        coinType_li.classList.add("pc_active")
+                        this.exchange_coin_name = list[1]
+                    }
+                    coinType_li.onclick = () => {
+                        this.exchange_typeObj.getElementsByClassName("pc_active")[0].classList.remove("pc_active")
+                        coinType_li.classList.add("pc_active")
+
+                        // 设置币种信息
+                        this.setExchangeCoinTypeInfo(Number(list[0]))
+                        // 购买栏显示
+                        this.showBuy(1)
+                        // 交易所详情
+                        this.showDetail(1)
+                    }
+                    this.ObjAppend(this.exchange_typeObj, coinType_li)
+                }
+            )
+        }
+
+        private showBuy(clear: number = 0) {
+            if (this.exchange_buyObj && clear == 1) {
+                this.objRemove(this.exchange_type_buy, this.exchange_buyObj)
+            }
+            this.exchange_buyObj = this.objCreate("div")
+            this.exchange_buyObj.classList.add("pc_exchangelist")
+            this.ObjAppend(this.exchange_type_buy, this.exchange_buyObj)
+
+            // 名称
+            var buyObj_name = this.objCreate("div")
+            buyObj_name.classList.add("pc_exchangename")
+            //名称图标
+            var buyObj_name_img = this.objCreate("img") as HTMLImageElement
+            buyObj_name_img.src = Main.resHost + "res/img/game0.png"
+            this.ObjAppend(buyObj_name, buyObj_name_img)
+            //名称内容
+            var buyObj_name_content = this.objCreate("label")
+            buyObj_name_content.textContent = "Bla Cat"
+            this.ObjAppend(buyObj_name, buyObj_name_content)
+            //名称类型
+            var buyObj_name_type = this.objCreate("p")
+            buyObj_name_type.textContent = "GAS/" + this.exchange_coin_name
+            this.ObjAppend(buyObj_name, buyObj_name_type)
+            this.ObjAppend(this.exchange_buyObj, buyObj_name)
+
+            // 最新价
+            var buyObj_price = this.objCreate("div")
+            buyObj_price.classList.add("pc_exchangeprice")
+            //最新价名称
+            var buyObj_price_name = this.objCreate("label")
+            buyObj_price_name.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
+            this.ObjAppend(buyObj_price, buyObj_price_name)
+            //最新价价格
+            var buyObj_price_price = this.objCreate("p")
+            buyObj_price_price.textContent = floatNum.addZero(this.getCurr(), 8)
+            this.ObjAppend(buyObj_price, buyObj_price_price)
+            this.ObjAppend(this.exchange_buyObj, buyObj_price)
+
+            // 购买
+            var buyObj_buy = this.objCreate("div")
+            buyObj_buy.classList.add("pc_exchangerange")
+            // 按钮
+            var buyObj_buy_btn = this.objCreate("button")
+            buyObj_buy_btn.textContent = Main.langMgr.get("pay_exchange_purchase") // "购买"
+            buyObj_buy_btn.onclick = () => {
+                this.hidden()
+                PayExchangeDetailView.refer = "PayExchangeView"
+                Main.viewMgr.change("PayExchangeDetailView")
+            }
+            this.ObjAppend(buyObj_buy, buyObj_buy_btn)
+            this.ObjAppend(this.exchange_buyObj, buyObj_buy)
+        }
+
+        private showDetail(clear: number = 0) {
+            if (this.exchange_detail_ul && clear == 1) {
+                this.objRemove(this.exchange_detail, this.exchange_detail_ul)
+            }
+
+            this.exchange_detail_ul = this.objCreate("ul")
+            this.ObjAppend(this.exchange_detail, this.exchange_detail_ul)
+
+
+            this.exchange_info.info.forEach(
+                list => {
+                    if (list.type == this.exchange_coin_type) {
+                        // 交易所行情列表
+                        var detail_li = this.objCreate("li")
+                        this.ObjAppend(this.exchange_detail_ul, detail_li)
+
+                        // 名称
+                        var li_name = this.objCreate("div")
+                        li_name.classList.add("pc_exchangename")
+                        // 名称图标
+                        var li_name_img = this.objCreate("img") as HTMLImageElement
+                        li_name_img.src = this.getMarketLiImg(list)
+                        this.ObjAppend(li_name, li_name_img)
+                        // 名称内容
+                        var li_name_content = this.objCreate("label")
+                        li_name_content.textContent = this.exchange_info["jys"][list.jys]
+                        this.ObjAppend(li_name, li_name_content)
+                        // 名称类型
+                        var li_name_coin = this.objCreate("p")
+                        li_name_coin.textContent = "GAS/" + this.exchange_coin_name
+                        this.ObjAppend(li_name, li_name_coin)
+                        this.ObjAppend(detail_li, li_name)
+
+
+                        // 最新价
+                        var li_price = this.objCreate("div")
+                        li_price.classList.add("pc_exchangeprice")
+                        // 最新价名称
+                        var li_price_name = this.objCreate("label")
+                        li_price_name.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
+                        this.ObjAppend(li_price, li_price_name)
+                        // 最新价价格
+                        var li_price_price = this.objCreate("p")
+                        li_price_price.textContent = floatNum.addZero(floatNum.round(Number(list["curr"]), 8), 8)
+                        this.ObjAppend(li_price, li_price_price)
+                        this.ObjAppend(detail_li, li_price)
+
+
+                        // 幅度
+                        var li_range = this.objCreate("div")
+                        li_range.classList.add("pc_exchangerange")
+                        // 幅度名称
+                        var li_range_name = this.objCreate("label")
+                        li_range_name.textContent = Main.langMgr.get("pay_exchange_range") // "24H涨跌"
+                        this.ObjAppend(li_range, li_range_name)
+
+                        // 幅度值
+                        var li_range_value = this.objCreate("p")
+                        li_range_value.textContent = floatNum.addZero(floatNum.round(floatNum.times(Number(list["last24"]), 100), 2), 2).toString() + "%"
+                        this.ObjAppend(li_range, li_range_value)
+                        this.ObjAppend(detail_li, li_range)
+                    }
+                }
+            )
+        }
+
+        private setExchangeCoinTypeInfo(type: number) {
+            this.exchange_coin_type = type
+            for (let i = 0; i < this.exchange_info.coin.length; i++) {
+                if (Number(this.exchange_info.coin[i][0]) == type) {
+                    this.exchange_coin_name = this.exchange_info.coin[i][1]
+                    break;
+                }
+            }
+        }
+
+        private getMarketLiImg(list) {
+            if (this.exchange_info.hasOwnProperty("jys_icon")) {
+                if (this.exchange_info["jys_icon"].hasOwnProperty(list.jys)) {
+                    return this.exchange_info["jys_icon"][list.jys]
+                }
+            }
+            return Main.resHost + "res/img/jys_" + list.jys + ".png"
+        }
+
+        private getCurr() {
+            let count = 0
+            let curr = 0
+            for (let i = 0; i < this.exchange_info.info.length; i++) {
+                let data = this.exchange_info.info[i]
+                if (data.type == this.exchange_coin_type) {
+                    count += 1;
+                    curr += Number(data.curr)
+                }
+            }
+            return count == 0 ? 0 : floatNum.round(curr / count, 8);
         }
 
     }

@@ -152,7 +152,7 @@ namespace BlackCat {
                     var res = await ApiTool.modUserIcon(Main.user.info.uid, Main.user.info.token, this.inputImg.files[0])
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[ModifyImgView]', 'doConfirm, ApiTool.modUserIcon error => ', e.toString())
+                    console.log("[BlaCat]", '[ModifyImgView]', 'doConfirm, ApiTool.modUserIcon error => ', e.toString())
                 }
 
                 Main.viewMgr.viewLoading.remove()

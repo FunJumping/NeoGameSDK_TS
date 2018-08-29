@@ -9,7 +9,7 @@ namespace BlackCat {
         }
 
         setType(type: string): boolean {
-            console.log('[Bla Cat]', '[LangMgr]', 'setType, type => ', type, ', this.type => ', this.type)
+            console.log("[BlaCat]", '[LangMgr]', 'setType, type => ', type, ', this.type => ', this.type)
             if (this.type == type) {
                 // 语言包一致，不需要重置
                 return false;

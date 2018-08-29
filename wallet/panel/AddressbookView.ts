@@ -90,7 +90,7 @@ namespace BlackCat {
 
             var res = await ApiTool.getAddrbook(Main.user.info.uid, Main.user.info.token);
 
-            console.log('[Bla Cat]', '[AddressbookView]', 'getAddressbook, res =>', res);
+            console.log("[BlaCat]", '[AddressbookView]', 'getAddressbook, res =>', res);
 
             if (res.r) {
                 this.addressbook = res.data;

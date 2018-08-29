@@ -123,7 +123,7 @@ namespace BlackCat {
                 cancelObj.classList.add("pc_cancel")
                 cancelObj.textContent = Main.langMgr.get("cancel") // "取消"
                 cancelObj.onclick = () => {
-                    console.log('[Bla Cat]', '[ViewTransConfirm]', '交易取消..')
+                    console.log("[BlaCat]", '[ViewTransConfirm]', '交易取消..')
                     if (ViewTransConfirm.callback_cancel) {
                         ViewTransConfirm.callback_cancel(ViewTransConfirm.callback_params)
                         ViewTransConfirm.callback_cancel = null;
@@ -140,7 +140,7 @@ namespace BlackCat {
                     confirmObj.textContent = Main.langMgr.get("ok") // "确认"
                 }
                 confirmObj.onclick = () => {
-                    console.log('[Bla Cat]', '[ViewTransConfirm]', '交易确认..')
+                    console.log("[BlaCat]", '[ViewTransConfirm]', '交易确认..')
                     ViewTransConfirm.callback(ViewTransConfirm.callback_params, this.trust)
                     ViewTransConfirm.callback = null;
                     this.remove(300)
@@ -169,7 +169,7 @@ namespace BlackCat {
         private getParams() {
             var html = ""
             var params: any = ViewTransConfirm.list.params;
-            console.log('[Bla Cat]', '[ViewTransConfirm]', 'getParams, params => ', params)
+            console.log("[BlaCat]", '[ViewTransConfirm]', 'getParams, params => ', params)
             if (params) {
                 try {
                     params = JSON.parse(params)
@@ -187,7 +187,7 @@ namespace BlackCat {
                     }
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[ViewTransConfirm]', 'getParams error => ', e.toString())
+                    console.log("[BlaCat]", '[ViewTransConfirm]', 'getParams error => ', e.toString())
                 }
             }
 

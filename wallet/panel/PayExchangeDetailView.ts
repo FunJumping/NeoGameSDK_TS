@@ -7,9 +7,10 @@ namespace BlackCat {
 
         private ulExchange: HTMLUListElement;
         private divAddress: HTMLDivElement;
+        private inputGas: HTMLInputElement;
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_bj", "pay_exchangedetail")
+            this.div.classList.add("pc_bj", "pc_exchangedetail")
 
             var header = this.objCreate("div")
             header.classList.add("pc_header")
@@ -34,7 +35,7 @@ namespace BlackCat {
             divExchange.classList.add("pc_exchangetitle")
             this.ObjAppend(this.div, divExchange)
 
-            //购买
+            //交易所类型详情
             var divEcvhangeObj = this.objCreate("div")
             divEcvhangeObj.classList.add("pc_exchangelist")
             this.ObjAppend(divExchange, divEcvhangeObj)
@@ -56,36 +57,71 @@ namespace BlackCat {
 
 
             //最新价
-            var divExchangePrice = this.objCreate("div")
-            divExchangePrice.classList.add("pc_exchangeprice")
+            var divNewPrice = this.objCreate("div")
+            divNewPrice.classList.add("pc_exchangeprice")
 
-            //最新价内容
-            var labelExchangePrice = this.objCreate("label")
-            labelExchangePrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
-            this.ObjAppend(divExchangePrice, labelExchangePrice)
+            //最新价名称
+            var divNewPriceName = this.objCreate("label")
+            divNewPriceName.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
+            this.ObjAppend(divNewPrice, divNewPriceName)
 
-            //最新价价格
-            var pExchangePrice = this.objCreate("p")
-            pExchangePrice.textContent = "1111111111111"
-            this.ObjAppend(divExchangePrice, pExchangePrice)
+            //最新价格
+            var pNewPrice = this.objCreate("p")
+            pNewPrice.textContent = "1111111111111"
+            this.ObjAppend(divNewPrice, pNewPrice)
 
-            this.ObjAppend(divEcvhangeObj, divExchangePrice)
+            this.ObjAppend(divEcvhangeObj, divNewPrice)
 
-            //最新价
-            var divExchangePrice = this.objCreate("div")
-            divExchangePrice.classList.add("pc_exchangeprice")
+            //余额
+            var divBalance = this.objCreate("div")
+            divBalance.classList.add("pc_exchangeprice")
 
-            //最新价内容
-            var labelExchangePrice = this.objCreate("label")
-            labelExchangePrice.textContent = Main.langMgr.get("pay_exchange_price") // "最新价"
-            this.ObjAppend(divExchangePrice, labelExchangePrice)
+            //余额名称
+            var labelBalanceName = this.objCreate("label")
+            labelBalanceName.textContent = Main.langMgr.get("pay_exchange_price") // "余额"
+            this.ObjAppend(divBalance, labelBalanceName)
 
-            //最新价价格
-            var pExchangePrice = this.objCreate("p")
-            pExchangePrice.textContent = "1111111111111"
-            this.ObjAppend(divExchangePrice, pExchangePrice)
+            //余额价格
+            var pBalance = this.objCreate("p")
+            pBalance.textContent = "1111111111111"
+            this.ObjAppend(divBalance, pBalance)
 
-            this.ObjAppend(divEcvhangeObj, divExchangePrice)
+            this.ObjAppend(divEcvhangeObj, divBalance)
+
+            // 购买GAS
+            var divGas = this.objCreate("div")
+            divGas.classList.add("pc_exc_purchases")
+            // 消耗
+            var divConsume = this.objCreate("div")
+            divConsume.classList.add("pc_exc_consume")
+            divConsume.textContent = "NEO消耗"
+            this.ObjAppend(divGas, divConsume)
+
+            var aConsume=this.objCreate("a")
+            aConsume.textContent="NEO不足?"
+            this.ObjAppend(divConsume,aConsume)
+
+            // GAS 数量框
+            var divGasObj = this.objCreate("div")
+            divGasObj.classList.add("pc_exc_inputpurchases")
+            divGasObj.textContent = "GAS"
+            this.ObjAppend(divGas, divGasObj)
+
+            // GAS 购买输入框
+            this.inputGas = this.objCreate("input") as HTMLInputElement
+            this.inputGas.placeholder = "输入购买数量"
+            this.ObjAppend(divGasObj, this.inputGas)
+
+            // 购买按钮
+            var btnGas = this.objCreate("button")
+            btnGas.textContent = "确认购买"
+            this.ObjAppend(divGasObj, btnGas)
+
+
+            this.ObjAppend(this.div, divGas)
+
+
+
 
 
             // 通讯录详情内容容器
@@ -132,7 +168,7 @@ namespace BlackCat {
 
             this.divAddress = this.objCreate("div") as HTMLDivElement
             this.divAddress.classList.add("pc_receivables")
-            this.divAddress.textContent = AddressbookDetailsView.contact.address_wallet
+            // this.divAddress.textContent = AddressbookDetailsView.contact.address_wallet
             this.ObjAppend(divObj, this.divAddress)
 
             //二维码容器
@@ -145,11 +181,11 @@ namespace BlackCat {
             var qrObj = this.objCreate("img") as HTMLImageElement
             QrCodeWithLogo.toImage({
                 image: qrObj,
-                content: AddressbookDetailsView.contact.address_wallet
+                content: 55 //AddressbookDetailsView.contact.address_wallet
             }).then(() => {
                 var url = URL.createObjectURL(this.base64ToBlob(qrObj.src));
                 qr_download.setAttribute('href', url)
-                qr_download.setAttribute("download", AddressbookDetailsView.contact.address_wallet + ".png")
+                qr_download.setAttribute("download", /*AddressbookDetailsView.contact.address_wallet*/555 + ".png")
             })
             this.ObjAppend(divQRCode, qrObj)
 
@@ -167,7 +203,7 @@ namespace BlackCat {
 
             var divDescribeText = this.objCreate("div")
             divDescribeText.classList.add("pc_describetext")
-            divDescribeText.textContent = AddressbookDetailsView.contact.address_desc ? AddressbookDetailsView.contact.address_desc : Main.langMgr.get("addressbook_det_empty") // "空"
+            // divDescribeText.textContent = AddressbookDetailsView.contact.address_desc ? AddressbookDetailsView.contact.address_desc : Main.langMgr.get("addressbook_det_empty") // "空"
             this.ObjAppend(divObj, divDescribeText)
 
 
@@ -193,7 +229,7 @@ namespace BlackCat {
                     Main.viewMgr.payView.doGetWalletLists(1)
 
                 }
-                PayTransferView.address = AddressbookDetailsView.contact.address_wallet
+                // PayTransferView.address = AddressbookDetailsView.contact.address_wallet
                 Main.viewMgr.change("PayTransferView")
 
 

@@ -9,72 +9,62 @@ namespace BlackCat {
         private default_type: number; // 默认网络，1：主网；2:测试网
 
         type: number; // 当前网络
-        private api_server: string; // 当前api_server
-        private node_server: any; // 当前nelnode_server
-        private cli_server: any; // 当前neocli节点
+        private apis_server: string; // 当前api_server
+        private nodes_server: any; // 当前nelnode_server
+        private clis_server: any; // 当前neocli节点
 
         private node_change_tmp: any; // 选择node节点
 
         constructor() {
             this.types = [1, 2]
 
-            this.clis = {}
-            this.clis[1] = [
-                // 主网cli
-                // 大陆
-                'https://clip01.9191wyx.com/api/mainnet',
-                // 其他地区
-                'https://neocli01.blacat.org/api/mainnet',
+            this.apis = [
+                // 调试服
+                ["CN", "https://api00.9191wyx.com/apic_v2/"],
+                // ["CN", "http://10.1.8.132/new/nel/api_c/"],
+
+                // 正式服
+                // ["CN", "//apip01.9191wyx.com/apic/"], // gateway
+                // ["HK", "//api01.blacat.org/apic/"],
             ]
-            this.clis[2] = []
 
             this.nodes = {}
             this.nodes[1] = [
-                // 主网nel
+                // 主网nelnode
+                ["CN", "https://api.nel.group/api/mainnet", "_1"],
+                ["CN", "https://nelnode01.9191wyx.com/api/mainnet", "_2"],
 
-                // 大陆
-                // "https://nelnode01.9191wyx.com/api/mainnet",
-                "https://api.nel.group/api/mainnet",
-
-                // 其他地区
-                "https://nelnode01.blacat.org/api/mainnet",
-                "http://nelnode01.blacat.org:82/api/mainnet",
+                ["HK", "https://nelnode01.blacat.org/api/mainnet"],
             ]
             this.nodes[2] = [
-                // 测试网nel
-
-                // 大陆
-                "https://nelnode00.9191wyx.com/api/testnet",
-                "https://api.nel.group/api/testnet",
-
-                // 其他地区
-                "https://nelnode00.blacat.org/api/testnet",
-            ]
-
-            this.apis = [
-                // 调试服
-                "//api00.9191wyx.com/apic_v2/",
-                // "http://10.1.8.132/new/nel/api_c/"
-
+                // 测试网nelnode
+                ["CN", "https://api.nel.group/api/testnet", "_1"],
+                ["CN", "https://nelnode00.9191wyx.com/api/testnet", "_2"],
                 
-                // 正式服
-
-                // 大陆
-                // "//apip01.9191wyx.com/apic/",
-
-                // 其他地区
-                // "//api01.blacat.org/apic/",
+                ["HK", "https://nelnode00.blacat.org/api/testnet"],
             ]
 
-            this.node_server = {}
+            this.clis = {}
+            this.clis[1] = [
+                // 主网cli
+                ["CN", 'https://clip01.9191wyx.com/api/mainnet'],  // gateway
+
+                ["HK", 'https://neocli01.blacat.org/api/mainnet'],
+            ]
+            this.clis[2] = [
+                // 测试网cli
+            ]
+
+
+            this.nodes_server = {}
             this.default_type = 1;
-            this.cli_server = {}
+            this.clis_server = {}
         }
 
         // 选择后台接口访问地址
         selectApi(callback) {
-            if (this.api_server) {
-                ApiTool.base_url = this.api_server;
+            if (this.apis_server) {
+                ApiTool.base_url = this.apis_server;
                 callback()
                 return
             }
@@ -90,7 +80,7 @@ namespace BlackCat {
         private _selectApi(callback) {
             Main.viewMgr.viewConnecting.showConnecting()
             Main.viewMgr.iconView.showState()
-            var conn = new Connector(this.apis, "apic_test.php", 'api')
+            var conn = new Connector(this.getHosts(this.apis), "apic_test.php", 'api')
             conn.getOne((res, response) => {
                 if (res === false) {
                     // 失败提示
@@ -103,21 +93,21 @@ namespace BlackCat {
                     if (Main.isLoginInit() === true) Main.viewMgr.iconView.showFail()
                     return
                 }
-                console.log('[Bla Cat]', '[NetMgr]', 'api => ', res)
-                console.log('[Bla Cat]', '[NetMgr]', 'api response => ', response)
-                this.api_server = res + "apic_user.php"
-                ApiTool.base_url = this.api_server
+                console.log("[BlaCat]", '[NetMgr]', 'api => ', res)
+                console.log("[BlaCat]", '[NetMgr]', 'api response => ', response)
+                this.apis_server = res + "apic_user.php"
+                ApiTool.base_url = this.apis_server
                 callback()
                 // if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
             })
         }
-        
+
 
         // 选择nelnode节点，使用这个后，必须再使用selectCli
         private selectNode(callback, type, force = 0) {
-            if (force == 0 && this.node_server && this.node_server.hasOwnProperty(type) && this.node_server[type]) {
+            if (force == 0 && this.nodes_server && this.nodes_server.hasOwnProperty(type) && this.nodes_server[type]) {
                 // tools.WWW.api = this.node_server[type];
-                this.node_change_tmp = this.node_server[type]
+                this.node_change_tmp = this.nodes_server[type]
                 // callback()
                 this.selectCli(callback, type, force)
                 return
@@ -135,7 +125,7 @@ namespace BlackCat {
         private _selectNode(callback, type, force) {
             Main.viewMgr.viewConnecting.showConnecting()
             Main.viewMgr.iconView.showState()
-            var conn = new Connector(this.nodes[type], "?jsonrpc=2.0&id=1&method=getblockcount&params=[]", 'node')
+            var conn = new Connector(this.getHosts(this.nodes[type]), "?jsonrpc=2.0&id=1&method=getblockcount&params=[]", 'node')
             conn.getOne((res, response) => {
                 if (res === false) {
                     // 失败提示
@@ -149,10 +139,10 @@ namespace BlackCat {
                     if (Main.isLoginInit() === true) Main.viewMgr.iconView.showFail()
                     return
                 }
-                console.log('[Bla Cat]', '[NetMgr]', 'node => ', res)
-                console.log('[Bla Cat]', '[NetMgr]', 'node response => ', response)
+                console.log("[BlaCat]", '[NetMgr]', 'node => ', res)
+                console.log("[BlaCat]", '[NetMgr]', 'node response => ', response)
 
-                
+
                 // this.node_server[type] = res
                 // tools.WWW.api = this.node_server[type]
                 // callback()
@@ -172,11 +162,12 @@ namespace BlackCat {
         private selectCli(callback, type, force = 0) {
 
             if (!this.clis || !this.clis[type] || this.clis[type].length == 0) {
-                this.node_server[type] = this.node_change_tmp
-                tools.WWW.api = this.node_server[type]
+                // 没有NeoCli
+                this.nodes_server[type] = this.node_change_tmp
+                tools.WWW.api_nodes = this.nodes_server[type]
 
-                this.cli_server[type] = null
-                tools.WWW.api_cli = null
+                this.clis_server[type] = null
+                tools.WWW.api_clis = null
                 callback()
 
                 if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
@@ -188,14 +179,13 @@ namespace BlackCat {
                 return
             }
 
-            if (force == 0 && this.cli_server && this.cli_server.hasOwnProperty(type) && this.cli_server[type]) {
-                // tools.WWW.api = this.node_server[type];
+            if (force == 0 && this.clis_server && this.clis_server.hasOwnProperty(type) && this.clis_server[type]) {
+                // 有NeoCli已经被选择了
+                this.nodes_server[type] = this.node_change_tmp
+                tools.WWW.api_nodes = this.nodes_server[type]
 
-                this.node_server[type] = this.node_change_tmp
-                tools.WWW.api = this.node_server[type]
+                tools.WWW.api_clis = this.clis_server[type]
 
-                tools.WWW.api_cli = this.cli_server[type]
-                
                 callback()
 
                 if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
@@ -203,7 +193,7 @@ namespace BlackCat {
                 Main.viewMgr.iconView.hiddenState()
                 // 显示正常
                 Main.viewMgr.iconView.showSucc()
-                
+
                 return
             }
 
@@ -219,7 +209,7 @@ namespace BlackCat {
         private _selectCli(callback, type) {
             Main.viewMgr.viewConnecting.showConnecting()
             Main.viewMgr.iconView.showState()
-            var conn = new Connector(this.clis[type], "?jsonrpc=2.0&id=1&method=getblockcount&params=[]&uid="+Main.randNumber, 'cli')
+            var conn = new Connector(this.getHosts(this.clis[type]), "?jsonrpc=2.0&id=1&method=getblockcount&params=[]&uid=" + Main.randNumber, 'cli')
             conn.getOne((res, response) => {
                 if (res === false) {
                     // 失败提示
@@ -233,15 +223,15 @@ namespace BlackCat {
                     if (Main.isLoginInit() === true) Main.viewMgr.iconView.showFail()
                     return
                 }
-                console.log('[Bla Cat]', '[NetMgr]', 'cli => ', res)
-                console.log('[Bla Cat]', '[NetMgr]', 'cli response => ', response)
+                console.log("[BlaCat]", '[NetMgr]', 'cli => ', res)
+                console.log("[BlaCat]", '[NetMgr]', 'cli response => ', response)
 
                 // cli也选择成功，可都修改参数了
-                this.node_server[type] = this.node_change_tmp
-                tools.WWW.api = this.node_server[type]
+                this.nodes_server[type] = this.node_change_tmp
+                tools.WWW.api_nodes = this.nodes_server[type]
 
-                this.cli_server[type] = res
-                tools.WWW.api_cli = this.cli_server[type]
+                this.clis_server[type] = res
+                tools.WWW.api_clis = this.clis_server[type]
 
                 callback()
                 if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
@@ -259,7 +249,7 @@ namespace BlackCat {
                 type = this.default_type;
             }
             if (this.type != type) {
-                console.log('[Bla Cat]', '[NetType]', ' change to type => ', type)
+                console.log("[BlaCat]", '[NetType]', ' change to type => ', type)
                 switch (type) {
                     case 1: // 主网
                         this.change2Main(callback)
@@ -271,7 +261,7 @@ namespace BlackCat {
             }
         }
         setDefault(type: number) {
-            console.log('[Bla Cat]', '[NetType]', ' default type => ', type)
+            console.log("[BlaCat]", '[NetType]', ' default type => ', type)
             this.default_type = type;
         }
 
@@ -313,6 +303,42 @@ namespace BlackCat {
                 }
             }
             return res;
+        }
+
+        private getHosts(hosts) {
+            var res = []
+            hosts.forEach(
+                host => {
+                    res.push(host[1])
+                }
+            )
+            return res;
+        }
+
+        // 获取当前节点信息，type: clis，nodes
+        getCurrNodeInfo(type: string) {
+            var info = null
+            if (this[type][this.type].length > 0) {
+                for (let i = 0; i < this[type][this.type].length; i++) {
+                    if (this[type][this.type][i][1] == this[type + "_server"][this.type]) {
+                        return this[type][this.type][i]
+                    }
+                }
+            }
+            return info
+        }
+
+        getNodeLists(type: string) {
+            var lists = []
+            if (this[type] && this[type][this.type]) {
+                return this[type][this.type]
+            }
+            return lists
+        }
+
+        setNode(type, url) {
+            this[type + "_server"][this.type] = url
+            tools.WWW["api_" + type] = url
         }
     }
 

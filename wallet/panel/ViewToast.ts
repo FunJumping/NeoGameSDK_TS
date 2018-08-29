@@ -5,7 +5,7 @@ namespace BlackCat {
     // toast视图
     export class ViewToast extends ViewBase {
 
-        static showTime: number = 1500;
+        static showTime: number = 2500;
         static content: string;
 
         create() {

@@ -6,7 +6,7 @@ namespace BlackCat {
     export class WalletView extends ViewBase {
 
         create() {
-            // console.log('[Bla Cat]', '[WalletView] 创建 ...")
+            // console.log("[BlaCat]", '[WalletView] 创建 ...")
 
             this.div = this.objCreate("div") as HTMLDivElement;
             this.div.classList.add("pc_bj", "pc_wallet")

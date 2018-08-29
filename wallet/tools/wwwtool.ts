@@ -7,9 +7,10 @@ namespace BlackCat.tools
         // static apiaggr: string = "https://apiaggr.nel.group/api/testnet";
 
         // Black Cat
-        static api: string;
-        static apiaggr: string;
-        static api_cli: string;
+        // static api: string;
+        static api_nodes: string
+        // static apiaggr: string;
+        static api_clis: string;
 
         static makeRpcUrl(url: string, method: string, ..._params: any[])
         {
@@ -53,9 +54,18 @@ namespace BlackCat.tools
         //     return r;
         // }
 
-        static async  api_getHeight()
-        {
-            var str = WWW.makeRpcUrl(WWW.api, "getblockcount");
+        // static async  api_getHeight()
+        // {
+        //     var str = WWW.makeRpcUrl(WWW.api_nodes, "getblockcount");
+        //     var result = await fetch(str, { "method": "get" });
+        //     var json = await result.json();
+        //     var r = json[ "result" ];
+        //     var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
+        //     return height;
+        // }
+
+        static async api_getHeight_nodes(nodes_url: string = WWW.api_nodes) {
+            var str = WWW.makeRpcUrl(nodes_url, "getblockcount");
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             var r = json[ "result" ];
@@ -63,22 +73,11 @@ namespace BlackCat.tools
             return height;
         }
 
-        static async  api_getCliHeight()
+        static async  api_getHeight_clis(clis_url: string = WWW.api_clis)
         {
-            var cli = 0;
-            if (WWW.api_cli && WWW.api_cli != "") {
-                cli = 1;
-            }
+            var str = WWW.makeRpcUrl(clis_url, "getblockcount");
 
-            var api_url = WWW.api;
-            if (cli == 1) {
-                api_url = WWW.api_cli
-            }
-
-            var str = WWW.makeRpcUrl(api_url, "getblockcount");
-            if (cli == 1) {
-                str += "&uid=" + Main.randNumber
-            }
+            str += "&uid=" + Main.randNumber
 
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
@@ -98,7 +97,7 @@ namespace BlackCat.tools
         // }
         static async api_getAllAssets()
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getallasset");
+            var str = WWW.makeRpcUrl(WWW.api_nodes, "getallasset");
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             var r = json[ "result" ];
@@ -106,8 +105,16 @@ namespace BlackCat.tools
         }
         static async api_getUTXO(address: string)
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getutxo", address);
+            var str = WWW.makeRpcUrl(WWW.api_nodes, "getutxo", address);
             var result = await fetch(str, { "method": "get" });
+            var json = await result.json();
+            var r = json[ "result" ];
+            return r;
+        }
+
+        static async api_getUTXOsToPay(address: string, asset: string, value: number, fromMax: number = 0) {
+            var postdata = WWW.makeRpcPostBody("getutxostopay", address, asset, value, fromMax);
+            var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
             var r = json[ "result" ];
             return r;
@@ -141,7 +148,7 @@ namespace BlackCat.tools
 
         static async api_getBalance(address: string)
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getbalance", address);
+            var str = WWW.makeRpcUrl(WWW.api_nodes, "getbalance", address);
             var value = await fetch(str, { "method": "get" });
             var json = await value.json();
             var r = json[ "result" ];
@@ -151,7 +158,7 @@ namespace BlackCat.tools
         static async getNep5Asset(asset: string)
         {
             var postdata = WWW.makeRpcPostBody("getnep5asset", asset);
-            var result = await fetch(WWW.api, { "method": "post", "body": JSON.stringify(postdata) });
+            var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
             var r = json[ "result" ][ 0 ];
             return r;
@@ -169,13 +176,13 @@ namespace BlackCat.tools
         static async cli_postRawTransaction(data: Uint8Array): Promise<boolean>
         {
             var cli = 0;
-            if (WWW.api_cli && WWW.api_cli != "") {
+            if (WWW.api_clis && WWW.api_clis != "") {
                 cli = 1;
             }
 
-            var api_url = WWW.api;
+            var api_url = WWW.api_nodes;
             if (cli == 1) {
-                api_url = WWW.api_cli
+                api_url = WWW.api_clis
             }
             var postdata = WWW.makeRpcPostBody("sendrawtransaction", data.toHexString());
             if (cli == 1) postdata["uid"] = Main.randNumber
@@ -188,7 +195,7 @@ namespace BlackCat.tools
         static async api_postRawTransaction(data: Uint8Array): Promise<boolean>
         {
             var postdata = WWW.makeRpcPostBody("sendrawtransaction", data.toHexString());
-            var result = await fetch(WWW.api, { "method": "post", "body": JSON.stringify(postdata) });
+            var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
             var r = json[ "result" ][ 0 ] as boolean;
             return r;
@@ -244,13 +251,13 @@ namespace BlackCat.tools
         static async cli_getInvokescript(scripthash: Uint8Array): Promise<any>
         {
             var cli = 0;
-            if (WWW.api_cli && WWW.api_cli != "") {
+            if (WWW.api_clis && WWW.api_clis != "") {
                 cli = 1;
             }
 
-            var api_url = WWW.api;
+            var api_url = WWW.api_nodes;
             if (cli == 1) {
-                api_url = WWW.api_cli
+                api_url = WWW.api_clis
             }
             var str = WWW.makeRpcUrl(api_url, "invokescript", scripthash.toHexString());
             if (cli == 1) {
@@ -267,7 +274,7 @@ namespace BlackCat.tools
         // nel调用invoke合约
         static async rpc_getInvokescript(scripthash: Uint8Array): Promise<any>
         {
-            var str = WWW.makeRpcUrl(WWW.api, "invokescript", scripthash.toHexString());
+            var str = WWW.makeRpcUrl(WWW.api_nodes, "invokescript", scripthash.toHexString());
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             if (json[ "result" ] == null)
@@ -278,7 +285,7 @@ namespace BlackCat.tools
         //获得交易详情
         static async getrawtransaction(txid: string)
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getrawtransaction", txid);
+            var str = WWW.makeRpcUrl(WWW.api_nodes, "getrawtransaction", txid);
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
             if (!json[ "result" ])
@@ -289,7 +296,7 @@ namespace BlackCat.tools
 
         static async api_getcontractstate(scriptaddr: string)
         {
-            var str = WWW.makeRpcUrl(WWW.api, "getcontractstate", scriptaddr);
+            var str = WWW.makeRpcUrl(WWW.api_nodes, "getcontractstate", scriptaddr);
             var value = await fetch(str, { "method": "get" });
             var json = await value.json();
             var r = json[ "result" ][ 0 ];

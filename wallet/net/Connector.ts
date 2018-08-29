@@ -19,16 +19,9 @@ namespace BlackCat {
 
         getOne(callback) {
             try {
-                var protocol = ""
-                if (window.location.protocol == "file:") {
-                    protocol = "http:"
-                }
                 this.hosts.forEach(
                     host => {
-                        let url_head = ""
-                        if (host.substr(0,2) === "//") {
-                            url_head = protocol
-                        }
+                        let url_head = host.substr(0,2) === "//" ? Main.urlHead : ""
                         let url = url_head + host + this.check_params
 
                         fetch(url).then(
@@ -66,14 +59,14 @@ namespace BlackCat {
                             },
                             error => {
                                 this.fetch_error.push(host)
-                                console.log('[Bla Cat]', '[Connector]', 'getOne, fetch err => ', error)
+                                console.log("[BlaCat]", '[Connector]', 'getOne, fetch err => ', error)
                             }
                         )
                     }
                 )
             }
             catch (e) {
-                console.log('[Bla Cat]', '[Connector]', 'getOne, error => ', e.toString())
+                console.log("[BlaCat]", '[Connector]', 'getOne, error => ', e.toString())
             }
 
             // setTimeout(() => {
@@ -86,11 +79,11 @@ namespace BlackCat {
         }
 
         private check_results(callback) {
-            console.log('[Bla Cat]', '[Connector]', 'do check_results ...')
+            console.log("[BlaCat]", '[Connector]', 'do check_results ...')
             setTimeout(() => {
                 if (!this.first_host) {
                     if (this.fetch_error.length == this.hosts.length) {
-                        console.log('[Bla Cat]', '[Connector]', 'check_results, all fetch_error => ', this.fetch_error)
+                        console.log("[BlaCat]", '[Connector]', 'check_results, all fetch_error => ', this.fetch_error)
                         callback(false, null)
                     }
                     else {

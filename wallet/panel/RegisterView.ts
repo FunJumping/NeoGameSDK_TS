@@ -137,8 +137,8 @@ namespace BlackCat {
                     var option = this.objCreate("option") as HTMLOptionElement;
                     option.setAttribute("value", area.codename);
                     option.textContent = Main.langMgr.get("area_code_" + area.codename)
-                    if(area.codename=="CN"){
-                        option.setAttribute("selected","selected")
+                    if (area.codename == "CN") {
+                        option.setAttribute("selected", "selected")
                     }
                     this.selectArea.options.add(option)
 
@@ -344,7 +344,7 @@ namespace BlackCat {
                 Main.showErrMsg(("register_input" + this.accountType + "_err"))
                 return false;
             }
-            if ( (await Main.validateFormat(this.accountType, this.inputAccount)) == false) {
+            if ((await Main.validateFormat(this.accountType, this.inputAccount)) == false) {
                 return false;
             }
             return await this.checkAccountFromApi()
@@ -357,7 +357,7 @@ namespace BlackCat {
                 return false;
             }
 
-            if ( (await Main.validateFormat("user", this.inputUid)) == false) {
+            if ((await Main.validateFormat("user", this.inputUid)) == false) {
                 return false;
             }
             return await this.checkUidFromApi()
@@ -402,6 +402,13 @@ namespace BlackCat {
 
             if (!(await this.validateVpass())) return
 
+            if (this.inputPass.value.length > 32) {
+                // 设置密码不能超过32个字符
+                Main.showErrMsg(("register_exceed"), () => {
+                    this.inputPass.focus()
+                })
+                return;
+            }
             var res: any;
             switch (this.accountType) {
                 case 'email':
@@ -513,7 +520,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-                console.log('[Bla Cat]', '[RegisterView]', 'doGetCode, ApiTool.getxxCode', 'error => ', e.toString())
+                console.log("[BlaCat]", '[RegisterView]', 'doGetCode, ApiTool.getxxCode', 'error => ', e.toString())
             }
 
             Main.viewMgr.viewLoading.remove()

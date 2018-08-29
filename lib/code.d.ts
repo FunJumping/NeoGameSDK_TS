@@ -6,6 +6,8 @@ declare namespace BlackCat {
         static readonly platName: string;
         static platLoginType: number;
         static randNumber: number;
+        static tsOffset: number;
+        static urlHead: string;
         static resHost: string;
         static appid: string;
         static appkey: string;
@@ -97,6 +99,9 @@ declare namespace BlackCat {
         static setLiveTimeMax(minutes: number): void;
         static getLiveTimeMax(): number;
         static getStringNumber(num: number): string;
+        private static setTsOffset(loginParam);
+        private static getUrlHead();
+        static randomSort(arr: any, newArr: any): any;
     }
 }
 declare namespace BlackCat {
@@ -116,6 +121,8 @@ declare namespace BlackCat {
             info: string;
             content: string;
             retry: string;
+            sgas: string;
+            gas: string;
             area_code_CN: string;
             area_code_AD: string;
             area_code_AE: string;
@@ -359,6 +366,7 @@ declare namespace BlackCat {
             register_getCode: string;
             register_getCodecount: string;
             register_getCodecountRetry: string;
+            register_exceed: string;
             register_doLogin: string;
             register_doRegister: string;
             login_inputuser: string;
@@ -399,6 +407,7 @@ declare namespace BlackCat {
             forgetpass_getCode: string;
             forgetpass_getCodecount: string;
             forgetpass_getCodecountRetry: string;
+            forgetpass_exceed: string;
             forgetpass_doLogin: string;
             forgetpass_do: string;
             forgetpass_do_ok: string;
@@ -429,6 +438,9 @@ declare namespace BlackCat {
             modifySex_succ: string;
             modifyArea: string;
             modifyArea_succ: string;
+            modifyNet: string;
+            modifyNet_succ: string;
+            modifyNet_node_err: string;
             security_title: string;
             security_trust: string;
             security_trust_admin: string;
@@ -478,6 +490,7 @@ declare namespace BlackCat {
             pay_sgas_desc: string;
             pay_send: string;
             pay_purchase: string;
+            pay_purchase_testnet_cant_buy: string;
             pay_makeMint: string;
             pay_recentLists: string;
             pay_makeMintGasNotEnough: string;
@@ -535,12 +548,17 @@ declare namespace BlackCat {
             pay_transferGas_count: string;
             pay_transCount_count: string;
             pay_transCount_inputCount: string;
-            pay_transCount_inputSGASCount: string;
-            pay_transCount_inputGASCount: string;
             pay_transCount_err: string;
-            pay_transCountGAS: string;
-            pay_transCountSGAS: string;
-            pay_transCountOLD: string;
+            pay_transCountSGAS2GAS: string;
+            pay_transCountGAS2SGAS: string;
+            pay_transCountSGASOLD2OLD: string;
+            pay_transCountTips_free: string;
+            pay_transCountTips_slow: string;
+            pay_transCountTips_fast: string;
+            pay_transCount_speed: string;
+            pay_transCount_cost: string;
+            pay_transCount_tips: string;
+            pay_transCount_tips_err: string;
             pay_walletOpen_password: string;
             pay_walletOpen_inputPassword: string;
             pay_walletOpen_inputPassword_err: string;
@@ -553,6 +571,7 @@ declare namespace BlackCat {
             walletCreate_doCreate: string;
             walletCreate_check_pass: string;
             walletCreate_check_vpass: string;
+            walletCreate_check_exceed: string;
             walletImport_invalid_file: string;
             walletImport_select_file: string;
             walletImport_import: string;
@@ -620,6 +639,8 @@ declare namespace BlackCat {
             info: string;
             content: string;
             retry: string;
+            sgas: string;
+            gas: string;
             area_code_CN: string;
             area_code_AD: string;
             area_code_AE: string;
@@ -863,6 +884,7 @@ declare namespace BlackCat {
             register_getCode: string;
             register_getCodecount: string;
             register_getCodecountRetry: string;
+            register_exceed: string;
             register_doLogin: string;
             register_doRegister: string;
             login_inputuser: string;
@@ -903,6 +925,7 @@ declare namespace BlackCat {
             forgetpass_getCode: string;
             forgetpass_getCodecount: string;
             forgetpass_getCodecountRetry: string;
+            forgetpass_exceed: string;
             forgetpass_doLogin: string;
             forgetpass_do: string;
             forgetpass_do_ok: string;
@@ -933,6 +956,9 @@ declare namespace BlackCat {
             modifySex_succ: string;
             modifyArea: string;
             modifyArea_succ: string;
+            modifyNet: string;
+            modifyNet_succ: string;
+            modifyNet_node_err: string;
             security_title: string;
             security_trust: string;
             security_trust_admin: string;
@@ -982,6 +1008,7 @@ declare namespace BlackCat {
             pay_sgas_desc: string;
             pay_send: string;
             pay_purchase: string;
+            pay_purchase_testnet_cant_buy: string;
             pay_makeMint: string;
             pay_recentLists: string;
             pay_makeMintGasNotEnough: string;
@@ -1039,12 +1066,17 @@ declare namespace BlackCat {
             pay_transferGas_count: string;
             pay_transCount_count: string;
             pay_transCount_inputCount: string;
-            pay_transCount_inputSGASCount: string;
-            pay_transCount_inputGASCount: string;
             pay_transCount_err: string;
-            pay_transCountGAS: string;
-            pay_transCountSGAS: string;
-            pay_transCountOLD: string;
+            pay_transCountSGAS2GAS: string;
+            pay_transCountGAS2SGAS: string;
+            pay_transCountSGASOLD2OLD: string;
+            pay_transCountTips_free: string;
+            pay_transCountTips_slow: string;
+            pay_transCountTips_fast: string;
+            pay_transCount_speed: string;
+            pay_transCount_cost: string;
+            pay_transCount_tips: string;
+            pay_transCount_tips_err: string;
             pay_walletOpen_password: string;
             pay_walletOpen_inputPassword: string;
             pay_walletOpen_inputPassword_err: string;
@@ -1057,6 +1089,7 @@ declare namespace BlackCat {
             walletCreate_doCreate: string;
             walletCreate_check_pass: string;
             walletCreate_check_vpass: string;
+            walletCreate_check_exceed: string;
             walletImport_invalid_file: string;
             walletImport_select_file: string;
             walletImport_import: string;
@@ -1142,9 +1175,9 @@ declare namespace BlackCat {
         private clis;
         private default_type;
         type: number;
-        private api_server;
-        private node_server;
-        private cli_server;
+        private apis_server;
+        private nodes_server;
+        private clis_server;
         private node_change_tmp;
         constructor();
         selectApi(callback: any): void;
@@ -1158,6 +1191,10 @@ declare namespace BlackCat {
         private change2test(callback);
         private change2Main(callback);
         getOtherTypes(): Array<number>;
+        private getHosts(hosts);
+        getCurrNodeInfo(type: string): any;
+        getNodeLists(type: string): any;
+        setNode(type: any, url: any): void;
     }
 }
 declare namespace BlackCat {
@@ -1361,6 +1398,21 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class ModifyNetworkLineView extends ViewBase {
+        static defaultType: string;
+        private divTypes;
+        private netType_nodes;
+        private netType_clis;
+        private divLists;
+        create(): void;
+        toRefer(): void;
+        private showNodeInfo(type, clear?);
+        private doChange(type, nodelist, height);
+        private getNodeName(nodeInfo);
+        private getHeight(type, nodelist, element, li, currNodeInfo);
+    }
+}
+declare namespace BlackCat {
     class ModifySexView extends ViewBase {
         private divSex;
         private inputSex1Obj;
@@ -1376,6 +1428,10 @@ declare namespace BlackCat {
         private myName;
         private mySex;
         private myArea;
+        private myNet_nodes;
+        private myNet_clis;
+        private divHeight_nodes;
+        private divHeight_clis;
         create(): void;
         toRefer(): void;
         private getImg();
@@ -1389,12 +1445,15 @@ declare namespace BlackCat {
         private modifyName();
         private modifySex();
         modifyArea(): void;
+        private getNodeHeight(type);
+        updateNodeInfo(): void;
     }
 }
 declare namespace BlackCat {
     class PayExchangeDetailView extends ViewBase {
         private ulExchange;
         private divAddress;
+        private inputGas;
         create(): void;
         toRefer(): void;
         private doMakeTransfer();
@@ -1403,10 +1462,25 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class PayExchangeView extends ViewBase {
-        private ulExchange;
-        private titlelist;
+        private exchange_type_buy;
+        private exchange_typeObj;
+        private exchange_buyObj;
+        private exchange_detail;
+        private exchange_detail_ul;
+        private exchange_info;
+        private exchange_coin_type;
+        private exchange_coin_name;
         create(): void;
+        reset(): void;
         toRefer(): void;
+        private getExchangeInfo(src_coin);
+        private showExchangeInfo();
+        private showCoinType();
+        private showBuy(clear?);
+        private showDetail(clear?);
+        private setExchangeCoinTypeInfo(type);
+        private getMarketLiImg(list);
+        private getCurr();
     }
 }
 declare namespace BlackCat {
@@ -1470,14 +1544,17 @@ declare namespace BlackCat {
         sgas: number;
         listPageNum: number;
         payMyWallet: HTMLElement;
-        height: number;
+        height_clis: number;
+        height_nodes: number;
         private spanGas;
         private spanSgas;
-        private spanHeight;
+        private divHeight_clis;
+        private divHeight_nodes;
         private divLists;
         private divListsMore;
         private divNetSelect;
         private getWalletListsTimeout;
+        private getWalletListsTimeout_min;
         private WalletListsNeedConfirm;
         walletListsNeedConfirmCounts: number;
         private WalletListsHashString;
@@ -1491,7 +1568,6 @@ declare namespace BlackCat {
         private doMakeRefundOld();
         private doMakePurchase();
         private doMakeMintToken();
-        private doMakeRefund();
         private divLists_recreate();
         doGetWalletLists(force?: number): Promise<void>;
         private getSgasIcon(v);
@@ -1514,7 +1590,8 @@ declare namespace BlackCat {
         private showChangeNetType();
         private getDivNetSelectType(type);
         checkTransCount(count: string): boolean;
-        getHeight(): Promise<void>;
+        getHeight(type: string): Promise<void>;
+        updateHeight(type: any, height: any): void;
     }
 }
 declare namespace BlackCat {
@@ -1654,6 +1731,7 @@ declare namespace BlackCat {
         modifyNameView: ModifyNameView;
         modifySexView: ModifySexView;
         modifyAreaView: ModifyAreaView;
+        modifyNetworkLineView: ModifyNetworkLineView;
         securityCenterView: SecurityCenterView;
         trustContractView: TrustContractView;
         autoLogoutWalletView: AutoLogoutWalletView;
@@ -1710,21 +1788,29 @@ declare namespace BlackCat {
 }
 declare namespace BlackCat {
     class ViewTransCount extends ViewBase {
+        private selectTransfertype;
+        private divtransfername;
         private divHaveAmounts;
         private spanHaveSGasAmounts;
         private spanHaveGasAmounts;
         private labeltransfername1;
         private labeltransfername2;
+        private divSpeed;
         private divHaveGasAmounts;
         private divHaveSGasAmounts;
+        private inputFree;
+        private inputcharge;
+        private divServiceCharge;
         static transTypename1: string;
         static transTypename2: string;
-        static transAmountsType: string;
         static transBalances: string;
         inputCount: HTMLInputElement;
+        net_fee: string;
         start(): void;
         create(): void;
         toRefer(): void;
+        private dofree();
+        private dospeed();
         private dotransfertype();
         private doinputchange();
         private doConfirm();
@@ -1995,6 +2081,7 @@ declare namespace BlackCat {
         static delAddrbook(uid: string, token: string, id: string): Promise<any>;
         static getAddrbook(uid: string, token: string): Promise<any>;
         static updateAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string, id: string): Promise<any>;
+        static getExchangeInfo(uid: string, token: string, src_coin: number): Promise<any>;
     }
 }
 declare namespace BlackCat {
@@ -2028,7 +2115,7 @@ declare namespace BlackCat.tools {
         }>;
         static makeTran(utxos: {
             [id: string]: UTXO[];
-        }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8): Result;
+        }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8, net_fee?: Neo.Fixed8): Result;
         static makeTranMulti(utxos: {
             [id: string]: UTXO[];
         }, targets: Array<{
@@ -2043,6 +2130,23 @@ declare namespace BlackCat.tools {
         static getsgasAssets(id_SGAS?: string): Promise<{
             [id: string]: UTXO[];
         }>;
+        static getSgasAssetsByAmount(id_SGAS: string, amount: number): Promise<{
+            [id: string]: UTXO[];
+        }>;
+    }
+}
+declare namespace BlackCat {
+    class floatNum {
+        static strip(num: number, precision?: number): number;
+        static digitLength(num: number): number;
+        static float2Fixed(num: number): number;
+        static checkBoundary(num: number): void;
+        static times(num1: number, num2: number, ...others: number[]): number;
+        static plus(num1: number, num2: number, ...others: number[]): number;
+        static minus(num1: number, num2: number, ...others: number[]): number;
+        static divide(num1: number, num2: number, ...others: number[]): number;
+        static round(num: number, ratio: number): number;
+        static addZero(num: number, ratio: number): string;
     }
 }
 declare namespace BlackCat.tools {
@@ -2216,15 +2320,15 @@ declare namespace BlackCat.tools {
 }
 declare namespace BlackCat.tools {
     class WWW {
-        static api: string;
-        static apiaggr: string;
-        static api_cli: string;
+        static api_nodes: string;
+        static api_clis: string;
         static makeRpcUrl(url: string, method: string, ..._params: any[]): string;
         static makeRpcPostBody(method: string, ..._params: any[]): {};
-        static api_getHeight(): Promise<number>;
-        static api_getCliHeight(): Promise<number>;
+        static api_getHeight_nodes(nodes_url?: string): Promise<number>;
+        static api_getHeight_clis(clis_url?: string): Promise<number>;
         static api_getAllAssets(): Promise<any>;
         static api_getUTXO(address: string): Promise<any>;
+        static api_getUTXOsToPay(address: string, asset: string, value: number, fromMax?: number): Promise<any>;
         static api_getBalance(address: string): Promise<any>;
         static getNep5Asset(asset: string): Promise<any>;
         static cli_postRawTransaction(data: Uint8Array): Promise<boolean>;

@@ -53,7 +53,7 @@
 .pc_login_title{width: 70%;margin: 0 auto;position: relative;}
 .pc_login_title h1{font-size: 23px;color: #fff}
 .pc_title_switch{font-size: 12px;position: absolute;top: 10px;right: 0;}
-.pc_login_title a{float: left;padding: 0 3px;color: #9a9dac;position: relative; cursor: pointer;-webkit-user-select: none;-ms-user-select: none; -moz-user-select: none; user-select: none;}
+.pc_login_title a{float: left;padding: 0 3px;color: #9a9dac;position: relative; cursor: pointer;}
 .pc_login_title .pc_active{color: #c8ab73;}
 .pc_login_title .pc_active::after{content: "";position: absolute;bottom: -3px;left: 0;right: 0;margin: auto; width: 85%;height: 1px;background-color: #c8ab73}
 .pc_tiletmobile{border-left: 1px solid #9a9dac;border-right: 1px solid #9a9dac;}
@@ -104,7 +104,7 @@ a.pc_areaa{font-size: 20px;color: #9c9ead;position: absolute;top: 10px;right: 5p
 
 
 /*创建钱包和导入钱包和所以弹窗*/
-.pc_popup,.pc_alter,.pc_loading{width: 375px;height: 100vh;max-height:667px;background-color: rgba(0, 0, 0,0.7);position: fixed;top: 0;right: 0;z-index: 9;-webkit-animation: fadeIn 0.3s;animation: fadeIn 0.3s;}
+.pc_popup,.pc_alter,.pc_loading{width: 375px;height: 100vh;max-height:667px;background-color: rgba(0, 0, 0,0.9);position: fixed;top: 0;right: 0;z-index: 9;-webkit-animation: fadeIn 0.3s;animation: fadeIn 0.3s;}
 .pc_popupbox,.pc_alterbox{width: 85%;background-color: #33353e;margin: auto;position: absolute;left: 0;right: 0;top: 30%; -webkit-animation: fadeInNarrow 0.3s;animation: fadeInNarrow 0.3s;}
 .pc_popup_title,.pc_altertitle{font-size: 18px;text-align: center;color: #a4a8c2;height: 40px;line-height: 40px;border-bottom: 1px solid #222335;position: relative;background-color: #2f323b}
 .pc_popupbox input{width: 70%;margin: 20px auto;height: 25px;background-color: #c3c4c9;color: #30313b;border: 1px solid #9c9ead;display: block;font-size: 14px;text-align: center}
@@ -149,15 +149,14 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_transfertype input:-moz-placeholder {color:#9b9ca0;}
 .pc_transfertype input::-moz-placeholder { color:#9b9ca0;}
 .pc_transfertype input:-ms-input-placeholder {color:#9b9ca0;}
-.pc_token{font-size: 16px;text-align: center;margin-top: 20px;color: #ccc}
-.pc_token label{position: absolute;user-select: none}
+.pc_token select{width: 100%;height: 25px; border: 1px solid #9c9ead;background-color: #c3c4c9;box-sizing: inherit; display: block;color: #2f323b;font-size: 14px;cursor: pointer;}
+.pc_token{width: 80%;font-size: 16px;text-align: center;color: #ccc;margin: 30px auto 20px;padding: 0;}
+.pc_token label{position: absolute;user-select: none;top: -2px}
 .pc_token label:first-child{right:160px;}
 .pc_token label:last-child{margin-left: 8px}
-.pc_token i{font-size: 30px;color: #c8ab73;margin: auto 5px;cursor: pointer;}
+.pc_token i{font-size: 30px;margin: auto 5px;}
 .pc_old .pc_token{font-size: 14px}
-.pc_old i{color: #ccc;cursor: default}
-.pc_haveamounts{width: 80%;margin: 0 auto;font-size: 13px;color: #ccc;line-height: 1.7}
-
+.pc_haveamounts{width: 80%;margin: 0 auto;font-size: 13px;color: #999;line-height: 2}
 .pc_haveamounts span{float: right;}
 .pc_haveamountssgas span,.pc_haveamountsgas span{display: block;}
 .pc_haveamountssgas>div:first-child span{color: #93304b}
@@ -169,10 +168,22 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_haveamountsgas>div:first-child span::before{content: "+";color: #309368}
 .pc_haveamountsgas>div:last-child span::before{content: "-";color: #93304b}
 
-
-
-
-
+.pc_speed{width: 80%;margin: 5px auto;display: none}
+.pc_speed ul{height: 20px;line-height: 20px}
+.pc_speed li{font-size: 12px;color: #999;float: left;width: 28px;text-align: center}
+.pc_speed li:first-child{margin-left: 60px;}
+.pc_speed li:nth-child(2){margin-left:9%;}
+.pc_speed li:last-child{float: right;margin-right: -3px;}
+.pc_speed>div{display: block;clear: both;position: relative;height: 20px;font-size: 12px;color: #999;line-height: 20px;margin-top: 5px}
+.pc_speed input{width: auto;margin: auto;display: inline-block; background-color: #1f2228;border: none;outline: none;cursor: pointer;-webkit-appearance: none;position: absolute}
+.pc_speed input[type=radio]{-webkit-appearance:none;width: 20px;height: 20px;border-radius: 50%;left: 65px;}
+.pc_speed input[type=range]{height: 5px;width: 55%;margin-top: 8px;right: 0;}
+.pc_speed input[type=range]::-webkit-slider-thumb {-webkit-appearance: none;height: 20px;width: 20px;margin-top: -2px;background: #1f2228;border-radius: 50%;border: solid 2px #1f2228;}
+.pc_speed input[type=radio]::before{display: none;color: #666b7b}
+.pc_speed input[type=radio]:checked::before{display: block;}
+.pc_speed input[type=range].pc_active::-webkit-slider-thumb{background:#1f2228 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABS2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIi8+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo8P3hwYWNrZXQgZW5kPSJyIj8+IEmuOgAAAdtJREFUOI191E9LVFEYBvDfHMcZlcRqKEqd0VBIW8TowqY2mtKilZuwdS2E6CP0QVq2qU20aZsURQTSpqBFFkSlMkE2ymhZ/hlsMXcGvc74wOGe8z7P+9z3vPecm5i9e08DTOJm9MxFsUW8wGM8jyckY+sh3MdEA/PBaMziJe5goUaGfcJxvG1iEsdEpB2PVzSEp+iMZ3z+9EGptALa2zrkRws1qjPKKWAhIIEH6Iqb7O7sWPz+xXp5zXp5zcnMqbikK8pNBExFrodQLC6qVCoglUrr6e1vJCtgKmCmEQvLS1/r877+QS0tLc2kM0H1Ex9CubxqY6MMkslWudxAMxOYTCLbuJpv9XkIwft386C7J6e7py8uzwZsxaOVyq4fxaX6ent7S6n0025l15mzDd8roHgoGFqMX73u0uWJeiydbpMfKQghxOWwHFQP1gEkEgmtral6j0II8iMFbW3tDavBm4BHzdi10i8wfCHv+IlMMxk8DHiG+Ubs6uqKXG5Ab/bcUSbzmAvYwy2U97Obf37r6Djm/PDFo0zKuI29WucWMI2NmuLvv0350abNFWmn8ZGDt/8VxqJSZTKnpVLpo7YzFuXg8P9oAVdwDTdU72EW21jCazzBnGpL6vgPloV3T27lLnYAAAAASUVORK5CYII=) no-repeat center center }
+.pc_speed .pc_ellipsis{position: absolute;left: 84px;top: -2px}
+.pc_speed .pc_ellipsis label{width: 5px;height: 5px;display: inline-block;background-color: #1f2228;margin-left: 3px}
 /*loading*/
 .pc_loadingbox {width: 50px;height: 50px;position: absolute;left: 0;right: 0;top: 0;bottom: 0;margin: auto;}
 .pc_loadingbox p {width: 300px;position: absolute;top: 52px;font-size: 14px;color: #f3ce87;left: 50%;margin-left: -150px;text-align: center}
@@ -207,9 +218,10 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_header{position: fixed;right: 0;top: 0;z-index: 8; width: 375px; height: 45px;line-height: 45px;background-color: #343643; box-shadow: 1px 2px 2px #262837;}
 .pc_header a{font-size: 28px;color: #9c9ead;position: absolute;padding: 0 12px;cursor: pointer;}
 .pc_header .icon-fanhui{font-size: 16px;padding: 0 10px;}
-.pc_payheighet{position: absolute;left: 50px;color: #9c9ead;line-height: 47px}
-.pc_header h1{font-size: 16px;text-align: center;color: #fed968;font-weight: 500;line-height: 45px}
-.pc_net,.pc_netbox{position: absolute;right: 46px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #fed968;color: #fed968;line-height: 1.5;padding:1px 3px;font-size: 14px;-webkit-user-select: none;-ms-user-select: none; -moz-user-select: none; user-select: none; cursor: pointer;}
+.pc_payheighet{position: absolute;left: 50px;color: #9c9ead;line-height: 47px;cursor: pointer;}
+.pc_header h1{font-size: 16px;text-align: center;color: #fed968;font-weight: 500;line-height: 45px;position: absolute;top: 0;left: 0;right: 0;z-index: -1;}
+.pc_header .network{font-size: 12px;line-height: 15px;display: inline;top: 21px}
+.pc_net,.pc_netbox{position: absolute;right: 46px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #fed968;color: #fed968;line-height: 1.5;padding:1px 3px;font-size: 14px;cursor: pointer;}
 .pc_net::after{content: "\e606";font-size: 12px}
 .pc_netbox{top: 33px;border-top: none}
 .pc_netbox>div{border-top: 1px solid #fed968;}
@@ -308,9 +320,9 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_exchangelist{padding:0 15px;clear: both;line-height: 1.5}
 .pc_exchangelist li{border-bottom: 1px solid #424453;height: 45px;padding: 15px 0;}
 .pc_exchangelist div{float: left;margin: 0 1%;}
-.pc_exchangename{width: 24%;}
-.pc_exchangeprice{width: 50%;text-align: center}
-.pc_exchangerange{width: 20%;text-align: center}
+.pc_exchangename{width:30%;}
+.pc_exchangeprice{width: 30%;text-align: center}
+.pc_exchangerange{width: 34%;text-align: center}
 .pc_exchangelist img{width: 17px;margin-right: 3px}
 .pc_exchangelist label{font-size: 13px;color: #b9bbdf}
 .pc_exchangelist p{font-size: 14px;color: #ccc}
@@ -321,11 +333,19 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_exchangerange p.pc_fall::before{content: "-";}
 
 /* 交易所详情 */
-.pay_exchangedetail .pc_exchangetitle{box-shadow: none;border-bottom: 1px solid #464753;margin: 45px 15px auto;}
-.pay_exchangedetail  .pc_exchangelist{padding: 0;}
-.pay_exchangedetail .pc_exchangelist div{margin: 15px 0.8%;}
-.pay_exchangedetail .pc_exchangename{text-align: center}
-.pay_exchangedetail .pc_exchangeprice{width: 35%;border-left: 1px solid #464753}
+.pc_exchangedetail .pc_exchangetitle{box-shadow: none;border-bottom: 1px solid #464753;margin: 45px 15px auto;}
+.pc_exchangedetail  .pc_exchangelist{padding: 0;}
+.pc_exchangedetail .pc_exchangelist div{margin: 15px 0.5%;}
+.pc_exchangedetail .pc_exchangename{text-align: center}
+.pc_exchangedetail .pc_exchangeprice{width: 33%;border-left: 1px solid #464753}
+.pc_exc_purchases{padding: 0 40px;font-size: 14px}
+.pc_exc_consume{color: #b9bbdf;line-height: 2;margin: 10px auto;}
+.pc_exc_consume a{float: right;font-size: 12px;color: #b4b3b3;border-bottom: 1px solid #b4b3b3}
+.pc_exc_inputpurchases{color: #b9bbdf;line-height: 30px}
+.pc_exc_inputpurchases input{background-color: #c6c6c6;height: 30px;float: right;padding: 0 10px;width: 80%;}
+.pc_exc_inputpurchases button{border: 1px solid #f3ce87;color: #f3ce87;width: 110px;height: 30px; margin:20px auto auto;display: block;border-radius: 5px}
+
+.pc_exchangedetail .pc_addressbookdet{margin: 20px auto;}
 
 /*合约交易详情*/
 .pc_switchbox{height: 30px;line-height: 50px;color: #cdcedb; font-size: 14px;text-indent: -4em}
@@ -360,7 +380,7 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 
 /* 我的信息 */
 .pc_myinfolist{padding-top: 45px;}
-.pc_myinfolist li{height: 60px;line-height: 60px;font-size: 14px;border-bottom: 1px solid #424453;margin: auto 15px;color: #9a9bac;padding: 0 5px;}
+.pc_myinfolist li{position: relative; height: 60px;line-height: 60px;font-size: 14px;border-bottom: 1px solid #424453;margin: auto 15px;color: #9a9bac;padding: 0 5px;cursor: pointer;user-select: none;}
 .pc_myinfolist li span{float: right;color: #ccc;position: relative;}
 .pc_myinfolist li i{color: #9a9bac;float: right}
 .pc_myinfolist .pc_myinfoimg{height: 75px;line-height: 75px}
@@ -374,7 +394,17 @@ div.pc_modifysex_active{background-color: #f3ce87;color: #33353e;border-color: #
 .pc_modifyimg{text-align: center}
 .pc_modifyimg>div{width:68%;margin: 40px auto 20px;padding: 0 1%; text-align: center;border: 1px solid #ccc;height: 25px;line-height: 25px;color: #ccc;font-size: 14px}
 .pc_modifyimg img{width: 100px;height: 100px;border-radius: 50%;display: none}
-
+.pc_myinfolist .pc_payheighet{position: relative;left: auto;line-height: 60px;display:inline-block;margin-left: 3px;color: #ccc;font-size: 14px}
+.pc_mmyinfoarea{display: inline-block}
+.pc_spannet{height: 30px;line-height: 25px;font-size: 12px;padding-right: 10px}
+.pc_spannet>div{display: inline-block;font-size: 12px;}
+.pc_myinfolist .pc_spannet_clis{position: absolute;right: 21px;bottom: 5px}
+.pc_moifynet .pc_divnettype{margin-top: 70px;text-align: center}
+.pc_moifynet button{border: 1px solid #c8ab73; padding: 5px 0 5px 15px; border-radius: 30px 0 0 30px; width: 80px;color: #c8ab73;}
+.pc_moifynet button:last-child{border-radius: 0px 30px 30px 0;padding: 5px 15px 5px 0px}
+.pc_divnettype button.pc_active{background-color: #c8ab73; color: #343643}
+.icon-blalian:before{font-size: 24px;position: relative;top: 4px}
+.icon-neolian:before{font-size: 24px;position: relative;top: 4px}
 /* 安全中心 */
 .pc_security li{margin: 0;padding:0 15px;border-color: #232436;border-top: 1px solid #232436;margin-top: 15px}
 .pc_signout_tips{line-height: 1.2;font-size: 12px;color: #7d7e80;text-align: justify;margin-top: 5px}
@@ -385,12 +415,17 @@ div.pc_modifysex_active{background-color: #f3ce87;color: #33353e;border-color: #
 .pc_logoutwallet li i{font-size: 30px;display: none}
 .pc_logoutwallet li.pc_active i{display: block;color: #f3ce87}
 
+/*网络线路*/
+.pc_moifynet i{font-size: 30px;display: none}
+.pc_moifynet li.pc_active i{display: block;color: #f3ce87}
+.pc_moifynet .pc_payheighet{color: #9a9bac;position: absolute;right: 65px;}
+
 /* 通讯录 */
 .pc_search{padding:70px 20px 20px;color: #606174}
 .pc_search input{width: 85%;height: 35px;padding-left: 12%; background-color: #2b2c39;color: #606174}
 .pc_search i{position: absolute;margin: 9px 0 0 15px;}
 .pc_addressbooklist li.pc_addressbooktitle{margin:-1px auto;height: auto;line-height:1.5;border: none !important;cursor: auto; padding: 0 20px;background-color: #2b2c39;color: #606174}
-.pc_addressbooklist li{height: 40px;line-height: 40px;margin: auto 20px;cursor: pointer; border-bottom: 1px solid #3f4050;color: #ccc;-webkit-user-select: none;-ms-user-select: none; -moz-user-select: none; user-select: none;}
+.pc_addressbooklist li{height: 40px;line-height: 40px;margin: auto 20px;cursor: pointer; border-bottom: 1px solid #3f4050;color: #ccc;}
 
 /* 通讯录详情 */
 .pc_addressbookdet{margin: 45px auto 20px;}

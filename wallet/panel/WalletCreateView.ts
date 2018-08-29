@@ -17,7 +17,7 @@ namespace BlackCat {
         }
 
         create() {
-            // console.log('[Bla Cat]', '[WalletCreateView] 创建 ...")
+            // console.log("[BlaCat]", '[WalletCreateView] 创建 ...")
 
             this.div = this.objCreate('div') as HTMLDivElement
             this.div.classList.add("pc_popup")
@@ -97,6 +97,7 @@ namespace BlackCat {
         }
 
         private doCreate() {
+
             if (!this.createVerifyPwd()) {
                 // "请检查输入密码"
                 Main.showErrMsg(("walletCreate_check_pass"), () => {
@@ -109,6 +110,13 @@ namespace BlackCat {
                 // "请检查确认密码"
                 Main.showErrMsg(("walletCreate_check_vpass"), () => {
                     this.inputVwd.focus()
+                })
+                return;
+            }
+            if (this.inputPwd.value.length > 32) {
+                // 设置密码不能超过32个字符
+                Main.showErrMsg(("walletCreate_check_exceed"), () => {
+                    this.inputPwd.focus()
                 })
                 return;
             }
@@ -155,7 +163,7 @@ namespace BlackCat {
                 }
                 catch (e) {
                     Main.viewMgr.viewLoading.remove()
-                    console.log('[Bla Cat]', '[WalletCreateView]', 'doCreate, ThinNeo.Helper.GetNep2FromPrivateKey error => ', e.toString())
+                    console.log("[BlaCat]", '[WalletCreateView]', 'doCreate, ThinNeo.Helper.GetNep2FromPrivateKey error => ', e.toString())
                 }
 
             }, 300);

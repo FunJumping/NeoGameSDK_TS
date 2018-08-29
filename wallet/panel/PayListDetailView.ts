@@ -118,7 +118,7 @@ namespace BlackCat {
 
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[PayListDetailView]', 'getParams error => ', e.toString())
+                    console.log("[BlaCat]", '[PayListDetailView]', 'getParams error => ', e.toString())
                 }
             }
 

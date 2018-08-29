@@ -91,7 +91,7 @@ namespace BlackCat {
                 cancelObj.classList.add("pc_cancel")
                 cancelObj.textContent = Main.langMgr.get("cancel") // "取消"
                 cancelObj.onclick = () => {
-                    console.log('[Bla Cat]', '[ViewTransConfirmGas]', 'PayTransfer交易取消..')
+                    console.log("[BlaCat]", '[ViewTransConfirmGas]', 'PayTransfer交易取消..')
                     if (ViewTransConfirmGas.callback_cancel) {
                         ViewTransConfirmGas.callback_cancel(ViewTransConfirmGas.callback_params)
                         ViewTransConfirmGas.callback_cancel = null;
@@ -110,7 +110,7 @@ namespace BlackCat {
                     confirmObj.textContent = Main.langMgr.get("ok") // "确认"
                 }
                 confirmObj.onclick = () => {
-                    console.log('[Bla Cat]', '[ViewTransConfirmGas]', 'PayTransfer交易确认..')
+                    console.log("[BlaCat]", '[ViewTransConfirmGas]', 'PayTransfer交易确认..')
                     ViewTransConfirmGas.callback(ViewTransConfirmGas.callback_params)
                     ViewTransConfirmGas.callback = null;
                     this.remove(300)
@@ -138,7 +138,7 @@ namespace BlackCat {
         private getParams() {
             var html = ""
             var params: any = ViewTransConfirmGas.list.params;
-            console.log('[Bla Cat]', '[ViewTransConfirmGas]', 'getParams, params => ', params)
+            console.log("[BlaCat]", '[ViewTransConfirmGas]', 'getParams, params => ', params)
             if (params) {
                 try {
                     params = JSON.parse(params)
@@ -155,7 +155,7 @@ namespace BlackCat {
                     }
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[ViewTransConfirmGas]', 'getParams error => ', e.toString())
+                    console.log("[BlaCat]", '[ViewTransConfirmGas]', 'getParams error => ', e.toString())
                 }
             }
 

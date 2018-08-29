@@ -159,8 +159,6 @@
     <div id="res"></div>
 
     <script>
-        var appid = "5";
-        var appkey = "";
         
         var listener = function (data) {
             // 页面显示
@@ -233,8 +231,12 @@
             }
         };
 
+        // var appid = "1000000";
+        var appid = "5";
+        var appkey = "";
+
         initSDK()
-        setDefaultNetType(2)
+        // setDefaultNetType(2)
         login()
 
 
@@ -259,7 +261,7 @@
 
         function login() {
             BlackCat.SDK.login(function (res) {
-                console.log('[BlackCat]', 'login.callback.function.res => ', res)
+                console.log("[BlaCat]", 'login.callback.function.res => ', res)
             });
         }
 
@@ -272,7 +274,7 @@
             }
             data.sbParamJson = JSON.parse(data.sbParamJson)
             BlackCat.SDK.invokescript(data, function (res) {
-                console.log('[BlackCat]', 'invokescript.callback.function.res => ', res)
+                console.log("[BlaCat]", 'invokescript.callback.function.res => ', res)
             })
         }
 
@@ -286,7 +288,7 @@
             data.sbParamJson = JSON.parse(data.sbParamJson)
 
             BlackCat.SDK.makeRawTransaction(data, function (res) {
-                console.log('[BlackCat]', 'makerawtransaction.callback.function.res => ', res)
+                console.log("[BlaCat]", 'makerawtransaction.callback.function.res => ', res)
             })
         }
 
@@ -297,7 +299,7 @@
             }
 
             BlackCat.SDK.makeRecharge(data, function (res) {
-                console.log('[BlackCat]', 'makeRecharge.callback.function.res => ', res)
+                console.log("[BlaCat]", 'makeRecharge.callback.function.res => ', res)
             })
         }
 
@@ -307,7 +309,7 @@
             }
 
             BlackCat.SDK.confirmAppNotify(data, function (res) {
-                console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
+                console.log("[BlaCat]", 'confirmAppNotify.callback.function.res => ', res)
             })
         }
 

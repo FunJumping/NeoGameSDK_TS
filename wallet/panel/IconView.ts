@@ -34,7 +34,7 @@ namespace BlackCat {
             this.showFail()
 
             this.div.onclick = () => {
-                console.log('[Bla Cat]', '[IconView]', 'onclick, this.doDragMove => ', this.doDragMove)
+                console.log("[BlaCat]", '[IconView]', 'onclick, this.doDragMove => ', this.doDragMove)
                 if (this.doDragMove == true) {
                     return false;
                 }
@@ -46,7 +46,10 @@ namespace BlackCat {
                 Main.viewMgr.mainView.show()
                 // 更新payView的height
                 if (Main.viewMgr.payView && Main.viewMgr.payView.isCreated) {
-                    Main.viewMgr.payView.getHeight()
+                    Main.viewMgr.payView.getHeight("nodes")
+                    if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
+                        Main.viewMgr.payView.getHeight("clis")
+                    }
                 }
             }
 
@@ -106,7 +109,7 @@ namespace BlackCat {
         }
 
         flushProcess(count) {
-            console.log('[Bla Cat]', '[IconView]', 'flushProcess, count => ', count)
+            console.log("[BlaCat]", '[IconView]', 'flushProcess, count => ', count)
             // return
             if (count > 0) {
                 // this.processDiv.textContent = count
@@ -120,7 +123,7 @@ namespace BlackCat {
         }
 
         private dragTouch(ev) {
-            // console.log('[Bla Cat]', '[IconView]', 'dragTouch, ev => ', ev)
+            // console.log("[BlaCat]", '[IconView]', 'dragTouch, ev => ', ev)
             var sent = {
                 l: 0,  //设置div在父元素的活动范围，10相当于给父div设置padding-left：10;
                 r: window.innerWidth - this.div.offsetWidth,  // offsetWidth:当前对象的宽度， offsetWidth = width+padding+border
@@ -128,7 +131,7 @@ namespace BlackCat {
                 b: window.innerHeight - this.div.offsetHeight
             }
 
-            // console.log('[Bla Cat]', '[IconView]', 'sent => ', sent)
+            // console.log("[BlaCat]", '[IconView]', 'sent => ', sent)
 
             var dmW = document.documentElement.clientWidth || document.body.clientWidth;
             var dmH = document.documentElement.clientHeight || document.body.clientHeight;
@@ -144,7 +147,7 @@ namespace BlackCat {
             var sentY = oEvent.clientY - this.div.offsetTop;
 
             document.ontouchmove = (ev: any) => {
-                // console.log('[Bla Cat]', '[IconView]', 'onmousemove ..')
+                // console.log("[BlaCat]", '[IconView]', 'onmousemove ..')
                 // 鼠标移动
                 var mEvent = ev.touches[0];
 
@@ -172,14 +175,14 @@ namespace BlackCat {
                 }
             };
             document.ontouchend = () => {
-                // console.log('[Bla Cat]', '[IconView]', 'onmouseup ..')
+                // console.log("[BlaCat]", '[IconView]', 'onmouseup ..')
                 // 鼠标松开
                 document.ontouchmove = null;
             }
         }
 
         private drag() {
-            // console.log('[Bla Cat]', '[IconView]', 'drag ..')
+            // console.log("[BlaCat]", '[IconView]', 'drag ..')
 
             var sent = {
                 l: 0,  //设置div在父元素的活动范围，10相当于给父div设置padding-left：10;
@@ -188,7 +191,7 @@ namespace BlackCat {
                 b: window.innerHeight - this.div.offsetHeight
             }
 
-            // console.log('[Bla Cat]', '[IconView]', 'sent => ', sent)
+            // console.log("[BlaCat]", '[IconView]', 'sent => ', sent)
 
             var dmW = document.documentElement.clientWidth || document.body.clientWidth;
             var dmH = document.documentElement.clientHeight || document.body.clientHeight;
@@ -199,7 +202,7 @@ namespace BlackCat {
             var b = sent.b || dmH - this.div.offsetHeight;
 
             this.div.onmousedown = (ev) => {
-                // console.log('[Bla Cat]', '[IconView]', 'onmousedown ..')
+                // console.log("[BlaCat]", '[IconView]', 'onmousedown ..')
                 // 鼠标按下，开始拖动
                 this.doDragMove = false;
                 var oEvent = ev;
@@ -207,7 +210,7 @@ namespace BlackCat {
                 var sentY = oEvent.clientY - this.div.offsetTop;
 
                 document.onmousemove = (ev) => {
-                    // console.log('[Bla Cat]', '[IconView]', 'onmousemove ..')
+                    // console.log("[BlaCat]", '[IconView]', 'onmousemove ..')
                     // 鼠标移动
                     var mEvent = ev;
 
@@ -236,7 +239,7 @@ namespace BlackCat {
 
                 };
                 document.onmouseup = () => {
-                    // console.log('[Bla Cat]', '[IconView]', 'onmouseup ..')
+                    // console.log("[BlaCat]", '[IconView]', 'onmouseup ..')
                     // 鼠标松开
                     document.onmousemove = null;
                     document.onmouseup = null;

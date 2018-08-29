@@ -202,14 +202,14 @@ namespace BlackCat {
                 res.err = true;
                 res.info = e.toString();
 
-                console.log('[Bla Cat]', '[PayTransferView]', 'doTransfer, tools.CoinTool.rawTransaction error => ', e.toString())
+                console.log("[BlaCat]", '[PayTransferView]', 'doTransfer, tools.CoinTool.rawTransaction error => ', e.toString())
             }
 
 
             Main.viewMgr.viewLoading.remove()
 
             if (res) {
-                console.log('[Bla Cat]', '[PayTransferView]', 'gas转账结果 => ', res)
+                console.log("[BlaCat]", '[PayTransferView]', 'gas转账结果 => ', res)
                 if (res.err == false) {
                     // 成功，上报
                     await ApiTool.addUserWalletLogs(

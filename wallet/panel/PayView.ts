@@ -13,18 +13,21 @@ namespace BlackCat {
         listPageNum: number;
         payMyWallet: HTMLElement;
         // cli高度
-        height: number;
+        height_clis: number;
+        height_nodes: number;
 
 
         private spanGas: HTMLElement;
         private spanSgas: HTMLElement;
-        private spanHeight: HTMLElement;
+        private divHeight_clis: HTMLElement;
+        private divHeight_nodes: HTMLElement;
 
         private divLists: HTMLDivElement;
         private divListsMore: HTMLElement;
         private divNetSelect: HTMLElement;
 
         private getWalletListsTimeout: number;
+        private getWalletListsTimeout_min: number;
         private WalletListsNeedConfirm: boolean;
         walletListsNeedConfirmCounts: number;
         private WalletListsHashString: string;
@@ -37,9 +40,11 @@ namespace BlackCat {
 
             this.listPageNum = 10;
 
-            this.height = 0;
+            this.height_clis = 0;
+            this.height_nodes = 0;
 
             this.getWalletListsTimeout = 20000; // 15s出块，所以最小间隔20s
+            this.getWalletListsTimeout_min = 10000; // 在>1个块时间并且<3个出块时间内，最小时间
             this.WalletListsNeedConfirm = false;
             this.WalletListsHashString = "";
 
@@ -77,10 +82,36 @@ namespace BlackCat {
             }
             this.ObjAppend(headerTitle, myinfo_a)
 
-            this.spanHeight = this.objCreate("div")
-            this.spanHeight.classList.add("pc_payheighet", "iconfont", "icon-diejia")
-            this.spanHeight.textContent = "0"
-            this.ObjAppend(headerTitle, this.spanHeight)
+            // nodes高度
+            this.divHeight_nodes = this.objCreate("div")
+            this.divHeight_nodes.classList.add("pc_payheighet", "iconfont", "icon-blalian", "network")
+            this.divHeight_nodes.style.top = "5px";
+            this.divHeight_nodes.textContent = "n/a"
+            this.divHeight_nodes.onclick = () => {
+                this.hidden()
+                ModifyNetworkLineView.refer = "PayView"
+
+                ModifyNetworkLineView.defaultType = "nodes"
+                Main.viewMgr.change("ModifyNetworkLineView")
+            }
+            this.ObjAppend(headerTitle, this.divHeight_nodes)
+
+            // clis高度
+            this.divHeight_clis = this.objCreate("div")
+            this.divHeight_clis.classList.add("pc_payheighet", "iconfont", "icon-neolian", "network")
+            this.divHeight_clis.textContent = "n/a"
+            this.divHeight_clis.onclick = () => {
+                if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
+                    this.hidden()
+                    ModifyNetworkLineView.refer = "PayView"
+
+                    ModifyNetworkLineView.defaultType = "clis"
+                    Main.viewMgr.change("ModifyNetworkLineView")
+                }
+            }
+            this.ObjAppend(headerTitle, this.divHeight_clis)
+
+
 
             // 钱包标题
             var headerh1 = this.objCreate("h1")
@@ -257,13 +288,19 @@ namespace BlackCat {
             // }
             // this.ObjAppend(divGas, makeRefundObj)
 
-            // 购买
+            // 购买（主网）
             // var makePurchaseObj = this.objCreate("button")
             // makePurchaseObj.textContent = Main.langMgr.get("pay_purchase") //"购买"
             // makePurchaseObj.onclick = () => {
-            //     this.doMakePurchase()
+            //     if (Main.netMgr.type == 1) {
+            //         this.doMakePurchase()
+            //     }
+            //     else {
+            //         Main.showToast("pay_purchase_testnet_cant_buy")
+            //     }
             // }
             // this.ObjAppend(divGas, makePurchaseObj)
+
 
             // 兑换
             var makeMintTokenObj = this.objCreate("button")
@@ -285,7 +322,10 @@ namespace BlackCat {
             this.doGetBalances()
             this.doGetWalletLists(1)
             // 获取高度
-            this.getHeight()
+            this.getHeight("nodes")
+            if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
+                this.getHeight("clis")
+            }
         }
 
         update() {
@@ -356,9 +396,9 @@ namespace BlackCat {
                 let id_SGAS_balance = sgas.toString()
 
                 // 打开输入数量
-                ViewTransCount.transTypename1 = "OLD"
-                ViewTransCount.transTypename2 = "GAS"
-                ViewTransCount.transAmountsType = "GASCount"
+                ViewTransCount.transTypename1 = "SGASOLD2OLD"
+                ViewTransCount.transTypename2 = "SGAS2GAS"
+
                 ViewTransCount.transBalances = id_SGAS_balance
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
@@ -402,14 +442,13 @@ namespace BlackCat {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
                 // 打开输入数量
-                ViewTransCount.transTypename1 = "GAS"
-                ViewTransCount.transTypename2 = "SGAS"
-                ViewTransCount.transAmountsType = "SGASCount"
+                ViewTransCount.transTypename1 = ""
+
                 ViewTransCount.refer = "PayView"
                 ViewTransCount.callback = () => {
-                    if (ViewTransCount.transTypename2 == "SGAS") {
+                    if (ViewTransCount.transTypename1 == "GAS2SGAS") {
                         this.makeMintTokenTransaction()
-                    } else if (ViewTransCount.transTypename2 == "GAS") {
+                    } else if (ViewTransCount.transTypename1 == "SGAS2GAS") {
                         this.makeRefundTransaction()
                     }
                 }
@@ -420,31 +459,6 @@ namespace BlackCat {
                 ViewWalletOpen.refer = "PayView"
                 ViewWalletOpen.callback = () => {
                     this.doMakeMintToken()
-                }
-                Main.viewMgr.change("ViewWalletOpen")
-                // this.hidden()
-            }
-        }
-
-        private async doMakeRefund() {
-            if (Main.isWalletOpen()) {
-                // 打开钱包了
-
-                // 打开输入数量
-                ViewTransCount.transTypename1 = "SGAS"
-                ViewTransCount.transTypename2 = "GAS"
-                ViewTransCount.transAmountsType = "GASCount"
-                ViewTransCount.refer = "PayView"
-                ViewTransCount.callback = () => {
-                    this.makeRefundTransaction()
-                }
-                Main.viewMgr.change("ViewTransCount")
-
-            } else {
-                // 未打开钱包
-                ViewWalletOpen.refer = "PayView"
-                ViewWalletOpen.callback = () => {
-                    this.doMakeRefund()
                 }
                 Main.viewMgr.change("ViewWalletOpen")
                 // this.hidden()
@@ -481,15 +495,15 @@ namespace BlackCat {
         }
 
         async doGetWalletLists(force = 0) {
-            console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, force => ', force)
+            console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, force => ', force)
             if (!Main.user.info.token) {
-                console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 已退出登录，本次请求取消')
+                console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 已退出登录，本次请求取消')
                 return;
             }
 
             if (force == 0 && this.WalletListsNeedConfirm) {
                 // 外部调用获取交易列表，当前又有待确认交易，取消本次查询，等待定时器自动刷新交易列表
-                console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 有定时刷新，本次请求取消')
+                console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 有定时刷新，本次请求取消')
                 return;
             }
 
@@ -505,13 +519,17 @@ namespace BlackCat {
                     Main.walletLogId = Number(res.data[0].id);
                     if (Main.walletLogId < Main.appWalletLogId || Main.walletLogId < Main.platWalletLogId) {
                         // 钱包记录数据不全，重新获取
-                        console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 钱包记录要重新获取 ..')
+                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 钱包记录要重新获取 ..')
                         this.doGetWalletLists(1);
                         return;
                     }
 
                     // 有无待确认交易，有的话，要重新获取
                     var hasNeedConfirm = false; // 是否有待确认的记录
+
+                    var next_timeout = this.getWalletListsTimeout; // 下次刷新间隔
+                    var curr_ts = Math.round((new Date()).getTime() / 1000); // 当前时间戳
+
                     this.walletListsNeedConfirmCounts = 0;
                     await res.data.forEach(
                         list => {
@@ -520,6 +538,14 @@ namespace BlackCat {
                             if (list.state == '0') {
                                 hasNeedConfirm = true;
                                 this.walletListsNeedConfirmCounts += 1;
+
+                                // 计算间隔时间
+                                let last_ts = (curr_ts - list.ctm) * 1000 - Main.tsOffset
+                                console.log('[BlaCat]', '[PayView]', 'doGetWalletLists, last_ts =>', last_ts)
+                                if (last_ts >= this.getWalletListsTimeout && last_ts < this.getWalletListsTimeout * 3) {
+                                    // 此记录持续时间超过出块时间，并且在3个出块时间内
+                                    next_timeout = this.getWalletListsTimeout_min
+                                }
                             }
                             else if (list.type == "2") {
                                 // 平台sgas->gas，特殊处理下
@@ -533,21 +559,22 @@ namespace BlackCat {
                     Main.viewMgr.iconView.flushProcess(this.walletListsNeedConfirmCounts)
 
                     if (this.WalletListsNeedConfirm) {
-                        console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 有待确认交易，轮询查询')
+                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 有待确认交易，轮询查询')
                         // 有待确认，自己加刷新
-                        this.s_doGetWalletLists = setTimeout(() => { this.doGetWalletLists(1) }, this.getWalletListsTimeout);
+                        console.log('[BlaCat]', '[PayView]', 'doGetWalletLists, next_timeout =>', next_timeout)
+                        this.s_doGetWalletLists = setTimeout(() => { this.doGetWalletLists(1) }, next_timeout);
                     }
 
                     var WalletListsHashString_tmp: string = JSON.stringify(res.data); // 记录hash  
                     if (WalletListsHashString_tmp == this.WalletListsHashString) {
-                        console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 交易记录没有更新 ..')
+                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 交易记录没有更新 ..')
                         return;
                     }
 
                     // 交易记录有更新
-                    console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 交易记录有更新')
-                    // console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, WalletListsHashString_tmp => ', WalletListsHashString_tmp)
-                    // console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, WalletListsHashString => ', this.WalletListsHashString)
+                    console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 交易记录有更新')
+                    // console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, WalletListsHashString_tmp => ', WalletListsHashString_tmp)
+                    // console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, WalletListsHashString => ', this.WalletListsHashString)
 
                     // 是否第一次显示
                     var isFirstShow = false;
@@ -559,7 +586,7 @@ namespace BlackCat {
 
                     if (!isFirstShow) {
                         // 第一次显示获取的余额已经是最新的了，不用再次刷新
-                        console.log('[Bla Cat]', '[PayView]', 'doGetWalletLists, 交易记录有更新，刷新余额')
+                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 交易记录有更新，刷新余额')
                         this.doGetBalances()
                     }
 
@@ -665,7 +692,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-                console.log('[Bla Cat]', '[PayView]', 'getListImg, v.type=' + v.type + ', error => ', e)
+                console.log("[BlaCat]", '[PayView]', 'getListImg, v.type=' + v.type + ', error => ', e)
             }
             return Main.resHost + "res/img/oldsgas.png";
         }
@@ -703,7 +730,7 @@ namespace BlackCat {
                         }
                     }
                     catch (e) {
-                        console.log('[Bla Cat]', '[PayView]', 'getListImg, v.type=5, error => ', e)
+                        console.log("[BlaCat]", '[PayView]', 'getListImg, v.type=5, error => ', e)
                     }
                     return v.icon;
                 case "6": // gas转账
@@ -720,7 +747,7 @@ namespace BlackCat {
                 return Main.platName;
             }
             else {
-                // console.log('[Bla Cat]', '[PayView]', 'v.name => ', v.name)
+                // console.log("[BlaCat]", '[PayView]', 'v.name => ', v.name)
                 try {
                     var nameObj = JSON.parse(v.name)
                     if (nameObj.hasOwnProperty(Main.langMgr.type)) {
@@ -732,7 +759,7 @@ namespace BlackCat {
                 }
                 catch (e) {
                     // return v.name;
-                    console.log('[Bla Cat]', '[PayView]', 'getListName, v', v, 'error => ', e.toString())
+                    console.log("[BlaCat]", '[PayView]', 'getListName, v', v, 'error => ', e.toString())
                 }
             }
             return v.name;
@@ -813,7 +840,7 @@ namespace BlackCat {
                 }
             }
             catch (e) {
-                console.log('[Bla Cat]', '[PayView]', 'getListParamMethods, v', v, 'error => ', e.toString())
+                console.log("[BlaCat]", '[PayView]', 'getListParamMethods, v', v, 'error => ', e.toString())
             }
             return Main.langMgr.get("paylist_sbPushString_none")
         }
@@ -927,13 +954,15 @@ namespace BlackCat {
             Main.viewMgr.change("ViewLoading")
 
             var mintCount = Main.viewMgr.viewTransCount.inputCount.value;
-            console.log('[Bla Cat]', '[PayView]', '充值sgas，数量 => ', mintCount)
+            var net_fee = Main.viewMgr.viewTransCount.net_fee;// 手续费
+            console.log("[BlaCat]", '[PayView]', '充值sgas，数量 => ', mintCount, '手续费netfee =>', net_fee)
+
 
             var login = tools.LoginInfo.getCurrentLogin();
 
             try {
                 var utxos_assets = await tools.CoinTool.getassets();
-                console.log('[Bla Cat]', '[PayView]', 'utxos_assets => ', utxos_assets)
+                console.log("[BlaCat]", '[PayView]', 'utxos_assets => ', utxos_assets)
 
                 var scriptaddress = tools.CoinTool.id_SGAS.hexToBytes().reverse();
                 var nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(scriptaddress);
@@ -941,7 +970,8 @@ namespace BlackCat {
                     utxos_assets,
                     nepAddress,
                     tools.CoinTool.id_GAS,
-                    Neo.Fixed8.fromNumber(Number(mintCount))
+                    Neo.Fixed8.fromNumber(Number(mintCount)),
+                    Neo.Fixed8.fromNumber(Number(net_fee)),
                 );
             }
             catch (e) {
@@ -969,7 +999,11 @@ namespace BlackCat {
             tran.type = ThinNeo.TransactionType.InvocationTransaction;
             tran.extdata = new ThinNeo.InvokeTransData();
             tran.extdata.script = sb.ToArray();
-            tran.extdata.gas = Neo.Fixed8.fromNumber(1.0);
+            tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
+            // if (Number(extgas) > 0) {
+            //     // 添加了手续费，version = 1
+            //     tran.version = 1;
+            // }
 
             var msg = tran.GetMessage();
             var signdata = ThinNeo.Helper.Sign(msg, login.prikey);
@@ -992,7 +1026,7 @@ namespace BlackCat {
                         "0",
                         mintCount,
                         "1",
-                        '{"sbParamJson":"[]", "sbPushString": "mintTokens", "nnc": "' + tools.CoinTool.id_SGAS + '"}',
+                        '{"sbParamJson":"[]", "sbPushString": "mintTokens", "nnc": "' + tools.CoinTool.id_SGAS + '", "netfee": "' + net_fee + '"}',
                         Main.netMgr.type
                     );
                     // if (logRes.r)
@@ -1001,7 +1035,7 @@ namespace BlackCat {
                     // }
 
                     // 记录使用的utxo，后面不再使用，需要记录高度
-                    var height = await tools.WWW.api_getHeight();
+                    var height = await tools.WWW.api_getHeight_nodes();
                     oldarr.map(old => old.height = height);
                     tools.OldUTXO.oldutxosPush(oldarr);
 
@@ -1041,6 +1075,10 @@ namespace BlackCat {
             Main.viewMgr.change("ViewLoading")
 
             var refundCount = Main.viewMgr.viewTransCount.inputCount.value;
+            var sendCount = Neo.Fixed8.fromNumber(Number(refundCount))
+
+            var net_fee = Main.viewMgr.viewTransCount.net_fee;// 手续费
+            console.log("[BlaCat]", '[PayView]', '退到gas，数量 => ', refundCount, '手续费netfee =>', net_fee)
 
             // 查询SGAS余额
             var scriptaddress = id_SGAS.hexToBytes().reverse();
@@ -1049,6 +1087,9 @@ namespace BlackCat {
 
             //获取sgas合约地址的资产列表
             var utxos_assets = await tools.CoinTool.getsgasAssets(id_SGAS);
+            // var utxos_assets = await tools.CoinTool.getSgasAssetsByAmount(id_SGAS, Number(refundCount));
+
+
             var us = utxos_assets[tools.CoinTool.id_GAS];
             if (us == undefined) {
                 Main.viewMgr.viewLoading.remove()
@@ -1057,16 +1098,22 @@ namespace BlackCat {
                 return;
             }
 
-            console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, us.before => ', us);
+            // 打乱us顺序，尽量避免一个块时间内，使用了重复的utxo，导致交易失败
+            // 不能完全避免失败，但是可以提高并发成功率
+            let us_random = []
+            Main.randomSort(us, us_random)
+            us = us_random
+
+            console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us.before => ', us);
 
             //检查sgas地址拥有的gas的utxo是否有被标记过
             var count: Neo.Fixed8 = Neo.Fixed8.Zero;
-            var sendCount = Neo.Fixed8.fromNumber(Number(refundCount))
+
             for (var i = us.length - 1; i >= 0; i--) {
 
                 if (count.compareTo(sendCount) > 0) {
                     // 足够数量了，后面的直接剔除了
-                    console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, enough us[' + i + '].delete => ', us[i]);
+                    console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, enough us[' + i + '].delete => ', us[i]);
                     delete us[i];
                     continue
                 }
@@ -1087,7 +1134,7 @@ namespace BlackCat {
                     var stack = r["stack"];
                     var value = stack[0]["value"].toString();
                     if (value.length > 0) {
-                        console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, us[' + i + '].delete => ', us[i]);
+                        console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us[' + i + '].delete => ', us[i]);
                         delete us[i];
                     }
                     else {
@@ -1096,7 +1143,11 @@ namespace BlackCat {
                 }
             }
 
-            console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, us.after => ', us);
+            console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us.after => ', us);
+
+            utxos_assets[tools.CoinTool.id_GAS] = us;
+
+            console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, utxos_assets.after => ', utxos_assets);
 
             // 生成交易请求
 
@@ -1109,6 +1160,51 @@ namespace BlackCat {
                     tools.CoinTool.id_GAS,
                     Neo.Fixed8.fromNumber(Number(refundCount))
                 );
+                // // 等待SGAS合约支持
+                // if (Number(net_fee) > 0) {
+                //     // 有网络手续费
+                //     try {
+                //         // 获取用户utxo
+                //         var user_utxos_assets = await tools.CoinTool.getassets();
+                //         console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_utxos_assets => ', user_utxos_assets)
+
+                //         var user_scriptaddress = tools.CoinTool.id_GAS.hexToBytes().reverse();
+                //         var user_nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(user_scriptaddress);
+                //         var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                //             user_utxos_assets,
+                //             user_nepAddress,
+                //             tools.CoinTool.id_GAS,
+                //             Neo.Fixed8.fromNumber(Number("0")),
+                //             Neo.Fixed8.fromNumber(Number(net_fee)),
+                //         );
+
+                //         // inputs、outputs、oldarr塞入
+                //         var user_tran = user_makeTranRes.info.tran
+                //         for (let i = 0; i< user_tran.inputs.length; i++) {
+                //             makeTranRes.info.tran.inputs.push(user_tran.inputs[i])
+                //         }
+                //         for (let i = 0; i< user_tran.outputs.length; i++) {
+                //             makeTranRes.info.tran.outputs.push(user_tran.outputs[i])
+                //         }
+                //         var user_oldarr = user_makeTranRes.info.oldarr
+                //         for (let i = 0; i< user_oldarr.length; i++) {
+                //             makeTranRes.info.oldarr.push(user_oldarr[i])
+                //         }
+                //         console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_makeTranRes => ', user_makeTranRes)
+                //     }
+                //     catch (e) {
+                //         Main.viewMgr.viewLoading.remove()
+                //         let errmsg = Main.langMgr.get(e.message);
+                //         if (errmsg) {
+                //             Main.showErrMsg((e.message)); // "GAS余额不足"
+                //         }
+                //         else {
+                //             Main.showErrMsg(("pay_makeMintGasNotEnough"))
+                //         }
+
+                //         return;
+                //     }
+                // }
             }
             catch (e) {
                 Main.viewMgr.viewLoading.remove()
@@ -1118,7 +1214,7 @@ namespace BlackCat {
             }
 
             console.log(
-                "[Bla Cat]", "[payView]", "makeRefundTransaction, makeTranRes => ",
+                "[BlaCat]", "[payView]", "makeRefundTransaction, makeTranRes => ",
                 makeTranRes
             );
 
@@ -1141,6 +1237,8 @@ namespace BlackCat {
                 tran.type = ThinNeo.TransactionType.InvocationTransaction;
                 tran.extdata = new ThinNeo.InvokeTransData();
                 tran.extdata.script = sb.ToArray();
+                // 网络手续费
+                // tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
 
                 //附加鉴证
                 tran.attributes = new Array<ThinNeo.Attribute>(1);
@@ -1161,7 +1259,7 @@ namespace BlackCat {
 
                 var trandata = tran.GetRawData();
 
-                console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, tran => ', tran);
+                console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, tran => ', tran);
 
                 // 发送交易请求
 
@@ -1189,7 +1287,7 @@ namespace BlackCat {
                         }
 
                         // 记录使用的utxo，后面不再使用，需要记录高度
-                        var height = await tools.WWW.api_getHeight();
+                        var height = await tools.WWW.api_getHeight_nodes();
                         oldarr.map(old => old.height = height);
                         tools.OldUTXO.oldutxosPush(oldarr);
 
@@ -1205,7 +1303,7 @@ namespace BlackCat {
                         // Main.showErrMsg("提取合约执行失败！请等待上个提现或兑换交易完成再操作！");
                         Main.showErrMsg(("pay_makeRefundDoFail"))
                     }
-                    console.log('[Bla Cat]', '[payView]', 'makeRefundTransaction, api_postRawTransaction结果 => ', r);
+                    console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, api_postRawTransaction结果 => ', r);
 
                 }
                 else {
@@ -1300,10 +1398,13 @@ namespace BlackCat {
             return true
         }
 
-        async getHeight() {
-            var height = await tools.WWW.api_getCliHeight()
-            this.spanHeight.textContent = height.toString()
-            this.height = height
+        async getHeight(type: string) {
+            var height = await tools.WWW["api_getHeight_" + type]()
+            this.updateHeight(type, height)
+        }
+        updateHeight(type, height) {
+            this["divHeight_" + type].textContent = height.toString()
+            this["height_" + type] = height
         }
     }
 }

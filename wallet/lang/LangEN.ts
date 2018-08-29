@@ -10,6 +10,8 @@
             info: "Information",
             content: "Content",
             retry: "Retry",
+            sgas: "SGAS",
+            gas: "GAS",
 
             // 地区代码
             area_code_CN: 'China',
@@ -259,6 +261,7 @@
             register_getCode: "Get Code",
             register_getCodecount: "Retry(60)",
             register_getCodecountRetry: "Retry",
+            register_exceed: "Please set your password within 32 letters",
 
             register_doLogin: "<<back",
             register_doRegister: "sign up",
@@ -316,6 +319,8 @@
             forgetpass_getCode: "Get Code",
             forgetpass_getCodecount: "Retry(60)",
             forgetpass_getCodecountRetry: "Retry",
+            forgetpass_exceed: "Please set your password within 32 letters",
+
 
             forgetpass_doLogin: "<<back",
             forgetpass_do: "OK",
@@ -339,7 +344,7 @@
             myinfo_logout: "Logout",
             myinfo_logoutConfirm: "Are you sure to log out?",
 
-            // ModifyNameView
+            // Modify*View
             modifyImg: "Head portrait",
             modifyImg_succ: "Head portrait modified successfully!",
             modifyImg_select: "Please choose local image",
@@ -353,6 +358,11 @@
             modifySex_succ: "Gender modified successfully!",
             modifyArea: "Area",
             modifyArea_succ: "Area modified successfully!",
+
+            // ModifyNetworkLineView
+            modifyNet: "Network line",
+            modifyNet_succ: "Network line modified successfully!",
+            modifyNet_node_err: "This network line is not available, please choose another line!",
 
             //SecurityCenterView
             security_title: "Security Center",
@@ -418,6 +428,7 @@
             pay_sgas_desc: "SGAS is a universal chip that Bla Cat offers to players.",
             pay_send: "SEND",
             pay_purchase: "Purchase",
+            pay_purchase_testnet_cant_buy: "Please switch Mainnet to buy GAS!",
             pay_makeMint: "Exchange",
             pay_recentLists: "Recent records",
             pay_makeMintGasNotEnough: "GAS balance is insufficient",
@@ -428,7 +439,7 @@
             pay_makeRefundDoFail2: "Sending an extraction transaction failed! Please check network and try again later!",
             pay_makeRefundGetScriptFail: "Getting extraction contract failed!",
             pay_makeRefundSgasOldNotEnough: "SGAS(old) balance is insufficient",
-            
+
 
             pay_not_enough_money: "Insufficient balance",
             pay_not_enough_utxo: "Please wait for the last transaction to complete before executing!",
@@ -502,13 +513,19 @@
 
             // ViewTransCount
             pay_transCount_count: "Exchange",
-            pay_transCount_inputCount: "Please input the amounts",
-            pay_transCount_inputSGASCount: "Please input the SGAS amounts",
-            pay_transCount_inputGASCount: "Please input the GAS amounts",
+            pay_transCount_inputCount: "Please input amount",
             pay_transCount_err: "Please input correct sums of amounts",
-            pay_transCountGAS: "GAS",
-            pay_transCountSGAS: "SGAS",
-            pay_transCountOLD: "SGAS(old)",
+            pay_transCountSGAS2GAS: "GAS",
+            pay_transCountGAS2SGAS: "SGAS",
+            pay_transCountSGASOLD2OLD: "SGAS(old)",
+            pay_transCountTips_free: "Free",
+            pay_transCountTips_slow: "Slow",
+            pay_transCountTips_fast: "Fast",
+            pay_transCount_speed: "Trade SPD",
+            pay_transCount_cost: "Fee：",
+            pay_transCount_tips: "Choose the token you want to exchange",
+            pay_transCount_tips_err: "Choose the token you want to exchange",
+
 
             // ViewWalletOpen
             pay_walletOpen_password: "password",
@@ -525,6 +542,7 @@
             walletCreate_doCreate: "Create",
             walletCreate_check_pass: "Please check the input password",
             walletCreate_check_vpass: "Please check the confirmation password",
+            walletCreate_check_exceed: "Please set your password within 32 letters",
 
 
             // WalletImportView

@@ -25,7 +25,7 @@ namespace BlackCat.tools {
 
         // 读取钱包信息，type=0表示文件导入读取，type=1表示本地缓存读取
         async readWalletFile(type: number = 0) {
-            // console.log('[Bla Cat]', '[wallet] 读取钱包信息，读取方式 => ", type)
+            // console.log("[BlaCat]", '[wallet] 读取钱包信息，读取方式 => ", type)
             if (type == 1) {
                 this.filestr = await Main.user.getWalletFileCache();
             }
@@ -34,19 +34,19 @@ namespace BlackCat.tools {
                 try {
                     this.isotc = !this.filestr.includes("accounts");
                     if (this.isotc) {
-                        // console.log('[Bla Cat]', '[wallet] 读取蓝鲸淘钱包")
+                        // console.log("[BlaCat]", '[wallet] 读取蓝鲸淘钱包")
                         this.wallet.accounts = undefined;
                         this.otcgo.fromJsonStr(this.filestr);
                         return true;
                     } else {
-                        // console.log('[Bla Cat]', '[wallet] 读取钱包")
+                        // console.log("[BlaCat]", '[wallet] 读取钱包")
                         this.otcgo.address = undefined;
                         this.wallet.fromJsonStr(this.filestr);
                         return true;
                     }
                 }
                 catch (e) {
-                    console.log('[Bla Cat]', '[wallet]', 'readWalletFile, 钱包文件解析异常', this.filestr)
+                    console.log("[BlaCat]", '[wallet]', 'readWalletFile, 钱包文件解析异常', this.filestr)
                     return false;
                 }
             }
@@ -55,14 +55,14 @@ namespace BlackCat.tools {
 
         async open(filepass: string) {
             if (!!this.wallet.accounts) {
-                // console.log('[Bla Cat]', '[wallet] 打开钱包文件")
+                // console.log("[BlaCat]", '[wallet] 打开钱包文件")
                 try {
                     let loginarray = await tools.neotools.nep6Load(
                         this.wallet,
                         filepass
                     ) as tools.LoginInfo[];
 
-                    // console.log('[Bla Cat]', '[wallet] 打开钱包文件，成功了")
+                    // console.log("[BlaCat]", '[wallet] 打开钱包文件，成功了")
 
                     await tools.StorageTool.setLoginArr(loginarray);
                     await tools.LoginInfo.setCurrentAddress(loginarray[0].address);
@@ -79,7 +79,7 @@ namespace BlackCat.tools {
                 }
             }
             if (!!this.otcgo.address) {
-                console.log('[Bla Cat]', '[wallet]', '打开蓝鲸淘钱包文件')
+                console.log("[BlaCat]", '[wallet]', '打开蓝鲸淘钱包文件')
                 try {
                     this.otcgo.otcgoDecrypt(filepass);
                     const result = this.otcgo.doValidatePwd();
@@ -107,7 +107,7 @@ namespace BlackCat.tools {
                     return false;
                 }
             }
-            console.log('[Bla Cat]', '[wallet]', '无有效的钱包文件')
+            console.log("[BlaCat]", '[wallet]', '无有效的钱包文件')
             return false;
         }
 
@@ -176,7 +176,7 @@ namespace BlackCat.tools {
                 random_int = Neo.BigInteger.fromUint8Array(random_uint8);
             } catch (e) {
                 var math_rand = parseInt((Math.random() * 10000000).toString());
-                console.log('[Bla Cat]', '[wallet]', 'makerawtransaction, math_rand => ', math_rand);
+                console.log("[BlaCat]", '[wallet]', 'makerawtransaction, math_rand => ', math_rand);
                 random_int = new Neo.BigInteger(math_rand);
             }
 
@@ -315,7 +315,7 @@ namespace BlackCat.tools {
                     t_amount
                 );
             } catch (e) {
-                console.log("[Bla Cat]", "[wallet]", "makeRecharge error => ", e.toString());
+                console.log("[BlaCat]", "[wallet]", "makeRecharge error => ", e.toString());
 
                 res.err = true;
                 res.info = { error: "post makeRecharge error" };
@@ -352,7 +352,7 @@ namespace BlackCat.tools {
                 res.info = { error: "post makeRecharge error, may be network error" };
             }
 
-            console.log("[Bla Cat]", "[wallet]", "makeRechargeRes => ", res);
+            console.log("[BlaCat]", "[wallet]", "makeRechargeRes => ", res);
 
             return res;
         }
@@ -361,7 +361,7 @@ namespace BlackCat.tools {
             // 清理打开的钱包
             tools.StorageTool.delStorage("current-address")
             tools.StorageTool.delStorage("login-info-arr")
-            console.log('[Bla Cat]', '[wallet]', 'closeWallet ...')
+            console.log("[BlaCat]", '[wallet]', 'closeWallet ...')
             if (Main.viewMgr.payWalletDetailView && Main.viewMgr.payWalletDetailView.isCreated && Main.viewMgr.payWalletDetailView.isHidden() == false) {
                 Main.viewMgr.payWalletDetailView.return()
             }

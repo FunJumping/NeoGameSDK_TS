@@ -29,7 +29,7 @@ namespace BlackCat.tools
         static async heightRefresh()
         {
             let oldheight = StorageTool.getStorage("block-height");
-            let height = await tools.WWW.api_getHeight() as number;
+            let height = await tools.WWW.api_getHeight_nodes() as number;
             if (oldheight == undefined || oldheight == null || oldheight == "")
             {
                 StorageTool.setStorage("block-height", height.toString());

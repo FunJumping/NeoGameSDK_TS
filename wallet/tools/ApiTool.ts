@@ -166,5 +166,9 @@ namespace BlackCat {
         static async updateAddrbook(uid: string, token: string, address_name: string, address_wallet: string, address_desc: string, id: string) {
             return this.common('user_addressbook.update_addr', { uid: uid, token: token, address_name: address_name, address_wallet: address_wallet, address_desc: address_desc, id: id })
         }
+
+        static async getExchangeInfo(uid: string, token: string, src_coin: number) {
+            return this.common('user_gas.get_info', {uid: uid, token: token, src_coin: src_coin})
+        }
     }
 }

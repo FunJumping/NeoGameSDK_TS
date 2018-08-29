@@ -10,7 +10,12 @@ namespace BlackCat {
         private mySex: HTMLElement;
         private myArea: HTMLElement;
 
+        private myNet_nodes: HTMLElement;
+        private myNet_clis: HTMLElement
 
+        private divHeight_nodes: HTMLElement
+        private divHeight_clis: HTMLElement;
+        
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_bj", "pc_myinfo")
@@ -33,14 +38,6 @@ namespace BlackCat {
 
             var myinfo = this.objCreate("div")
             myinfo.classList.add("pc_myinfolist")
-            // myinfo.innerHTML
-            //     = '<ul>'
-            //     + '<li class="pc_myinfoimg">' + Main.langMgr.get("myinfo_headImg") + '<span><img src="' + this.getImg() + '"></span></li>'
-            //     + '<li>' + Main.langMgr.get("myinfo_nickname") + '<span onclick="modifyName()">' + this.getName() + '</span></li>'
-            //     + '<li>' + Main.langMgr.get("myinfo_sex") + '<span>' + this.getSex() + '</span></li>'
-            //     + '<li>' + Main.langMgr.get("myinfo_uid") + '<span>' + this.getUid() + '</span></li>'
-            //     + '<li>' + Main.langMgr.get("myinfo_area") + '<span>' + this.getArea() + '</span></li>'
-            //     + '</ul>'
 
             var ulMyinfo = this.objCreate("ul")
             this.ObjAppend(myinfo, ulMyinfo)
@@ -48,7 +45,6 @@ namespace BlackCat {
             //头像
             var liMyinfoImg = this.objCreate("li")
             liMyinfoImg.classList.add("pc_myinfoimg")
-            liMyinfoImg.style.cursor = "pointer"
             liMyinfoImg.onclick = () => {
                 this.modifyImg()
             }
@@ -71,7 +67,6 @@ namespace BlackCat {
 
             //昵称
             var liMyinfoName = this.objCreate("li")
-            liMyinfoName.style.cursor = "pointer"
             liMyinfoName.textContent = Main.langMgr.get("myinfo_nickname")
             liMyinfoName.onclick = () => {
                 this.modifyName()
@@ -92,7 +87,6 @@ namespace BlackCat {
 
             //性别
             var liMyinfoSex = this.objCreate("li")
-            liMyinfoSex.style.cursor = "pointer"
             liMyinfoSex.textContent = Main.langMgr.get("myinfo_sex")
             liMyinfoSex.onclick = () => {
                 this.modifySex()
@@ -111,6 +105,7 @@ namespace BlackCat {
 
             //账号
             var liMyinfoUid = this.objCreate("li")
+            liMyinfoUid.style.cursor = "Default"
             liMyinfoUid.textContent = Main.langMgr.get("myinfo_uid")
             this.ObjAppend(ulMyinfo, liMyinfoUid)
 
@@ -138,9 +133,56 @@ namespace BlackCat {
             this.myArea.textContent = this.getArea()
             this.ObjAppend(liMyinfoArea, this.myArea)
 
+
+
+            //网络线路
+            var liMyinfoNet = this.objCreate("li")
+            liMyinfoNet.textContent = Main.langMgr.get("modifyNet")
+            liMyinfoNet.onclick = () => {
+                this.hidden()
+                ModifyNetworkLineView.refer = "MyInfoView"
+                ModifyNetworkLineView.defaultType = "nodes"
+                Main.viewMgr.change("ModifyNetworkLineView")
+            }
+            this.ObjAppend(ulMyinfo, liMyinfoNet)
+
+            //网络线路标签
+            var iMyinfoNet = this.objCreate("i")
+            iMyinfoNet.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfoNet, iMyinfoNet)
+
+            // 网络线路内容
+            var spanNet_nodes = this.objCreate("span")
+            this.ObjAppend(liMyinfoNet, spanNet_nodes)
+            spanNet_nodes.classList.add("pc_spannet")
+
+            this.myNet_nodes = this.objCreate("div")
+            this.myNet_nodes.textContent = "BlockAPI" // "中国—上海" //this.getArea()
+            this.ObjAppend(spanNet_nodes, this.myNet_nodes)
+
+            //网络线路高度
+            this.divHeight_nodes = this.objCreate("div")
+            this.divHeight_nodes.classList.add( "iconfont", "icon-blalian")
+            this.divHeight_nodes.textContent = "n/a"
+            this.ObjAppend(spanNet_nodes, this.divHeight_nodes)
+
+
+            var spanNet_clis = this.objCreate("span")
+            this.ObjAppend(liMyinfoNet, spanNet_clis)
+            spanNet_clis.classList.add("pc_spannet","pc_spannet_clis")
+
+            this.myNet_clis = this.objCreate("div") 
+            this.myNet_clis.textContent = "NeoCli" // "中国—上海" //this.getArea()
+            this.ObjAppend(spanNet_clis, this.myNet_clis)
+
+            this.divHeight_clis = this.objCreate("div")
+            this.divHeight_clis.classList.add( "iconfont", "icon-neolian")
+            this.divHeight_clis.textContent = "n/a"
+            this.ObjAppend(spanNet_clis, this.divHeight_clis)
+
+
             // 安全中心
             var liMyinfoTrust = this.objCreate("li")
-            liMyinfoTrust.style.cursor = "pointer"
             liMyinfoTrust.textContent = Main.langMgr.get("myinfo_security")
             liMyinfoTrust.onclick = () => {
                 this.hidden()
@@ -167,6 +209,13 @@ namespace BlackCat {
             this.ObjAppend(myinfo, logout)
 
             this.ObjAppend(this.div, myinfo)
+
+
+            // this.getNodeName("nodes")
+            this.getNodeHeight("nodes")
+
+            // this.getNodeName("clis")
+            this.getNodeHeight("clis")
 
         }
 
@@ -237,6 +286,29 @@ namespace BlackCat {
             this.myArea.textContent = this.getArea()
         }
 
+        // private async getNodeName(type: string) {
+        //     let currNodeInfo = Main.netMgr.getCurrNodeInfo(type)
+        //     if (currNodeInfo) {
+        //         let content = Main.langMgr.get("area_code_" + currNodeInfo[0])
+        //         if (currNodeInfo[2]) {
+        //             content += currNodeInfo[2]
+        //         }
+        //         this["myNet_" + type].textContent = content
+        //     }
+        // }
+        private async getNodeHeight(type: string) {
+            let height = Main.viewMgr.payView["height_" + type].toString()
+            if (height > 0) {
+                this["divHeight_" + type].textContent = height == 0 ? "n/a" : height
+            }
+        }
 
+        updateNodeInfo() {
+            // this.getNodeName(type)
+            this.getNodeHeight("nodes")
+            if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
+                this.getNodeHeight("clis")
+            }
+        }
     }
 }
