@@ -6,11 +6,17 @@ namespace BlackCat {
     export class ViewTransConfirm extends ViewBase {
 
         static list: walletLists;
+        static isTrustFeeLess: boolean; // 信任状态下，缺少手续费
 
         private divConfirmSelect: HTMLElement; // 确认/取消栏div
 
         private divTrust: HTMLElement
         private trust: string; // 是否信任，"1"表示信任
+
+        private netFeeCom: NetFeeComponent; // 手续费组件
+
+        private net_fee: string // 网络交易费
+
 
         constructor() {
             super()
@@ -33,6 +39,12 @@ namespace BlackCat {
             }
 
             this.trust = "0";
+
+            if (ViewTransConfirm.isTrustFeeLess) {
+                // 手续费不足，提示
+                Main.showErrMsg('pay_makerawtrans_fee_less')
+                this.divConfirmSelect.classList.add("pc_tradeconfirmbut_fee")
+            }
         }
 
         create() {
@@ -65,7 +77,10 @@ namespace BlackCat {
 
                 var contentObj = this.objCreate("div")
                 contentObj.classList.add("pc_detail")
-                contentObj.style.paddingBottom = "120px"
+                contentObj.style.paddingBottom = "210px"
+                if(ViewTransConfirm.isTrustFeeLess){
+                    contentObj.style.paddingBottom = "160px"
+                }
                 contentObj.innerHTML
                     = '<ul>'
                     + '<li>'
@@ -92,32 +107,44 @@ namespace BlackCat {
                 this.divConfirmSelect.classList.add("pc_tradeconfirmbut")
                 this.ObjAppend(this.div, this.divConfirmSelect)
 
+                // 手续费组件
+                this.netFeeCom = new NetFeeComponent(this.divConfirmSelect, (net_fee) => {
+                    // this.netFeeChange(net_fee)
+                    this.net_fee = net_fee
+                })
+                this.netFeeCom.setFeeDefault()
+                this.netFeeCom.createDiv()
+
                 // 信任合约
-                this.divTrust = this.objCreate("div")
-                this.divTrust.classList.add("pc_switchbox")
-                this.divTrust.textContent = Main.langMgr.get("pay_trust_tips") //信任合约
-                this.ObjAppend(this.divConfirmSelect, this.divTrust)
-
-                var labelTrust = this.objCreate("label")
-                labelTrust.textContent = Main.langMgr.get("pay_trust_Vice_tips") //（本合约交易不再弹出此窗口）
-                this.ObjAppend(this.divTrust, labelTrust)
-
-                var trustObj = this.objCreate("a")
-                trustObj.classList.add("pc_switch")
-                trustObj.onclick = () => {
-                    if (this.trust == "0") {
-                        this.trust = "1"
-                        trustObj.classList.add("pc_switch_active")
+                if (ViewTransConfirm.isTrustFeeLess !== true) {
+                    this.divTrust = this.objCreate("div")
+                    this.divTrust.classList.add("pc_switchbox")
+                    this.divTrust.textContent = Main.langMgr.get("pay_trust_tips") //信任合约
+                    this.ObjAppend(this.divConfirmSelect, this.divTrust)
+    
+                    var trustObj = this.objCreate("a")
+                    trustObj.classList.add("pc_switch")
+                    trustObj.onclick = () => {
+                        if (this.trust == "0") {
+                            this.trust = "1"
+                            trustObj.classList.add("pc_switch_active")
+                        }
+                        else {
+                            this.trust = "0"
+                            trustObj.classList.remove("pc_switch_active")
+                        }
                     }
-                    else {
-                        this.trust = "0"
-                        trustObj.classList.remove("pc_switch_active")
-                    }
+                    this.ObjAppend(this.divTrust, trustObj)
+    
+                    var spanSwitchBut = this.objCreate("span")
+    
+                    var pTrust = this.objCreate("p")
+                    pTrust.textContent = Main.langMgr.get("pay_trust_Vice_tips") //（本合约交易不再弹出此窗口）
+                    this.ObjAppend(this.divTrust, pTrust)
+    
+                    this.ObjAppend(trustObj, spanSwitchBut)
                 }
-                this.ObjAppend(this.divTrust, trustObj)
-
-                var spanSwitchBut = this.objCreate("span")
-                this.ObjAppend(trustObj, spanSwitchBut)
+                
 
                 var cancelObj = this.objCreate("button")
                 cancelObj.classList.add("pc_cancel")
@@ -140,8 +167,15 @@ namespace BlackCat {
                     confirmObj.textContent = Main.langMgr.get("ok") // "确认"
                 }
                 confirmObj.onclick = () => {
+
+                    if (Number(this.net_fee) > Main.viewMgr.payView.gas) {
+                        // 手续费不足
+                        Main.showErrMsg('pay_makerawtrans_fee_less')
+                        return
+                    }
+
                     console.log("[BlaCat]", '[ViewTransConfirm]', '交易确认..')
-                    ViewTransConfirm.callback(ViewTransConfirm.callback_params, this.trust)
+                    ViewTransConfirm.callback(ViewTransConfirm.callback_params, this.trust, this.net_fee)
                     ViewTransConfirm.callback = null;
                     this.remove(300)
                 }
@@ -193,6 +227,6 @@ namespace BlackCat {
 
             return html;
         }
-
+        
     }
 }

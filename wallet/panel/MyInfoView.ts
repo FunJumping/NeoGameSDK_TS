@@ -9,13 +9,14 @@ namespace BlackCat {
         private myName: HTMLElement;
         private mySex: HTMLElement;
         private myArea: HTMLElement;
+        private myFee: HTMLElement;
 
         private myNet_nodes: HTMLElement;
         private myNet_clis: HTMLElement
 
         private divHeight_nodes: HTMLElement
         private divHeight_clis: HTMLElement;
-        
+
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_bj", "pc_myinfo")
@@ -134,6 +135,26 @@ namespace BlackCat {
             this.ObjAppend(liMyinfoArea, this.myArea)
 
 
+            //手续费
+            var liMyinfofee = this.objCreate("li")
+            liMyinfofee.textContent = Main.langMgr.get("myinfo_fee")
+            liMyinfofee.onclick = () => {
+                this.hidden()
+                ModifyTransactionFeeView.refer = "MyInfoView"
+                Main.viewMgr.change("ModifyTransactionFeeView")
+            }
+
+            //手续费标签
+            var iMyinfofee = this.objCreate("i")
+            iMyinfofee.classList.add("iconfont", "icon-gengduo")
+            this.ObjAppend(liMyinfofee, iMyinfofee)
+
+            //手续费内容
+            this.myFee = this.objCreate("span")
+            this.myFee.textContent = this.getFee()
+            this.ObjAppend(liMyinfofee, this.myFee)
+            this.ObjAppend(ulMyinfo, liMyinfofee)
+
 
             //网络线路
             var liMyinfoNet = this.objCreate("li")
@@ -162,21 +183,21 @@ namespace BlackCat {
 
             //网络线路高度
             this.divHeight_nodes = this.objCreate("div")
-            this.divHeight_nodes.classList.add( "iconfont", "icon-blalian")
+            this.divHeight_nodes.classList.add("iconfont", "icon-blalian")
             this.divHeight_nodes.textContent = "n/a"
             this.ObjAppend(spanNet_nodes, this.divHeight_nodes)
 
 
             var spanNet_clis = this.objCreate("span")
             this.ObjAppend(liMyinfoNet, spanNet_clis)
-            spanNet_clis.classList.add("pc_spannet","pc_spannet_clis")
+            spanNet_clis.classList.add("pc_spannet", "pc_spannet_clis")
 
-            this.myNet_clis = this.objCreate("div") 
+            this.myNet_clis = this.objCreate("div")
             this.myNet_clis.textContent = "NeoCli" // "中国—上海" //this.getArea()
             this.ObjAppend(spanNet_clis, this.myNet_clis)
 
             this.divHeight_clis = this.objCreate("div")
-            this.divHeight_clis.classList.add( "iconfont", "icon-neolian")
+            this.divHeight_clis.classList.add("iconfont", "icon-neolian")
             this.divHeight_clis.textContent = "n/a"
             this.ObjAppend(spanNet_clis, this.divHeight_clis)
 
@@ -241,9 +262,16 @@ namespace BlackCat {
         private getSex() {
             return Main.langMgr.get("myinfo_sex_" + Main.user.info.sex);
         }
+        private getFee() {
+            if (Main.user.info.service_charge) {
+                return Main.user.info.service_charge + " " + Main.langMgr.get("gas")
+            } else {
+                return Main.user.info.service_charge ? Main.user.info.service_charge : Main.langMgr.get("myinfo_fee_empty");
+            }
+        }
 
         private getArea() {
-            return Main.langMgr.get("area_code_" + Main.user.info.region) ? Main.langMgr.get("area_code_" + Main.user.info.region) : Main.langMgr.get("modifyArea_empty")
+            return Main.langMgr.get("area_code_" + Main.user.info.region) ? Main.langMgr.get("area_code_" + Main.user.info.region) : Main.langMgr.get("myinfo_area_empty")
         }
 
         private doLogout() {
@@ -282,9 +310,13 @@ namespace BlackCat {
             }
             Main.viewMgr.change("ModifySexView")
         }
+        modifyFee() {
+            this.myFee.textContent = this.getFee()
+        }
         modifyArea() {
             this.myArea.textContent = this.getArea()
         }
+
 
         // private async getNodeName(type: string) {
         //     let currNodeInfo = Main.netMgr.getCurrNodeInfo(type)

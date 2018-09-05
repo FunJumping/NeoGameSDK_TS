@@ -9,6 +9,10 @@ namespace BlackCat {
 
         private divConfirmSelect: HTMLElement; // 确认/取消栏div
 
+        private netFeeCom: NetFeeComponent; // 手续费组件
+
+        private net_fee: string // 网络交易费
+
         constructor() {
             super()
 
@@ -60,7 +64,7 @@ namespace BlackCat {
 
                 var contentObj = this.objCreate("div")
                 contentObj.classList.add("pc_detail")
-                contentObj.style.paddingBottom = "90px"
+                contentObj.style.paddingBottom = "160px"
                 contentObj.innerHTML
                     = '<ul>'
                     + '<li>'
@@ -82,10 +86,21 @@ namespace BlackCat {
                     + '</ul>'
                 this.ObjAppend(this.div, contentObj)
 
+
+
                 // 确认/取消栏div
                 this.divConfirmSelect = this.objCreate("div")
                 this.divConfirmSelect.classList.add("pc_tradeconfirmbut")
                 this.ObjAppend(this.div, this.divConfirmSelect)
+
+                // 手续费组件
+                this.netFeeCom = new NetFeeComponent(this.divConfirmSelect, (net_fee) => {
+                    // this.netFeeChange(net_fee)
+                    this.net_fee = net_fee
+                })
+                this.netFeeCom.setFeeDefault()
+                this.netFeeCom.createDiv()
+                
 
                 var cancelObj = this.objCreate("button")
                 cancelObj.classList.add("pc_cancel")
@@ -111,7 +126,7 @@ namespace BlackCat {
                 }
                 confirmObj.onclick = () => {
                     console.log("[BlaCat]", '[ViewTransConfirmGas]', 'PayTransfer交易确认..')
-                    ViewTransConfirmGas.callback(ViewTransConfirmGas.callback_params)
+                    ViewTransConfirmGas.callback(ViewTransConfirmGas.callback_params, this.net_fee)
                     ViewTransConfirmGas.callback = null;
                     this.remove(300)
                 }
@@ -161,6 +176,5 @@ namespace BlackCat {
 
             return html;
         }
-
     }
 }

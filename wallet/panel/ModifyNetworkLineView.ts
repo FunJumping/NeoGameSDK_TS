@@ -111,10 +111,10 @@ namespace BlackCat {
 
                         //网络线路高度
                         var divHeight = this.objCreate("div")
-                        if(type == "nodes"){
+                        if (type == "nodes") {
                             divHeight.classList.add("pc_payheighet", "iconfont", "icon-blalian")
                         }
-                        if(type == "clis"){
+                        if (type == "clis") {
                             divHeight.classList.add("pc_payheighet", "iconfont", "icon-neolian")
                         }
                         divHeight.textContent = "n/a"

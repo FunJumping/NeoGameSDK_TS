@@ -263,7 +263,6 @@ namespace BlackCat {
             register_getCodecountRetry: "重新获取",
             register_exceed: "设置密码不能超过32个字符",
 
-
             register_doLogin: "<<返回登录",
             register_doRegister: "立即注册",
 
@@ -341,7 +340,9 @@ namespace BlackCat {
 
             myinfo_uid: "账号",
             myinfo_area: "地区",
-            modifyArea_empty: "请选择",
+            myinfo_fee: "交易手续费",
+            myinfo_fee_empty: "请选择",
+            myinfo_area_empty: "请选择",
             myinfo_security: "安全中心",
             myinfo_set: "设置",
             myinfo_logout: "退出账号",
@@ -361,6 +362,8 @@ namespace BlackCat {
             modifySex_succ: "性别修改成功",
             modifyArea: "地区",
             modifyArea_succ: "地区修改成功",
+            modifyFee: "交易手续费",
+            modifyFee_succ: "交易手续费修改成功",
 
             // ModifyNetworkLineView
             modifyNet: "网络线路",
@@ -418,6 +421,7 @@ namespace BlackCat {
             pay_transferCountError: "提款金额错误",
             pay_transferDoSucc: "提款操作成功",
             pay_transferDoFail: "提款失败",
+            pay_transferGasNotEnough: "GAS余额不足！",
 
             // PayView
             pay_wallet: "我的钱包",
@@ -437,7 +441,10 @@ namespace BlackCat {
             pay_makeMintGasNotEnough: "GAS余额不足",
             pay_makeMintDoFail: "充值SGAS失败！\r\n充值合约执行失败！\r\n请等待上次充值确认后再操作！",
             pay_makeMintDoFail2: "充值SGAS失败！\r\n发送充值请求失败！请检查网络，稍候重试！",
+            pay_makeRefundSgasNotEnoughUtxo: "SGAS兑换繁忙，请稍后重试！",
             pay_makeRefundSgasNotEnough: "SGAS余额不足",
+            pay_makeRefundGasFeeNotEnough: "GAS余额不足，无法支付手续费！",
+            pay_makeRefundGasLessThanFee: "兑换GAS的金额不能小于手续费！",
             pay_makeRefundDoFail: "提取合约执行失败！请等待上个提现或兑换交易完成再操作！",
             pay_makeRefundDoFail2: "发送提取交易失败！请检查网络，稍候重试！",
             pay_makeRefundGetScriptFail: "获取提取合约失败！",
@@ -460,6 +467,7 @@ namespace BlackCat {
             pay_walletDetail_export: "导出钱包",
 
             pay_makerawtrans_err: "交易发起失败",
+            pay_makerawtrans_fee_less: "GAS余额不足，无法支付手续费！",
 
             // AddressbookView
             addressbook_title: "通讯录",
@@ -507,7 +515,7 @@ namespace BlackCat {
             // ViewTransConfirm
             pay_makeRecharge: "充值",
             pay_trust_tips: "信任合约",
-            pay_trust_Vice_tips: "（本合约交易不再弹出此窗口）",
+            pay_trust_Vice_tips: "本合约交易不再弹出此窗口,如需更改手续费请前往设置界面",
 
             // ViewTransConfirmGas
             pay_transferGas_toaddr: "转账地址",
@@ -517,6 +525,9 @@ namespace BlackCat {
             pay_transCount_count: "兑换",
             pay_transCount_inputCount: "请输入需要兑换的金额",
             pay_transCount_err: "请输入正确的金额",
+            pay_transCountGAS: "GAS：",
+            pay_transCountSGAS: "SGAS：",
+            pay_transCountSGASOLD: "SGAS(old)：",
             pay_transCountSGAS2GAS: "GAS",
             pay_transCountGAS2SGAS: "SGAS",
             pay_transCountSGASOLD2OLD: "SGAS(old)",
@@ -614,7 +625,6 @@ namespace BlackCat {
             netmgr_select_cli_slow: "与链上节点通讯异常，请检查网络后重试！",
             netmgr_connecting: "连接中，请稍候...",
             netmgr_connecting_fail: "连接失败，请检查网络后重试。",
-
         }
     }
 }

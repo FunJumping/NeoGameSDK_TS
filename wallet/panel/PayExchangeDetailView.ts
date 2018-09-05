@@ -97,9 +97,9 @@ namespace BlackCat {
             divConsume.textContent = "NEO消耗"
             this.ObjAppend(divGas, divConsume)
 
-            var aConsume=this.objCreate("a")
-            aConsume.textContent="NEO不足?"
-            this.ObjAppend(divConsume,aConsume)
+            var aConsume = this.objCreate("a")
+            aConsume.textContent = "NEO不足?"
+            this.ObjAppend(divConsume, aConsume)
 
             // GAS 数量框
             var divGasObj = this.objCreate("div")

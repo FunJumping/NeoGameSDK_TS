@@ -71,7 +71,7 @@ namespace BlackCat {
 
                 // 修改用户信息
                 Main.user.setInfo('region', area.codename)
-                Main.viewMgr.myInfoView.modifyArea()
+                Main.viewMgr.myInfoView.modifyFee()
                 this.return()
             }
             else {

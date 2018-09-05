@@ -51,8 +51,8 @@ namespace BlackCat {
             return this.common('user.get_entergame_param', { uid: uid, token: token, g_id: g_id });
         }
 
-        static async addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust: string = "0") {
-            return this.common('user_wallet.logss', { uid: uid, token: token, txid: txid, g_id: g_id, cnts: cnts, type: type, params: params, net_type: net_type, trust: trust });
+        static async addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust: string = "0", net_fee: string = "") {
+            return this.common('user_wallet.logss', { uid: uid, token: token, txid: txid, g_id: g_id, cnts: cnts, type: type, params: params, net_type: net_type, trust: trust, net_fee: net_fee });
         }
 
         static async getWalletListss(uid: string, token: string, page: number, num: number, net_type: number) {
@@ -131,6 +131,10 @@ namespace BlackCat {
             return this.common('user.mod_region', { uid: uid, token: token, region: region })
         }
 
+        static async modUserFee(uid: string, token: string, service_charge: string) {
+            return this.common('user.mod_serviceCharge', { uid: uid, token: token, serviceCharge: service_charge })
+        }
+
         static async forgetPassByPhone(phone: string, code: string, new_pwd: string) {
             return this.common('user_phone.mod_pwd', { phone: phone, code: code, new_pwd: new_pwd })
         }
@@ -168,7 +172,7 @@ namespace BlackCat {
         }
 
         static async getExchangeInfo(uid: string, token: string, src_coin: number) {
-            return this.common('user_gas.get_info', {uid: uid, token: token, src_coin: src_coin})
+            return this.common('user_gas.get_info', { uid: uid, token: token, src_coin: src_coin })
         }
     }
 }

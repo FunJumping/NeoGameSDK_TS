@@ -378,6 +378,9 @@ namespace BlackCat {
             // 判断一下有没有减号，不用科学计数法表示
             this.spanSgas.textContent = Main.getStringNumber(this.sgas)
 
+            // 通知其他界面更新余额
+            Main.viewMgr.updateBalance()
+
         }
         private async doMakeRefundOld() {
             if (Main.isWalletOpen()) {
@@ -972,6 +975,8 @@ namespace BlackCat {
                     tools.CoinTool.id_GAS,
                     Neo.Fixed8.fromNumber(Number(mintCount)),
                     Neo.Fixed8.fromNumber(Number(net_fee)),
+                    0,
+                    true, // 拆分gas的utxo，以便后续手续费
                 );
             }
             catch (e) {
@@ -1026,8 +1031,10 @@ namespace BlackCat {
                         "0",
                         mintCount,
                         "1",
-                        '{"sbParamJson":"[]", "sbPushString": "mintTokens", "nnc": "' + tools.CoinTool.id_SGAS + '", "netfee": "' + net_fee + '"}',
-                        Main.netMgr.type
+                        '{"sbParamJson":"[]", "sbPushString": "mintTokens", "nnc": "' + tools.CoinTool.id_SGAS + '"}',
+                        Main.netMgr.type,
+                        "0",
+                        net_fee
                     );
                     // if (logRes.r)
                     // {
@@ -1078,6 +1085,7 @@ namespace BlackCat {
             var sendCount = Neo.Fixed8.fromNumber(Number(refundCount))
 
             var net_fee = Main.viewMgr.viewTransCount.net_fee;// 手续费
+            // var net_fee = "0.00000001"
             console.log("[BlaCat]", '[PayView]', '退到gas，数量 => ', refundCount, '手续费netfee =>', net_fee)
 
             // 查询SGAS余额
@@ -1087,14 +1095,12 @@ namespace BlackCat {
 
             //获取sgas合约地址的资产列表
             var utxos_assets = await tools.CoinTool.getsgasAssets(id_SGAS);
-            // var utxos_assets = await tools.CoinTool.getSgasAssetsByAmount(id_SGAS, Number(refundCount));
-
 
             var us = utxos_assets[tools.CoinTool.id_GAS];
             if (us == undefined) {
                 Main.viewMgr.viewLoading.remove()
                 // Main.showErrMsg("Sgas余额不足");
-                Main.showErrMsg("pay_makeRefundSgasNotEnough")
+                Main.showErrMsg("pay_makeRefundSgasNotEnoughUtxo")
                 return;
             }
 
@@ -1107,19 +1113,20 @@ namespace BlackCat {
             console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us.before => ', us);
 
             //检查sgas地址拥有的gas的utxo是否有被标记过
+            var us_parse = [] // us处理后结果
             var count: Neo.Fixed8 = Neo.Fixed8.Zero;
-
             for (var i = us.length - 1; i >= 0; i--) {
 
                 if (count.compareTo(sendCount) > 0) {
                     // 足够数量了，后面的直接剔除了
                     console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, enough us[' + i + '].delete => ', us[i]);
-                    delete us[i];
+                    // delete us[i];
                     continue
                 }
 
                 if (us[i].n > 0) {
                     count = count.add(us[i].count)
+                    us_parse.push(us[i])
                     continue;
                 }
 
@@ -1135,13 +1142,15 @@ namespace BlackCat {
                     var value = stack[0]["value"].toString();
                     if (value.length > 0) {
                         console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us[' + i + '].delete => ', us[i]);
-                        delete us[i];
+                        // delete us[i];
                     }
                     else {
                         count = count.add(us[i].count)
+                        us_parse.push(us[i])
                     }
                 }
             }
+            us = us_parse
 
             console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us.after => ', us);
 
@@ -1160,51 +1169,50 @@ namespace BlackCat {
                     tools.CoinTool.id_GAS,
                     Neo.Fixed8.fromNumber(Number(refundCount))
                 );
-                // // 等待SGAS合约支持
-                // if (Number(net_fee) > 0) {
-                //     // 有网络手续费
-                //     try {
-                //         // 获取用户utxo
-                //         var user_utxos_assets = await tools.CoinTool.getassets();
-                //         console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_utxos_assets => ', user_utxos_assets)
+                // 有网络手续费
+                if (Number(net_fee) > 0) {
 
-                //         var user_scriptaddress = tools.CoinTool.id_GAS.hexToBytes().reverse();
-                //         var user_nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(user_scriptaddress);
-                //         var user_makeTranRes: Result = tools.CoinTool.makeTran(
-                //             user_utxos_assets,
-                //             user_nepAddress,
-                //             tools.CoinTool.id_GAS,
-                //             Neo.Fixed8.fromNumber(Number("0")),
-                //             Neo.Fixed8.fromNumber(Number(net_fee)),
-                //         );
+                    // makeTranRes.info.tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
+                    try {
+                        // 获取用户utxo
+                        var user_utxos_assets = await tools.CoinTool.getassets();
+                        console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_utxos_assets => ', user_utxos_assets)
 
-                //         // inputs、outputs、oldarr塞入
-                //         var user_tran = user_makeTranRes.info.tran
-                //         for (let i = 0; i< user_tran.inputs.length; i++) {
-                //             makeTranRes.info.tran.inputs.push(user_tran.inputs[i])
-                //         }
-                //         for (let i = 0; i< user_tran.outputs.length; i++) {
-                //             makeTranRes.info.tran.outputs.push(user_tran.outputs[i])
-                //         }
-                //         var user_oldarr = user_makeTranRes.info.oldarr
-                //         for (let i = 0; i< user_oldarr.length; i++) {
-                //             makeTranRes.info.oldarr.push(user_oldarr[i])
-                //         }
-                //         console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_makeTranRes => ', user_makeTranRes)
-                //     }
-                //     catch (e) {
-                //         Main.viewMgr.viewLoading.remove()
-                //         let errmsg = Main.langMgr.get(e.message);
-                //         if (errmsg) {
-                //             Main.showErrMsg((e.message)); // "GAS余额不足"
-                //         }
-                //         else {
-                //             Main.showErrMsg(("pay_makeMintGasNotEnough"))
-                //         }
+                        var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                            user_utxos_assets,
+                            Main.user.info.wallet,
+                            tools.CoinTool.id_GAS,
+                            Neo.Fixed8.Zero,
+                            Neo.Fixed8.fromNumber(Number(net_fee)),
+                        );
 
-                //         return;
-                //     }
-                // }
+                        // inputs、outputs、oldarr塞入
+                        var user_tran = user_makeTranRes.info.tran
+                        for (let i = 0; i < user_tran.inputs.length; i++) {
+                            makeTranRes.info.tran.inputs.push(user_tran.inputs[i])
+                        }
+                        for (let i = 0; i < user_tran.outputs.length; i++) {
+                            makeTranRes.info.tran.outputs.push(user_tran.outputs[i])
+                        }
+                        var user_oldarr = user_makeTranRes.info.oldarr
+                        for (let i = 0; i < user_oldarr.length; i++) {
+                            makeTranRes.info.oldarr.push(user_oldarr[i])
+                        }
+                        console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_makeTranRes => ', user_makeTranRes)
+                    }
+                    catch (e) {
+                        Main.viewMgr.viewLoading.remove()
+                        let errmsg = Main.langMgr.get(e.message);
+                        if (errmsg) {
+                            Main.showErrMsg((e.message)); // "GAS余额不足"
+                        }
+                        else {
+                            Main.showErrMsg(("pay_makeMintGasNotEnough"))
+                        }
+
+                        return;
+                    }
+                }
             }
             catch (e) {
                 Main.viewMgr.viewLoading.remove()
@@ -1238,7 +1246,7 @@ namespace BlackCat {
                 tran.extdata = new ThinNeo.InvokeTransData();
                 tran.extdata.script = sb.ToArray();
                 // 网络手续费
-                // tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
+                if (Number(net_fee) > 0) tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
 
                 //附加鉴证
                 tran.attributes = new Array<ThinNeo.Attribute>(1);
@@ -1279,7 +1287,8 @@ namespace BlackCat {
                             "0",
                             refundCount,
                             "2",
-                            '{"sbParamJson":"' + paramJson_tmp + '", "sbPushString": "refund", "nnc": "' + id_SGAS + '"}',
+                            // 塞入net_fee，以便退款第二步参考手续费
+                            '{"sbParamJson":"' + paramJson_tmp + '", "sbPushString": "refund", "nnc": "' + id_SGAS + '", "net_fee": "'+net_fee+'"}',
                             Main.netMgr.type
                         );
                         if (logRes.r) {

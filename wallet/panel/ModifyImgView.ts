@@ -93,7 +93,7 @@ namespace BlackCat {
             this.reader = new FileReader();
             this.reader.onload = () => {
                 this.divImg.textContent = this.filename;
-                this.displayImg.src = this.reader.result;
+                this.displayImg.src = this.reader.result as string;
                 this.displayImg.style.display = "inline-block"
             };
 
@@ -105,6 +105,7 @@ namespace BlackCat {
                     this.displayImg.src = ""
                     this.displayImg.style.display = "none"
                     return
+
                 }
                 var regex = /\.(jpg|png|jpeg)+$/;
                 var current = regex.test(this.inputImg.files[0].name)

@@ -33,6 +33,7 @@ namespace BlackCat {
         modifyNameView: ModifyNameView; //修改昵称
         modifySexView: ModifySexView; //修改性别
         modifyAreaView: ModifyAreaView;//修改地区
+        modifyTransactionFeeView: ModifyTransactionFeeView;//修改手续费
         modifyNetworkLineView: ModifyNetworkLineView;//修改网络线路
 
         securityCenterView: SecurityCenterView; //安全中心
@@ -293,6 +294,14 @@ namespace BlackCat {
                     }
                     this.modifyAreaView.start()
                     break;
+                case "ModifyTransactionFeeView":
+                    console.log("[BlaCat]", '[ViewMgr]', '显示修改手续费(' + type + ') ...')
+                    if (!this.modifyTransactionFeeView) {
+                        this.modifyTransactionFeeView = new ModifyTransactionFeeView()
+                        this.views[type] = this.modifyTransactionFeeView
+                    }
+                    this.modifyTransactionFeeView.start()
+                    break;
                 case "ModifyNetworkLineView":
                     console.log("[BlaCat]", '[ViewMgr]', '显示修改网络线路(' + type + ') ...')
                     if (!this.modifyNetworkLineView) {
@@ -401,6 +410,18 @@ namespace BlackCat {
                             v.update()
                         }
                         break;
+                }
+            }
+        }
+
+        // 更新余额
+        updateBalance() {
+            console.log("[BlaCat]", '[ViewMgr]', 'updateBalance ...')
+
+            for (let className in this.views) {
+                let v = this.views[className];
+                if (v.__proto__["updateBalance"]) {
+                    v.updateBalance()
                 }
             }
         }

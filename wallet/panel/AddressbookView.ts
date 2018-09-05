@@ -190,8 +190,8 @@ namespace BlackCat {
                         Main.viewMgr.payTransferView.show()
                         PayTransferView.contact = addrs[i]
                         Main.viewMgr.payTransferView.gatSelect()
-                        AddressbookView.select=""
-                        
+                        AddressbookView.select = ""
+
                     } else {
                         this.hidden()
                         AddressbookDetailsView.refer = "AddressbookView"

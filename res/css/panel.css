@@ -139,7 +139,7 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 
 /*转账弹窗 GAS提取 兑换*/
 .pc_transfertype{width: 270px;height: 25px;font-size: 14px;line-height: 25px;margin: 0 auto;padding: 10px 0; color: #9c9ead;position: relative;}
-.pc_transfer input{width: 230px;height: 25px;margin:auto auto;text-align: left;padding: 0 35px 0 5px;text-align: center}
+.pc_transfer .pc_transferbox input{width: 230px;height: 25px;margin:auto auto;text-align: left;padding: 0 35px 0 5px;text-align: center}
 .pc_transfer .pc_transaddress{padding: 0 35px 0 5px;width: 230px;}
 .pc_transfer .pc_transferaddressbook{position: absolute;top: 14px;right: 3px;line-height: 1;font-size: 20px;color: #30313b;cursor: pointer;}
 .pc_transfername{position: absolute;top:10px;left: 5px;color: #30313b;display: none}
@@ -158,28 +158,25 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 .pc_old .pc_token{font-size: 14px}
 .pc_haveamounts{width: 80%;margin: 0 auto;font-size: 13px;color: #999;line-height: 2}
 .pc_haveamounts span{float: right;}
-.pc_haveamountssgas span,.pc_haveamountsgas span{display: block;}
-.pc_haveamountssgas>div:first-child span{color: #93304b}
-.pc_haveamountssgas>div:last-child span{color: #309368}
-.pc_haveamountssgas>div:first-child span::before{content: "-";color: #93304b}
-.pc_haveamountssgas>div:last-child span::before{content: "+";color: #309368}
-.pc_haveamountsgas>div:first-child span{color: #309368}
-.pc_haveamountsgas>div:last-child span{color: #93304b}
-.pc_haveamountsgas>div:first-child span::before{content: "+";color: #309368}
-.pc_haveamountsgas>div:last-child span::before{content: "-";color: #93304b}
 
-.pc_speed{width: 80%;margin: 5px auto;display: none}
+.pc_haveamounts .pc_income{color: #999}
+.pc_haveamounts .pc_income span{color: #309368}
+.pc_haveamounts .pc_expenditure{color: #999}
+.pc_haveamounts .pc_expenditure span{color: #93304b}
+
+
+.pc_speed{width: 80%;margin: 5px auto;}
 .pc_speed ul{height: 20px;line-height: 20px}
 .pc_speed li{font-size: 12px;color: #999;float: left;width: 28px;text-align: center}
-.pc_speed li:first-child{margin-left: 60px;}
+.pc_speed li:first-child{margin-left: 24%;}
 .pc_speed li:nth-child(2){margin-left:9%;}
 .pc_speed li:last-child{float: right;margin-right: -3px;}
 .pc_speed>div{display: block;clear: both;position: relative;height: 20px;font-size: 12px;color: #999;line-height: 20px;margin-top: 5px}
 .pc_speed input{width: auto;margin: auto;display: inline-block; background-color: #1f2228;border: none;outline: none;cursor: pointer;-webkit-appearance: none;position: absolute}
-.pc_speed input[type=radio]{-webkit-appearance:none;width: 20px;height: 20px;border-radius: 50%;left: 65px;}
+.pc_speed input[type=radio]{-webkit-appearance:none;width: 20px;height: 20px;border-radius: 50%;left: 65px;font-size: 18px;line-height: 20px;}
 .pc_speed input[type=range]{height: 5px;width: 55%;margin-top: 8px;right: 0;}
 .pc_speed input[type=range]::-webkit-slider-thumb {-webkit-appearance: none;height: 20px;width: 20px;margin-top: -2px;background: #1f2228;border-radius: 50%;border: solid 2px #1f2228;}
-.pc_speed input[type=radio]::before{display: none;color: #666b7b}
+.pc_speed input[type=radio]::before{display: none;color: #666b7b;margin-left: -1px }
 .pc_speed input[type=radio]:checked::before{display: block;}
 .pc_speed input[type=range].pc_active::-webkit-slider-thumb{background:#1f2228 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAABS2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIi8+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo8P3hwYWNrZXQgZW5kPSJyIj8+IEmuOgAAAdtJREFUOI191E9LVFEYBvDfHMcZlcRqKEqd0VBIW8TowqY2mtKilZuwdS2E6CP0QVq2qU20aZsURQTSpqBFFkSlMkE2ymhZ/hlsMXcGvc74wOGe8z7P+9z3vPecm5i9e08DTOJm9MxFsUW8wGM8jyckY+sh3MdEA/PBaMziJe5goUaGfcJxvG1iEsdEpB2PVzSEp+iMZ3z+9EGptALa2zrkRws1qjPKKWAhIIEH6Iqb7O7sWPz+xXp5zXp5zcnMqbikK8pNBExFrodQLC6qVCoglUrr6e1vJCtgKmCmEQvLS1/r877+QS0tLc2kM0H1Ex9CubxqY6MMkslWudxAMxOYTCLbuJpv9XkIwft386C7J6e7py8uzwZsxaOVyq4fxaX6ent7S6n0025l15mzDd8roHgoGFqMX73u0uWJeiydbpMfKQghxOWwHFQP1gEkEgmtral6j0II8iMFbW3tDavBm4BHzdi10i8wfCHv+IlMMxk8DHiG+Ubs6uqKXG5Ab/bcUSbzmAvYwy2U97Obf37r6Djm/PDFo0zKuI29WucWMI2NmuLvv0350abNFWmn8ZGDt/8VxqJSZTKnpVLpo7YzFuXg8P9oAVdwDTdU72EW21jCazzBnGpL6vgPloV3T27lLnYAAAAASUVORK5CYII=) no-repeat center center }
 .pc_speed .pc_ellipsis{position: absolute;left: 84px;top: -2px}
@@ -277,8 +274,8 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 
 /*交易详情*/
 .pc_tradeconfirm{background-color: #343643; position: fixed;top: 0;right: 0;z-index: 9;}
-.pc_tradeconfirmbut{text-align: center;position: fixed;right: 0;top: 587px;width: 375px;height: 80px; background:#343643;box-shadow: 2px -2px 1px #000}
-.pc_tradeconfirmbut button{width: 30%;height: 40px;background-color: #c8ab73;font-size: 20px;color: #5f491f;margin: auto 25px;border-radius: 5px;margin-top: 20px;box-shadow: inset 0 -5px 30px rgba(50, 0, 0, 0.45);}
+.pc_tradeconfirmbut{text-align: center;position: fixed;right: 0;top: 517px;width: 375px;height: 150px; background:#343643;box-shadow: 2px -2px 1px #000}
+.pc_tradeconfirmbut button{width: 30%;height: 40px;background-color: #c8ab73;font-size: 20px;color: #5f491f;margin: auto 25px;border-radius: 5px;margin-top: 15px;box-shadow: inset 0 -5px 30px rgba(50, 0, 0, 0.45);}
 
 
 /*钱包交易列表*/
@@ -348,20 +345,26 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_exchangedetail .pc_addressbookdet{margin: 20px auto;}
 
 /*合约交易详情*/
-.pc_switchbox{height: 30px;line-height: 50px;color: #cdcedb; font-size: 14px;text-indent: -4em}
-.pc_switchbox label{font-size: 12px;color: 868686}
-.pc_trust .pc_tradeconfirmbut{height: 110px;top: 557px}
-.pc_trust .pc_switch{position: absolute;top:5px}
-.pc_switch{width: 55px;height: 25px;line-height: 25px;background-color: #424453;border-radius: 50px;float: right;margin-top: 8px;cursor: pointer; position: relative;-webkit-transition: all 0.3s;transition: all 0.3s}
-.pc_switch span{width: 20px;height: 20px;background-color: #2a2c3b;border-radius: 50%;position: absolute;top: 2.5px;left: 5px;-webkit-transition: all 0.3s 0.1s;transition: all 0.3s 0.1s}
+.pc_switchbox{line-height: 30px;color: #cdcedb; font-size: 14px;position: relative;width: 80%;margin: 0px auto;text-align: left}
+.pc_switchbox p{font-size: 12px;color: #868686;width: 110%;margin:5px auto auto -5%;line-height: 1;text-align: center}
+.pc_trust .pc_tradeconfirmbut{height: 200px;top: 467px}
+.pc_trust .pc_tradeconfirmbut_fee{height: 150px;top: 517px}
+.pc_trust .pc_switch{position: absolute;top:-5px;margin-left: 10px;}
+.pc_switch{width: 45px;height: 20px;line-height: 20px;background-color: #424453;border-radius: 50px;float: right;margin-top: 10px;cursor: pointer; position: relative;-webkit-transition: all 0.3s;transition: all 0.3s}
+.pc_switch span{width: 15px;height: 15px;background-color: #2a2c3b;border-radius: 50%;position: absolute;top: 2.5px;left: 5px;-webkit-transition: all 0.3s 0.1s;transition: all 0.3s 0.1s}
 .pc_switch_active{background-color: #c8ab73;}
-.pc_switch_active span{left: 30px;}
+.pc_switch_active span{left: 25px;}
 .pc_contract{float: right;text-indent: -3em;font-size: 12px;line-height:0;margin-top: 25px;margin-right: 5px;cursor: pointer;}
+
 /*信任合约*/
 .pc_trustcontract li{cursor: auto}
 .pc_trustcontract .pc_liftinfo{max-width: 65%;}
 .pc_trustcontract .pc_listname{line-height: 1.2}
 .pc_trustcontract .pc_method{line-height: 1;font-size: 12px;height: 25px;overflow : hidden;text-overflow:ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;white-space:normal;}
+.pc_tradeconfirmbut .pc_speed{text-align: left;margin: 10px auto 0;}
+.pc_tradeconfirmbut .pc_speed li:first-child{margin-left: 21%;}
+.pc_tradeconfirmbut .pc_speed li:nth-child(2){margin-left: 13%;}
+
 /* 交易表单详情 */
 .pc_detail{padding:45px 0;}
 .pc_detail li{clear: both;padding: 10px 20px;border-bottom: 1px solid #424453;position: relative; color: #a7a8ba}
@@ -394,9 +397,12 @@ div.pc_modifysex_active{background-color: #f3ce87;color: #33353e;border-color: #
 .pc_modifyimg{text-align: center}
 .pc_modifyimg>div{width:68%;margin: 40px auto 20px;padding: 0 1%; text-align: center;border: 1px solid #ccc;height: 25px;line-height: 25px;color: #ccc;font-size: 14px}
 .pc_modifyimg img{width: 100px;height: 100px;border-radius: 50%;display: none}
+.pc_modifyfee{margin-top: 70px}
+.pc_modifyfee .pc_speed li:nth-child(1){margin-left: 21%}
+.pc_modifyfee .pc_speed li:nth-child(2){margin-left: 13%}
 .pc_myinfolist .pc_payheighet{position: relative;left: auto;line-height: 60px;display:inline-block;margin-left: 3px;color: #ccc;font-size: 14px}
 .pc_mmyinfoarea{display: inline-block}
-.pc_spannet{height: 30px;line-height: 25px;font-size: 12px;padding-right: 10px}
+.pc_spannet{height: 30px;line-height: 25px;font-size: 12px;padding-right: 10px;margin-top: 3px}
 .pc_spannet>div{display: inline-block;font-size: 12px;}
 .pc_myinfolist .pc_spannet_clis{position: absolute;right: 21px;bottom: 5px}
 .pc_moifynet .pc_divnettype{margin-top: 70px;text-align: center}

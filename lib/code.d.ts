@@ -58,7 +58,7 @@ declare namespace BlackCat {
         getNetType(): number;
         invokescript(params: any): Promise<tools.Result>;
         makeRawTransaction(params: any, callback: any): Promise<void>;
-        private _makeRawTransaction(params, trust?, callback?);
+        private _makeRawTransaction(params, trust, net_fee, callback?);
         makeRecharge(params: any, callback: any): Promise<void>;
         makeGasTransfer(params: any, callback?: any): Promise<void>;
         makeGasTransferMulti(params: any, callback?: any): Promise<void>;
@@ -102,6 +102,41 @@ declare namespace BlackCat {
         private static setTsOffset(loginParam);
         private static getUrlHead();
         static randomSort(arr: any, newArr: any): any;
+    }
+}
+declare namespace BlackCat {
+    class ComponentBase {
+        objCreate(tag: string): HTMLElement;
+        ObjAppend(o: any, tag: HTMLElement): void;
+        objRemove(o: any, tag: HTMLElement): void;
+        parentAdd(tag: HTMLElement): void;
+        parentRemove(tag: HTMLElement): void;
+        bodyAppend(tag: HTMLElement): void;
+        bodyRemove(tag: HTMLElement): void;
+    }
+}
+declare namespace BlackCat {
+    class NetFeeComponent extends ComponentBase {
+        private parentDiv;
+        private mainDiv;
+        private mainDiv_text;
+        private inputFree;
+        private inputcharge;
+        private net_fee;
+        private net_fees;
+        private net_fee_show_rate;
+        private callback;
+        constructor(parentDiv: any, callback: any, net_fees?: Array<string>);
+        setFeeDefault(net_fee?: string): void;
+        setNetFeeShowRate(rate?: number): void;
+        createDiv(): void;
+        hidden(): void;
+        show(): void;
+        private getNetFeesIdx(net_fee);
+        private dofree();
+        private dospeed(net_fee?);
+        private getNetFeeShow();
+        private showNetFee();
     }
 }
 declare namespace BlackCat {
@@ -420,7 +455,9 @@ declare namespace BlackCat {
             myinfo_sex_2: string;
             myinfo_uid: string;
             myinfo_area: string;
-            modifyArea_empty: string;
+            myinfo_fee: string;
+            myinfo_fee_empty: string;
+            myinfo_area_empty: string;
             myinfo_security: string;
             myinfo_set: string;
             myinfo_logout: string;
@@ -438,6 +475,8 @@ declare namespace BlackCat {
             modifySex_succ: string;
             modifyArea: string;
             modifyArea_succ: string;
+            modifyFee: string;
+            modifyFee_succ: string;
             modifyNet: string;
             modifyNet_succ: string;
             modifyNet_node_err: string;
@@ -479,6 +518,7 @@ declare namespace BlackCat {
             pay_transferCountError: string;
             pay_transferDoSucc: string;
             pay_transferDoFail: string;
+            pay_transferGasNotEnough: string;
             pay_wallet: string;
             pay_refresh: string;
             pay_wallet_detail: string;
@@ -496,7 +536,10 @@ declare namespace BlackCat {
             pay_makeMintGasNotEnough: string;
             pay_makeMintDoFail: string;
             pay_makeMintDoFail2: string;
+            pay_makeRefundSgasNotEnoughUtxo: string;
             pay_makeRefundSgasNotEnough: string;
+            pay_makeRefundGasFeeNotEnough: string;
+            pay_makeRefundGasLessThanFee: string;
             pay_makeRefundDoFail: string;
             pay_makeRefundDoFail2: string;
             pay_makeRefundGetScriptFail: string;
@@ -513,6 +556,7 @@ declare namespace BlackCat {
             pay_walletDetail_notice: string;
             pay_walletDetail_export: string;
             pay_makerawtrans_err: string;
+            pay_makerawtrans_fee_less: string;
             addressbook_title: string;
             addressbook_search: string;
             addressbook_det_title: string;
@@ -549,6 +593,9 @@ declare namespace BlackCat {
             pay_transCount_count: string;
             pay_transCount_inputCount: string;
             pay_transCount_err: string;
+            pay_transCountGAS: string;
+            pay_transCountSGAS: string;
+            pay_transCountSGASOLD: string;
             pay_transCountSGAS2GAS: string;
             pay_transCountGAS2SGAS: string;
             pay_transCountSGASOLD2OLD: string;
@@ -938,7 +985,9 @@ declare namespace BlackCat {
             myinfo_sex_2: string;
             myinfo_uid: string;
             myinfo_area: string;
-            modifyArea_empty: string;
+            myinfo_fee: string;
+            myinfo_fee_empty: string;
+            myinfo_area_empty: string;
             myinfo_security: string;
             myinfo_set: string;
             myinfo_logout: string;
@@ -956,6 +1005,8 @@ declare namespace BlackCat {
             modifySex_succ: string;
             modifyArea: string;
             modifyArea_succ: string;
+            modifyFee: string;
+            modifyFee_succ: string;
             modifyNet: string;
             modifyNet_succ: string;
             modifyNet_node_err: string;
@@ -997,6 +1048,7 @@ declare namespace BlackCat {
             pay_transferCountError: string;
             pay_transferDoSucc: string;
             pay_transferDoFail: string;
+            pay_transferGasNotEnough: string;
             pay_wallet: string;
             pay_refresh: string;
             pay_wallet_detail: string;
@@ -1014,7 +1066,10 @@ declare namespace BlackCat {
             pay_makeMintGasNotEnough: string;
             pay_makeMintDoFail: string;
             pay_makeMintDoFail2: string;
+            pay_makeRefundSgasNotEnoughUtxo: string;
             pay_makeRefundSgasNotEnough: string;
+            pay_makeRefundGasFeeNotEnough: string;
+            pay_makeRefundGasLessThanFee: string;
             pay_makeRefundDoFail: string;
             pay_makeRefundDoFail2: string;
             pay_makeRefundGetScriptFail: string;
@@ -1031,6 +1086,7 @@ declare namespace BlackCat {
             pay_walletDetail_notice: string;
             pay_walletDetail_export: string;
             pay_makerawtrans_err: string;
+            pay_makerawtrans_fee_less: string;
             addressbook_title: string;
             addressbook_search: string;
             addressbook_det_title: string;
@@ -1067,6 +1123,9 @@ declare namespace BlackCat {
             pay_transCount_count: string;
             pay_transCount_inputCount: string;
             pay_transCount_err: string;
+            pay_transCountGAS: string;
+            pay_transCountSGAS: string;
+            pay_transCountSGASOLD: string;
             pay_transCountSGAS2GAS: string;
             pay_transCountGAS2SGAS: string;
             pay_transCountSGASOLD2OLD: string;
@@ -1423,11 +1482,21 @@ declare namespace BlackCat {
     }
 }
 declare namespace BlackCat {
+    class ModifyTransactionFeeView extends ViewBase {
+        private netFeeCom;
+        private net_fee;
+        create(): void;
+        toRefer(): void;
+        private setSpeed();
+    }
+}
+declare namespace BlackCat {
     class MyInfoView extends ViewBase {
         private myImg;
         private myName;
         private mySex;
         private myArea;
+        private myFee;
         private myNet_nodes;
         private myNet_clis;
         private divHeight_nodes;
@@ -1438,12 +1507,14 @@ declare namespace BlackCat {
         private getName();
         private getUid();
         private getSex();
+        private getFee();
         private getArea();
         private doLogout();
         private makeLogout();
         private modifyImg();
         private modifyName();
         private modifySex();
+        modifyFee(): void;
         modifyArea(): void;
         private getNodeHeight(type);
         updateNodeInfo(): void;
@@ -1524,17 +1595,26 @@ declare namespace BlackCat {
         private inputTransferAddr;
         private divTransferAddr;
         private labelName;
+        private divHaveAmounts;
+        private divHaveGasAmounts;
+        private spanHaveGasAmounts;
+        private netFeeCom;
         private gasBalance;
         private toaddress;
         static address: string;
         static contact: contact;
+        inputCount: HTMLInputElement;
+        net_fee: string;
         reset(): void;
         start(): void;
         create(): void;
         toRefer(): void;
         private getAddress();
+        private doinputchange();
         gatSelect(): void;
         private doTransfer();
+        private netFeeChange(net_fee);
+        updateBalance(): void;
     }
 }
 declare namespace BlackCat {
@@ -1731,6 +1811,7 @@ declare namespace BlackCat {
         modifyNameView: ModifyNameView;
         modifySexView: ModifySexView;
         modifyAreaView: ModifyAreaView;
+        modifyTransactionFeeView: ModifyTransactionFeeView;
         modifyNetworkLineView: ModifyNetworkLineView;
         securityCenterView: SecurityCenterView;
         trustContractView: TrustContractView;
@@ -1748,6 +1829,7 @@ declare namespace BlackCat {
         change(type: string): void;
         removeAll(): void;
         update(): void;
+        updateBalance(): void;
     }
 }
 declare namespace BlackCat {
@@ -1761,9 +1843,12 @@ declare namespace BlackCat {
 declare namespace BlackCat {
     class ViewTransConfirm extends ViewBase {
         static list: walletLists;
+        static isTrustFeeLess: boolean;
         private divConfirmSelect;
         private divTrust;
         private trust;
+        private netFeeCom;
+        private net_fee;
         constructor();
         start(): void;
         create(): void;
@@ -1777,6 +1862,8 @@ declare namespace BlackCat {
     class ViewTransConfirmGas extends ViewBase {
         static list: walletLists;
         private divConfirmSelect;
+        private netFeeCom;
+        private net_fee;
         constructor();
         start(): void;
         create(): void;
@@ -1790,17 +1877,14 @@ declare namespace BlackCat {
     class ViewTransCount extends ViewBase {
         private selectTransfertype;
         private divtransfername;
-        private divHaveAmounts;
-        private spanHaveSGasAmounts;
-        private spanHaveGasAmounts;
         private labeltransfername1;
         private labeltransfername2;
-        private divSpeed;
+        private divHaveAmounts;
         private divHaveGasAmounts;
+        private spanHaveGasAmounts;
         private divHaveSGasAmounts;
-        private inputFree;
-        private inputcharge;
-        private divServiceCharge;
+        private spanHaveSGasAmounts;
+        private netFeeCom;
         static transTypename1: string;
         static transTypename2: string;
         static transBalances: string;
@@ -1809,12 +1893,13 @@ declare namespace BlackCat {
         start(): void;
         create(): void;
         toRefer(): void;
-        private dofree();
-        private dospeed();
         private dotransfertype();
         private doinputchange();
         private doConfirm();
-        doGetBalances(): Promise<void>;
+        private showNetFee();
+        private showNetFeeSGAS2GAS();
+        private netFeeChange(net_fee);
+        updateBalance(): void;
     }
 }
 declare namespace BlackCat {
@@ -2052,7 +2137,7 @@ declare namespace BlackCat {
         static bindWallet(uid: string, token: string, wallet: string): Promise<any>;
         static getWalletFile(uid: string, token: string): Promise<any>;
         static getEntergameParam(uid: string, token: string, g_id: string): Promise<any>;
-        static addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust?: string): Promise<any>;
+        static addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust?: string, net_fee?: string): Promise<any>;
         static getWalletListss(uid: string, token: string, page: number, num: number, net_type: number): Promise<any>;
         static walletNotify(uid: string, token: string, txid: string, net_type: number): Promise<any>;
         static getAppWalletNotifys(uid: string, token: string, g_id: string, net_type: number): Promise<any>;
@@ -2072,6 +2157,7 @@ declare namespace BlackCat {
         static modUserName(uid: string, token: string, name: string): Promise<any>;
         static modUserSex(uid: string, token: string, sex: string): Promise<any>;
         static modUserArea(uid: string, token: string, region: string): Promise<any>;
+        static modUserFee(uid: string, token: string, service_charge: string): Promise<any>;
         static forgetPassByPhone(phone: string, code: string, new_pwd: string): Promise<any>;
         static forgetPassByEmail(email: string, code: string, new_pwd: string): Promise<any>;
         static getTrustNncs(uid: string, token: string, g_id: string): Promise<any>;
@@ -2115,22 +2201,19 @@ declare namespace BlackCat.tools {
         }>;
         static makeTran(utxos: {
             [id: string]: UTXO[];
-        }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8, net_fee?: Neo.Fixed8): Result;
+        }, targetaddr: string, assetid: string, sendcount: Neo.Fixed8, net_fee?: Neo.Fixed8, left_fee?: number, split?: boolean): Result;
         static makeTranMulti(utxos: {
             [id: string]: UTXO[];
         }, targets: Array<{
             toaddr: string;
             count: string;
-        }>, assetid: string): Result;
-        static rawTransaction(targetaddr: string, asset: string, count: string): Promise<Result>;
-        static rawTransactionMulti(targets: Array<any>, asset: string): Promise<Result>;
+        }>, assetid: string, net_fee?: Neo.Fixed8): Result;
+        static rawTransaction(targetaddr: string, asset: string, count: string, net_fee?: Neo.Fixed8): Promise<Result>;
+        static rawTransactionMulti(targets: Array<any>, asset: string, net_fee?: Neo.Fixed8): Promise<Result>;
         static contractInvokeTrans_attributes(script: Uint8Array): Promise<Result>;
         static contractInvokeTrans(script: Uint8Array): Promise<Result>;
         static nep5Transaction(address: string, tatgeraddr: any, asset: string, amount: string): Promise<Result>;
         static getsgasAssets(id_SGAS?: string): Promise<{
-            [id: string]: UTXO[];
-        }>;
-        static getSgasAssetsByAmount(id_SGAS: string, amount: number): Promise<{
             [id: string]: UTXO[];
         }>;
     }
@@ -2199,6 +2282,7 @@ declare namespace BlackCat {
         qq: string;
         icon: string;
         sex: string;
+        service_charge: string;
     }
     class TransInfo {
         assetid: string;
@@ -2313,7 +2397,7 @@ declare namespace BlackCat.tools {
         open(filepass: string): Promise<boolean>;
         isOpen(): boolean;
         invokescript(params: any): Promise<Result>;
-        makeRawTransaction(params: any, trust?: string): Promise<Result>;
+        makeRawTransaction(params: any, trust: string, net_fee: string): Promise<Result>;
         makeRecharge(params: any): Promise<Result>;
         closeWallet(): void;
     }

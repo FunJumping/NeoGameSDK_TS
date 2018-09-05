@@ -1,7 +1,5 @@
-namespace BlackCat.tools
-{
-    export class WWW
-    {
+namespace BlackCat.tools {
+    export class WWW {
         // Nel
         // static api: string = "https://api.nel.group/api/testnet";
         // static apiaggr: string = "https://apiaggr.nel.group/api/testnet";
@@ -12,30 +10,26 @@ namespace BlackCat.tools
         // static apiaggr: string;
         static api_clis: string;
 
-        static makeRpcUrl(url: string, method: string, ..._params: any[])
-        {
+        static makeRpcUrl(url: string, method: string, ..._params: any[]) {
             var urlout = url + "?jsonrpc=2.0&id=1&method=" + method + "&params=[";
-            for (var i = 0; i < _params.length; i++)
-            {
-                urlout += JSON.stringify(_params[ i ]);
+            for (var i = 0; i < _params.length; i++) {
+                urlout += JSON.stringify(_params[i]);
                 if (i != _params.length - 1)
                     urlout += ",";
             }
             urlout += "]";
             return urlout;
         }
-        static makeRpcPostBody(method: string, ..._params: any[]): {}
-        {
+        static makeRpcPostBody(method: string, ..._params: any[]): {} {
             var body = {};
-            body[ "jsonrpc" ] = "2.0";
-            body[ "id" ] = 1;
-            body[ "method" ] = method;
+            body["jsonrpc"] = "2.0";
+            body["id"] = 1;
+            body["method"] = method;
             var params = [];
-            for (var i = 0; i < _params.length; i++)
-            {
-                params.push(_params[ i ]);
+            for (var i = 0; i < _params.length; i++) {
+                params.push(_params[i]);
             }
-            body[ "params" ] = params;
+            body["params"] = params;
             return body;
         }
 
@@ -68,24 +62,23 @@ namespace BlackCat.tools
             var str = WWW.makeRpcUrl(nodes_url, "getblockcount");
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            var r = json[ "result" ];
-            var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
+            var r = json["result"];
+            var height = parseInt(r[0]["blockcount"] as string) - 1;
             return height;
         }
 
-        static async  api_getHeight_clis(clis_url: string = WWW.api_clis)
-        {
+        static async  api_getHeight_clis(clis_url: string = WWW.api_clis) {
             var str = WWW.makeRpcUrl(clis_url, "getblockcount");
 
             str += "&uid=" + Main.randNumber
 
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            var r = json[ "result" ];
-            var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
+            var r = json["result"];
+            var height = parseInt(r[0]["blockcount"] as string) - 1;
             return height;
         }
-        
+
         // static async api_getBlockInfo(index: number)
         // {
         //     var str = WWW.makeRpcUrl(WWW.api, "getblocktime");
@@ -95,20 +88,18 @@ namespace BlackCat.tools
         //     var height = parseInt(r[ 0 ][ "blockcount" ] as string) - 1;
         //     return height;
         // }
-        static async api_getAllAssets()
-        {
+        static async api_getAllAssets() {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "getallasset");
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            var r = json[ "result" ];
+            var r = json["result"];
             return r;
         }
-        static async api_getUTXO(address: string)
-        {
+        static async api_getUTXO(address: string) {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "getutxo", address);
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            var r = json[ "result" ];
+            var r = json["result"];
             return r;
         }
 
@@ -116,7 +107,7 @@ namespace BlackCat.tools
             var postdata = WWW.makeRpcPostBody("getutxostopay", address, asset, value, fromMax);
             var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
-            var r = json[ "result" ];
+            var r = json["result"];
             return r;
         }
         // static async api_getnep5Balance(address: string)
@@ -146,21 +137,19 @@ namespace BlackCat.tools
         //     return r;
         // }
 
-        static async api_getBalance(address: string)
-        {
+        static async api_getBalance(address: string) {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "getbalance", address);
             var value = await fetch(str, { "method": "get" });
             var json = await value.json();
-            var r = json[ "result" ];
+            var r = json["result"];
             return r;
         }
 
-        static async getNep5Asset(asset: string)
-        {
+        static async getNep5Asset(asset: string) {
             var postdata = WWW.makeRpcPostBody("getnep5asset", asset);
             var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
-            var r = json[ "result" ][ 0 ];
+            var r = json["result"][0];
             return r;
         }
 
@@ -173,8 +162,7 @@ namespace BlackCat.tools
         //     return r;
         // }
 
-        static async cli_postRawTransaction(data: Uint8Array): Promise<boolean>
-        {
+        static async cli_postRawTransaction(data: Uint8Array): Promise<boolean> {
             var cli = 0;
             if (WWW.api_clis && WWW.api_clis != "") {
                 cli = 1;
@@ -188,16 +176,15 @@ namespace BlackCat.tools
             if (cli == 1) postdata["uid"] = Main.randNumber
             var result = await fetch(api_url, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
-            var r = json[ "result" ][ 0 ] as boolean;
+            var r = json["result"][0] as boolean;
             return r;
         }
 
-        static async api_postRawTransaction(data: Uint8Array): Promise<boolean>
-        {
+        static async api_postRawTransaction(data: Uint8Array): Promise<boolean> {
             var postdata = WWW.makeRpcPostBody("sendrawtransaction", data.toHexString());
             var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
-            var r = json[ "result" ][ 0 ] as boolean;
+            var r = json["result"][0] as boolean;
             return r;
         }
 
@@ -246,10 +233,9 @@ namespace BlackCat.tools
         //     var r = json[ "result" ] as string;
         //     return r;
         // }
-        
+
         // cli调用invoke合约
-        static async cli_getInvokescript(scripthash: Uint8Array): Promise<any>
-        {
+        static async cli_getInvokescript(scripthash: Uint8Array): Promise<any> {
             var cli = 0;
             if (WWW.api_clis && WWW.api_clis != "") {
                 cli = 1;
@@ -265,41 +251,38 @@ namespace BlackCat.tools
             }
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            if (json[ "result" ] == null)
+            if (json["result"] == null)
                 return null;
-            var r = json[ "result" ][ 0 ]
+            var r = json["result"][0]
             return r;
         }
 
         // nel调用invoke合约
-        static async rpc_getInvokescript(scripthash: Uint8Array): Promise<any>
-        {
+        static async rpc_getInvokescript(scripthash: Uint8Array): Promise<any> {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "invokescript", scripthash.toHexString());
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            if (json[ "result" ] == null)
+            if (json["result"] == null)
                 return null;
-            var r = json[ "result" ][ 0 ]
+            var r = json["result"][0]
             return r;
         }
         //获得交易详情
-        static async getrawtransaction(txid: string)
-        {
+        static async getrawtransaction(txid: string) {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "getrawtransaction", txid);
             var result = await fetch(str, { "method": "get" });
             var json = await result.json();
-            if (!json[ "result" ])
+            if (!json["result"])
                 return null;
-            var r = json[ "result" ][ 0 ]
+            var r = json["result"][0]
             return r;
         }
 
-        static async api_getcontractstate(scriptaddr: string)
-        {
+        static async api_getcontractstate(scriptaddr: string) {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "getcontractstate", scriptaddr);
             var value = await fetch(str, { "method": "get" });
             var json = await value.json();
-            var r = json[ "result" ][ 0 ];
+            var r = json["result"][0];
             return r;
         }
 

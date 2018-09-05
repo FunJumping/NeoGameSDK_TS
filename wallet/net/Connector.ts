@@ -21,7 +21,7 @@ namespace BlackCat {
             try {
                 this.hosts.forEach(
                     host => {
-                        let url_head = host.substr(0,2) === "//" ? Main.urlHead : ""
+                        let url_head = host.substr(0, 2) === "//" ? Main.urlHead : ""
                         let url = url_head + host + this.check_params
 
                         fetch(url).then(
@@ -40,7 +40,7 @@ namespace BlackCat {
                                                     }
                                                 }
                                             }
-                                            catch(e) { }
+                                            catch (e) { }
                                             this.fetch_error.push(host)
                                             return
                                         case "api":

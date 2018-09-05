@@ -12,6 +12,8 @@ namespace BlackCat {
         qq: string = '';
         icon: string = '';
         sex: string = "";
+        service_charge: string = "";
+
     }
 
     export class TransInfo {

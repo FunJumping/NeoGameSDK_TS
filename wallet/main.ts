@@ -11,7 +11,7 @@ namespace BlackCat {
 
         private static isCreated: boolean;
 
-        static readonly platName = "Bla Cat"
+        static readonly platName = "BlaCat"
         static platLoginType = 0; // 0，SDK；1：PAGE
         static randNumber: number; // 随机数
         static tsOffset: number; // 和服务器时间差
@@ -281,13 +281,23 @@ namespace BlackCat {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
+                // 重置状态（非信任合约、信任合约手续费够）
+                ViewTransConfirm.isTrustFeeLess = false
+
                 // 检查是否有未信任合约
                 let unTrust = Main.getUnTrustNnc(params);
                 if (unTrust.length == 0) {
-                    // 信任合约，直接操作
-                    console.log("[BlaCat]", '[main]', 'makeRawTransaction, trust nnc ...')
-                    this._makeRawTransaction(params, "0", callback)
-                    return
+                    // 信任合约
+                    if (Main.viewMgr.payView.gas > Number(Main.user.info.service_charge) ) {
+                        // 手续费足够，直接操作
+                        console.log("[BlaCat]", '[main]', 'makeRawTransaction, trust nnc ...')
+                        this._makeRawTransaction(params, "0", Main.user.info.service_charge, callback)
+                        return
+                    }
+                    else {
+                        // 信任合约，不够手续费
+                        ViewTransConfirm.isTrustFeeLess = true
+                    }
                 }
 
                 if (Main.viewMgr.mainView.isHidden()) {
@@ -318,19 +328,22 @@ namespace BlackCat {
 
                 ViewTransConfirm.list = list;
                 ViewTransConfirm.refer = ""
-                ViewTransConfirm.callback_params = params;
+                ViewTransConfirm.callback_params = params
 
-                ViewTransConfirm.callback = async (params, trust) => {
+                ViewTransConfirm.callback = async (params, trust, net_fee) => {
                     console.log("[BlaCat]", '[main]', 'makeRawTransaction交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
+                    // var net_fee = "0.00000001" // for test
+                    // var net_fee = ViewTransConfirm.net_fee
+
                     setTimeout(async () => {
                         try {
-                            await this._makeRawTransaction(params, trust, Main.transCallback)
+                            await this._makeRawTransaction(params, trust, net_fee, Main.transCallback)
                         }
                         catch (e) {
-                            console.log("[BlaCat]", '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'error => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust, net_fee, Main.transCallback) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'Main.transCallback =>', Main.transCallback, 'error => ', e.toString())
                         }
                         Main.viewMgr.viewLoading.remove()
                     }, 300);
@@ -384,19 +397,19 @@ namespace BlackCat {
             }
         }
         // 对外接口：合约交易的私有函数
-        private async _makeRawTransaction(params, trust: string = "0", callback = null) {
+        private async _makeRawTransaction(params, trust: string = "0", net_fee: string, callback = null) {
             // 合约交易，延长钱包退出时间
             Main.setLiveTime()
 
             try {
-                var res = await Main.wallet.makeRawTransaction(params, trust);
+                var res = await Main.wallet.makeRawTransaction(params, trust, net_fee);
             }
             catch (e) {
                 var res = new Result()
                 res.err = true
                 res.info = e.toString()
 
-                console.log("[BlaCat]", '[main]', '_makeRawTransaction, Main.wallet.makeRawTransaction(params, trust) error, params => ', params, 'trust =>', trust, 'e => ', e.toString())
+                console.log("[BlaCat]", '[main]', '_makeRawTransaction, Main.wallet.makeRawTransaction(params, trust, net_fee) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
             }
 
             // function回调
@@ -506,6 +519,8 @@ namespace BlackCat {
                 list.cnts = params.count.toString();
                 list.type = "3";
 
+                ViewTransConfirm.isTrustFeeLess = false
+                
                 ViewTransConfirm.list = list;
                 ViewTransConfirm.refer = ""
                 ViewTransConfirm.callback_params = params;
@@ -659,14 +674,17 @@ namespace BlackCat {
                 ViewTransConfirmGas.refer = ""
                 ViewTransConfirmGas.callback_params = params;
 
-                ViewTransConfirmGas.callback = async (params) => {
+                ViewTransConfirmGas.callback = async (params, net_fee) => {
                     console.log("[BlaCat]", '[main]', 'makeGasTransfer交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
+                    // var net_fee = "0.00000001" // for test
+                    // var net_fee = ViewTransConfirmGas.net_fee
+
                     setTimeout(async () => {
                         try {
-                            var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool.id_GAS, params.count);
+                            var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool.id_GAS, params.count, Neo.Fixed8.fromNumber(Number(net_fee)));
                             if (res.err == false) {
                                 params.sbPushString = "transfer"
                                 // 成功，上报
@@ -678,7 +696,9 @@ namespace BlackCat {
                                     params.count.toString(),
                                     "6",
                                     JSON.stringify(params),
-                                    Main.netMgr.type
+                                    Main.netMgr.type,
+                                    "0",
+                                    net_fee
                                 );
                                 Main.appWalletLogId = logRes.data;
                                 // 重新获取钱包记录
@@ -761,7 +781,8 @@ namespace BlackCat {
             // 计算交易金额
             var _count: number = 0;
             for (let i = 0; i < params.length; i++) {
-                _count += Number(params[i].count)
+                // _count += Number(params[i].count)
+                _count = floatNum.plus(_count, Number(params[i].count))
             }
 
             // 判定余额
@@ -815,14 +836,16 @@ namespace BlackCat {
                 ViewTransConfirmGas.refer = ""
                 ViewTransConfirmGas.callback_params = params;
 
-                ViewTransConfirmGas.callback = async (params) => {
+                ViewTransConfirmGas.callback = async (params, net_fee) => {
                     console.log("[BlaCat]", '[main]', 'makeGasTransferMulti交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
+                    // var net_fee = "0.00000001" // for test
+
                     setTimeout(async () => {
                         try {
-                            var res: Result = await tools.CoinTool.rawTransactionMulti(params, tools.CoinTool.id_GAS);
+                            var res: Result = await tools.CoinTool.rawTransactionMulti(params, tools.CoinTool.id_GAS, Neo.Fixed8.fromNumber(Number(net_fee)));
                             if (res.err == false) {
                                 params.map(item => (item.sbPushString = "transfer"))
                                 // 成功，上报
@@ -834,7 +857,9 @@ namespace BlackCat {
                                     _count.toString(),
                                     "6",
                                     JSON.stringify(params),
-                                    Main.netMgr.type
+                                    Main.netMgr.type,
+                                    "0",
+                                    net_fee
                                 );
                                 // 重新获取钱包记录
                                 await Main.viewMgr.payView.doGetWalletLists(1)
@@ -1204,12 +1229,40 @@ namespace BlackCat {
             console.log("[BlaCat]", '[main]', 'doPlatNotiyRefund, utxos_assets => ', utxos_assets);
 
             try {
-                var makeTranRes: Result = tools.CoinTool.makeTran(
-                    utxos_assets,
-                    Main.user.info.wallet,
-                    tools.CoinTool.id_GAS,
-                    Neo.Fixed8.fromNumber(Number(params.cnts))
-                );
+                let net_fee = "0"
+                try {
+                    let p = JSON.parse(params.params)
+                    if (p.hasOwnProperty("net_fee")) {
+                        net_fee = p.net_fee
+                    }
+                }
+                catch (e) {
+
+                }
+
+                var refundcounts = Number(params.cnts) - Number(net_fee)
+                if (refundcounts < Number(net_fee)) {
+                    // 不够支付手续
+
+                    var makeTranRes: Result = tools.CoinTool.makeTran(
+                        utxos_assets,
+                        Main.user.info.wallet,
+                        tools.CoinTool.id_GAS,
+                        Neo.Fixed8.fromNumber(Number(params.cnts)),
+                    );
+                }
+                else {
+                    var makeTranRes: Result = tools.CoinTool.makeTran(
+                        utxos_assets,
+                        Main.user.info.wallet,
+                        tools.CoinTool.id_GAS,
+                        Neo.Fixed8.fromNumber(Number(params.cnts) - Number(net_fee)),
+                        Neo.Fixed8.Zero,
+                        // 余额作为手续费
+                        1
+                    );
+                }
+
             }
             catch (e) {
                 // Main.showErrMsg("生成转换请求（utxo->gas）失败");
@@ -1729,13 +1782,13 @@ namespace BlackCat {
             }
             return num_str;
         }
-
+        // 获取客户端和服务端时间差
         private static setTsOffset(loginParam) {
             let curr_ts = Math.round((new Date()).getTime() / 1000);
             Main.tsOffset = (curr_ts - loginParam.time) * 1000
             console.log('[BlaCat]', '[Main]', 'setTsOffset, tsOffset => ', Main.tsOffset)
         }
-
+        // 获取url主机头
         private static getUrlHead() {
             if (Main.urlHead === undefined) {
                 if (window.location.protocol == "file:") {
@@ -1747,7 +1800,7 @@ namespace BlackCat {
             }
             return Main.urlHead
         }
-
+        // 随机数组
         static randomSort(arr, newArr) {
             // 如果原数组arr的length值等于1时，原数组只有一个值，其键值为0
             // 同时将这个值push到新数组newArr中

@@ -77,12 +77,12 @@ namespace BlackCat {
             if (!this.stateDiv) {
                 this.stateDiv = this.objCreate("div")
                 this.stateDiv.classList.add("pc_iconstate")
-    
+
                 var imgStateIcon = this.objCreate("img") as HTMLImageElement
                 imgStateIcon.src = Main.resHost + "res/img/BlackCaticon.gif"
-    
+
                 this.ObjAppend(this.stateDiv, imgStateIcon)
-    
+
                 this.ObjAppend(this.div, this.stateDiv)
             }
             this.stateDiv.style.display = ""

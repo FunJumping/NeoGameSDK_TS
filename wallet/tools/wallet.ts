@@ -153,7 +153,7 @@ namespace BlackCat.tools {
         }
 
         // 合约交易
-        async makeRawTransaction(params: any, trust: string = "0") {
+        async makeRawTransaction(params: any, trust: string = "0", net_fee: string) {
             var res: Result = new Result();
 
             var login = LoginInfo.getCurrentLogin();
@@ -165,6 +165,42 @@ namespace BlackCat.tools {
             tran.outputs = [];
             tran.type = ThinNeo.TransactionType.InvocationTransaction;
             tran.extdata = new ThinNeo.InvokeTransData();
+
+            // 手续费计算
+            if (Number(net_fee) > 0) {
+                (tran.extdata as ThinNeo.InvokeTransData).gas = Neo.Fixed8.fromNumber(Number(net_fee));
+                // 有网络手续费
+                try {
+                    // 获取用户utxo
+                    var user_utxos_assets = await tools.CoinTool.getassets();
+                    console.log("[BlaCat]", '[wallet]', 'makeRawTransaction, user_utxos_assets => ', user_utxos_assets)
+
+                    var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                        user_utxos_assets,
+                        addr,
+                        tools.CoinTool.id_GAS,
+                        Neo.Fixed8.Zero,
+                        Neo.Fixed8.fromNumber(Number(net_fee)),
+                        0,
+                        true, // 拆分gas的utxo，以便后续支付手续费
+                    );
+
+                    // inputs、outputs、oldarr塞入
+                    var user_tran = user_makeTranRes.info.tran
+                    var oldarr = user_makeTranRes.info.oldarr
+
+                    tran.inputs = user_tran.inputs
+                    tran.outputs = user_tran.outputs
+
+                    console.log("[BlaCat]", '[wallet]', 'makeRawTransaction, user_makeTranRes => ', user_makeTranRes)
+                }
+                catch (e) {
+                    res.err = true;
+                    res.info = { error: "get_net_fee error" };
+
+                    return res;
+                }
+            }
 
             var sb = new ThinNeo.ScriptBuilder();
 
@@ -272,8 +308,17 @@ namespace BlackCat.tools {
                         "5",
                         JSON.stringify(params),
                         Main.netMgr.type,
-                        trust
+                        trust,
+                        net_fee,
                     );
+
+                    // 记录使用的utxo，后面不再使用，需要记录高度
+                    if (Number(net_fee) > 0) {
+                        var height = await tools.WWW.api_getHeight_nodes();
+                        oldarr.map(old => old.height = height);
+                        tools.OldUTXO.oldutxosPush(oldarr);
+                    }
+
                     Main.appWalletLogId = logRes.data;
                     if (trust == "1") {
                         Main.updateTrustNnc()

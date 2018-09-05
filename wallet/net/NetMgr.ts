@@ -40,7 +40,7 @@ namespace BlackCat {
                 // 测试网nelnode
                 ["CN", "https://api.nel.group/api/testnet", "_1"],
                 ["CN", "https://nelnode00.9191wyx.com/api/testnet", "_2"],
-                
+
                 ["HK", "https://nelnode00.blacat.org/api/testnet"],
             ]
 
@@ -272,10 +272,9 @@ namespace BlackCat {
             this.selectNode(() => {
                 // 测试网
                 this.type = 2;
-                // sgas合约地址
-                tools.CoinTool.id_SGAS = "0x961e628cc93d61bf636dc0443cf0548947a50dbe";
-                // SGAS旧合约地址
-                tools.CoinTool.id_SGAS_OLD = ["0x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54"]
+                // sgas合约地址、SGAS旧合约地址
+                tools.CoinTool.id_SGAS = "0x9121e89e8a0849857262d67c8408601b5e8e0524";
+                tools.CoinTool.id_SGAS_OLD = ["0x961e628cc93d61bf636dc0443cf0548947a50dbe"]
                 // 回调
                 callback()
             }, 2)
@@ -286,10 +285,9 @@ namespace BlackCat {
             this.selectNode(() => {
                 // 主网
                 this.type = 1;
-                // 主网sgas合约
-                tools.CoinTool.id_SGAS = "0x961e628cc93d61bf636dc0443cf0548947a50dbe";
-                // SGAS旧合约地址
-                tools.CoinTool.id_SGAS_OLD = []
+                // sgas合约地址、SGAS旧合约地址
+                tools.CoinTool.id_SGAS = "0x9121e89e8a0849857262d67c8408601b5e8e0524";
+                tools.CoinTool.id_SGAS_OLD = ["0x961e628cc93d61bf636dc0443cf0548947a50dbe"]
                 // 回调
                 callback()
             }, 1)

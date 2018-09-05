@@ -7,19 +7,19 @@ namespace BlackCat {
 
         private selectTransfertype: HTMLSelectElement;
         private divtransfername: HTMLDivElement;
-        private divHaveAmounts: HTMLDivElement;
-        private spanHaveSGasAmounts: HTMLSpanElement;
-        private spanHaveGasAmounts: HTMLSpanElement;
+
+
         private labeltransfername1: HTMLLabelElement;
         private labeltransfername2: HTMLLabelElement;
 
+        private divHaveAmounts: HTMLDivElement; // 余额信息
+        private divHaveGasAmounts: HTMLDivElement;  // GAS余额
+        private spanHaveGasAmounts: HTMLSpanElement;    // GAS变化
+        private divHaveSGasAmounts: HTMLDivElement; // SGAS余额
+        private spanHaveSGasAmounts: HTMLSpanElement; // SGAS变化
 
-        private divSpeed: HTMLElement;
-        private divHaveGasAmounts: HTMLDivElement;
-        private divHaveSGasAmounts: HTMLDivElement;
-        private inputFree: HTMLInputElement;
-        private inputcharge: HTMLInputElement;
-        private divServiceCharge: HTMLElement;
+        private netFeeCom: NetFeeComponent; // 手续费组件
+
 
         static transTypename1: string;
         static transTypename2: string;
@@ -97,13 +97,13 @@ namespace BlackCat {
                 // 选择SGAS类型
                 var optionSgas = this.objCreate("option") as HTMLOptionElement
                 optionSgas.value = Main.langMgr.get("pay_transCountGAS2SGAS") // "SGAS"
-                optionSgas.innerHTML ="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+  Main.langMgr.get("pay_transCountGAS2SGAS") // "SGAS"
+                optionSgas.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + Main.langMgr.get("pay_transCountGAS2SGAS") // "SGAS"
                 this.ObjAppend(this.selectTransfertype, optionSgas)
 
                 // 选择GAS类型
                 var optionGas = this.objCreate("option") as HTMLOptionElement
                 optionGas.value = Main.langMgr.get("pay_transCountSGAS2GAS") // "GAS"
-                optionGas.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+ Main.langMgr.get("pay_transCountSGAS2GAS")
+                optionGas.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + Main.langMgr.get("pay_transCountSGAS2GAS")
                 this.ObjAppend(this.selectTransfertype, optionGas)
 
             }
@@ -123,75 +123,42 @@ namespace BlackCat {
             this.divHaveAmounts.classList.add("pc_haveamounts")
             this.ObjAppend(popupbox, this.divHaveAmounts)
 
-            // 拥有GAS
-            this.divHaveGasAmounts = this.objCreate("div") as HTMLDivElement
-            this.divHaveGasAmounts.textContent = "GAS：" + Main.getStringNumber(Main.viewMgr.payView.gas)
-            this.ObjAppend(this.divHaveAmounts, this.divHaveGasAmounts)
-
 
             // 拥有SGAS
             this.divHaveSGasAmounts = this.objCreate("div") as HTMLDivElement
             if (ViewTransCount.transTypename1 == "SGASOLD2OLD") {
-                this.divHaveSGasAmounts.textContent = "SGAS(old)：" + ViewTransCount.transBalances
-            }else{
-                this.divHaveSGasAmounts.textContent = "SGAS：" + Main.getStringNumber(Main.viewMgr.payView.sgas)
+                this.divHaveSGasAmounts.textContent = Main.langMgr.get("pay_transCountSGASOLD") + ViewTransCount.transBalances
+            } else {
+                this.divHaveSGasAmounts.textContent = Main.langMgr.get("pay_transCountSGAS") + Main.getStringNumber(Main.viewMgr.payView.sgas)
             }
             this.ObjAppend(this.divHaveAmounts, this.divHaveSGasAmounts)
 
-            //交易速度
-            this.divSpeed = this.objCreate("div") as HTMLElement;
-            this.divSpeed.classList.add("pc_speed")
-            this.ObjAppend(popupbox, this.divSpeed)
+            // SGAS交易数量
+            this.spanHaveSGasAmounts = this.objCreate("span")
+            this.ObjAppend(this.divHaveSGasAmounts, this.spanHaveSGasAmounts)
 
-            var divSpeedtips = this.objCreate("ul")
-            divSpeedtips.innerHTML =
-                "<li>"
-                + Main.langMgr.get('pay_transCountTips_free') + "</li><li>"
-                + Main.langMgr.get('pay_transCountTips_slow') + "</li><li>"
-                + Main.langMgr.get('pay_transCountTips_fast')
-                + "</li>"
-            this.ObjAppend(this.divSpeed, divSpeedtips)
+            // 拥有GAS
+            this.divHaveGasAmounts = this.objCreate("div") as HTMLDivElement
+            this.divHaveGasAmounts.textContent = Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
+            this.ObjAppend(this.divHaveAmounts, this.divHaveGasAmounts)
 
+            // GAS交易数量
+            this.spanHaveGasAmounts = this.objCreate("span")
+            this.ObjAppend(this.divHaveGasAmounts, this.spanHaveGasAmounts)
 
-            // 交易速度选择
-            var divSpeedSelect = this.objCreate("div")
-            divSpeedSelect.textContent = Main.langMgr.get("pay_transCount_speed") //交易速度
-            this.ObjAppend(this.divSpeed, divSpeedSelect)
-
-            // 免费选择
-            this.inputFree = this.objCreate("input") as HTMLInputElement
-            this.inputFree.classList.add("iconfont", "icon-shandian")
-            this.inputFree.type = "radio"
-            this.inputFree.onclick = () => {
-                this.dofree()
+            // 手续费组件
+            if (this.showNetFee()) {
+                // 手续费
+                this.netFeeCom = new NetFeeComponent(popupbox, (net_fee) => {
+                    this.netFeeChange(net_fee)
+                })
+                this.netFeeCom.setFeeDefault()
+                this.netFeeCom.createDiv()
             }
-            this.ObjAppend(divSpeedSelect, this.inputFree)
-
-            var divEllipsis = this.objCreate("div")
-            divEllipsis.classList.add("pc_ellipsis")
-            divEllipsis.innerHTML = "<label></label><label></label><label></label><label></label><label></label><label></label>"
-            this.ObjAppend(divSpeedSelect, divEllipsis)
-
-            // 收费选择
-            this.inputcharge = this.objCreate("input") as HTMLInputElement
-            this.inputcharge.type = "range"
-            this.inputcharge.value = '0'
-            this.inputcharge.max = "5"
-            this.inputcharge.oninput = () => {
-                this.dospeed()
+            else {
+                this.net_fee = "0"
             }
-            this.inputcharge.onclick = () => {
-                this.dospeed()
-            }
-            this.ObjAppend(divSpeedSelect, this.inputcharge)
 
-            // 手续费
-            this.divServiceCharge = this.objCreate("div")
-            if (this.inputcharge.value == "0") {
-                this.inputcharge.classList.add("pc_active")
-                this.divServiceCharge.textContent = Main.langMgr.get("pay_transCount_cost") + "0.00000001" + Main.langMgr.get("gas")
-            }
-            this.ObjAppend(this.divSpeed, this.divServiceCharge)
 
             // 弹窗按钮外框
             var popupbutbox = this.objCreate('div')
@@ -207,17 +174,12 @@ namespace BlackCat {
             }
             this.ObjAppend(popupbutbox, popupClose)
 
-
-
             var confirmObj = this.objCreate("button")
             confirmObj.textContent = Main.langMgr.get("ok") // "确认"
             confirmObj.onclick = () => {
                 this.doConfirm()
             }
             this.ObjAppend(popupbutbox, confirmObj)
-
-            this.dospeed()
-            this.doGetBalances()
         }
 
         toRefer() {
@@ -227,74 +189,26 @@ namespace BlackCat {
             }
         }
 
-        private dofree() {
-            this.inputcharge.classList.remove("pc_active")
-            this.net_fee = "0"
-            this.divServiceCharge.textContent = Main.langMgr.get("pay_transCount_cost") + this.net_fee + " " + Main.langMgr.get("gas")
-            var v = this.inputCount.value;
-            if(v.length == 0 || v.replace(/(^s*)|(s*$)/g, "").length ==0){ 
-                this.spanHaveGasAmounts.textContent = ""
-            }else{
-                this.divHaveAmounts.classList.add("pc_haveamountssgas")
-                this.divHaveAmounts.classList.remove("pc_haveamountsgas")
-                this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus( Number(this.inputCount.value) , Number(this.net_fee)));
-            }
-            
-        }
-
-        private dospeed() {
-            this.inputcharge.classList.add("pc_active")
-            this.inputFree.checked = false
-
-            switch (this.inputcharge.value) {
-                case "0":
-                    this.net_fee = "0.00000001"
-                    
-                    break;
-                case "1":
-                    this.net_fee = "0.0000001"
-                    break;
-                case "2":
-                    this.net_fee = "0.000001"
-                    break;
-                case "3":
-                    this.net_fee = "0.00001"
-                    break;
-                case "4":
-                    this.net_fee = "0.0001"
-                    break;
-                case "5":
-                    this.net_fee = "0.001"
-                    break;
-            }
-            this.divServiceCharge.textContent = Main.langMgr.get("pay_transCount_cost") + this.net_fee + " " + Main.langMgr.get("gas")
-            if (ViewTransCount.transTypename1 == "GAS2SGAS") {
-                var v = this.inputCount.value;
-                if(v.length == 0 || v.replace(/(^s*)|(s*$)/g, "").length ==0){
-                    this.spanHaveGasAmounts.textContent = ""
-                }else{
-                    this.divHaveAmounts.classList.add("pc_haveamountssgas")
-                    this.divHaveAmounts.classList.remove("pc_haveamountsgas")
-                    this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus( Number(this.inputCount.value) , Number(this.net_fee)));
-                }
-               
-            }
-        }
-
         private dotransfertype() {
 
             if (this.selectTransfertype.value == "GAS") {
-                this.divHaveAmounts.classList.remove("pc_haveamountssgas")
+                this.divHaveGasAmounts.classList.remove("pc_income", "pc_expenditure")
+                this.divHaveSGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.inputCount.value = ""
                 ViewTransCount.transTypename1 = "SGAS2GAS"
-                this.divSpeed.style.display = "none" //SGAS兑换GAS时隐藏手续费
-
+                if (this.showNetFeeSGAS2GAS() === false) {
+                    this.netFeeCom.hidden() //SGAS兑换GAS时隐藏手续费
+                }
+                else {
+                    this.netFeeCom.setNetFeeShowRate(2)
+                }
             } else if (this.selectTransfertype.value == "SGAS") {
-                this.divHaveAmounts.classList.remove("pc_haveamountsgas")
+                this.divHaveGasAmounts.classList.remove("pc_income", "pc_expenditure")
+                this.divHaveSGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.inputCount.value = ""
                 ViewTransCount.transTypename1 = "GAS2SGAS"
-                this.divSpeed.style.display = "block" //GAS兑换SGAS时显示手续费
-
+                this.netFeeCom.setNetFeeShowRate(1)
+                this.netFeeCom.show() //GAS兑换SGAS时显示手续费
             }
             this.spanHaveSGasAmounts.textContent = this.spanHaveGasAmounts.textContent = ""
             this.inputCount.focus()
@@ -302,27 +216,32 @@ namespace BlackCat {
 
         private doinputchange() {
             if (!Main.viewMgr.payView.checkTransCount(this.inputCount.value)) {
-                this.divHaveAmounts.classList.remove("pc_haveamountsgas", "pc_haveamountssgas")
+                this.divHaveGasAmounts.classList.remove("pc_income", "pc_expenditure")
+                this.divHaveSGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.spanHaveSGasAmounts.textContent = this.spanHaveGasAmounts.textContent = ""
                 return
             }
-            if (ViewTransCount.transTypename1 == "SGAS2GAS") {
-                this.divHaveAmounts.classList.add("pc_haveamountsgas")
-                this.divHaveAmounts.classList.remove("pc_haveamountssgas")
-                this.spanHaveSGasAmounts.textContent = this.spanHaveGasAmounts.textContent = this.inputCount.value;
+            if (ViewTransCount.transTypename1 == "SGAS2GAS" || ViewTransCount.transTypename1 == "SGASOLD2OLD") {
 
-            }
-            if (ViewTransCount.transTypename1 == "GAS2SGAS") {
-                this.divHaveAmounts.classList.add("pc_haveamountssgas")
-                this.divHaveAmounts.classList.remove("pc_haveamountsgas")
-                this.spanHaveSGasAmounts.textContent =  this.inputCount.value;
-                this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus( Number(this.inputCount.value) , Number(this.net_fee)));
-            }
-            if (ViewTransCount.transTypename1 == "SGASOLD2OLD") {
-                this.divHaveAmounts.classList.add("pc_haveamountsgas")
-                this.spanHaveSGasAmounts.textContent = this.spanHaveGasAmounts.textContent = this.inputCount.value + this.net_fee;
-            }
+                if (Number(this.inputCount.value) - Number(this.net_fee) * 2 <= 0 ) {
+                    // 如果有手续费，并且手续费大于兑换金额，提示错误
+                    Main.showErrMsg('pay_makeRefundGasLessThanFee', () => {
+                        this.inputCount.focus()
+                    })
+                    return
+                }
 
+                this.divHaveGasAmounts.classList.add("pc_income")
+                this.divHaveSGasAmounts.classList.add("pc_expenditure")
+                this.spanHaveSGasAmounts.textContent = this.inputCount.value;
+                this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.minus(Number(this.inputCount.value), Number(this.net_fee)*2));
+            }
+            else if (ViewTransCount.transTypename1 == "GAS2SGAS") {
+                this.divHaveGasAmounts.classList.add("pc_expenditure")
+                this.divHaveSGasAmounts.classList.add("pc_income")
+                this.spanHaveSGasAmounts.textContent = this.inputCount.value;
+                this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus(Number(this.inputCount.value), Number(this.net_fee)));
+            }
         }
 
 
@@ -346,7 +265,7 @@ namespace BlackCat {
                 })
                 return
             }
- 
+
             // 余额判断
             switch (ViewTransCount.transTypename1) {
                 case 'SGAS2GAS':
@@ -356,9 +275,26 @@ namespace BlackCat {
                         })
                         return
                     }
+                    // 手续费判断
+                    if (Number(this.net_fee) > 0) {
+                        if (Main.viewMgr.payView.gas < Number(this.net_fee)) {
+                            Main.showErrMsg("pay_makeRefundGasFeeNotEnough", () => {
+                                this.inputCount.focus()
+                            })
+                            return
+                        }
+
+                        if (Number(this.inputCount.value) - Number(this.net_fee) * 2 <= 0 ) {
+                            // 如果有手续费，并且手续费大于兑换金额，提示错误
+                            Main.showErrMsg('pay_makeRefundGasLessThanFee', () => {
+                                this.inputCount.focus()
+                            })
+                            return
+                        }
+                    }
                     break;
                 case 'GAS2SGAS':
-                    if (Main.viewMgr.payView.gas < Number(this.inputCount.value)) {
+                    if (Main.viewMgr.payView.gas < Number(this.inputCount.value) + Number(this.net_fee)) {
                         Main.showErrMsg('pay_makeMintGasNotEnough', () => {
                             this.inputCount.focus()
                         })
@@ -372,6 +308,23 @@ namespace BlackCat {
                         })
                         return
                     }
+                    // 手续费判断
+                    if (Number(this.net_fee) > 0) {
+                        if (Main.viewMgr.payView.gas < Number(this.net_fee)) {
+                            Main.showErrMsg("pay_makeRefundGasFeeNotEnough", () => {
+                                this.inputCount.focus()
+                            })
+                            return
+                        }
+
+                        if (Number(this.inputCount.value) - Number(this.net_fee)*2 <= 0 ) {
+                            // 如果有手续费，并且手续费大于兑换金额，提示错误
+                            Main.showErrMsg('pay_makeRefundGasLessThanFee', () => {
+                                this.inputCount.focus()
+                            })
+                            return
+                        }
+                    }
                     break;
             }
 
@@ -380,23 +333,69 @@ namespace BlackCat {
             ViewTransCount.callback();
             ViewTransCount.callback = null;
         }
-
-        async doGetBalances() {
-            setTimeout(() => {
-                this.divHaveSGasAmounts.innerHTML = "SGAS：" + Main.getStringNumber(Main.viewMgr.payView.sgas)
-                this.divHaveGasAmounts.innerHTML = "GAS：" + Main.getStringNumber(Main.viewMgr.payView.gas)
-                if (ViewTransCount.transTypename1 == "SGASOLD2OLD") {
-                    this.divHaveSGasAmounts.textContent = "SGAS(old)：" + ViewTransCount.transBalances
+        // 是否加载&显示手续费组件
+        private showNetFee(): boolean {
+            if (ViewTransCount.transTypename1 == "SGASOLD2OLD") {
+                if (tools.CoinTool.id_SGAS_OLD[0] == "0x961e628cc93d61bf636dc0443cf0548947a50dbe") {
+                    return false
                 }
-                // GAS交易数量
-                this.spanHaveGasAmounts = this.objCreate("span")
-                this.ObjAppend(this.divHaveGasAmounts, this.spanHaveGasAmounts)
+            }
+            return true
+        }
+        // SGAS2GAS手续费是否显示
+        private showNetFeeSGAS2GAS(): boolean {
+            if (tools.CoinTool.id_SGAS == "0x961e628cc93d61bf636dc0443cf0548947a50dbe") {
+                return false
+            }
+            return true
+        }
 
-                // SGAS交易数量
-                this.spanHaveSGasAmounts = this.objCreate("span")
-                this.ObjAppend(this.divHaveSGasAmounts, this.spanHaveSGasAmounts)
-            }, 100)
+        private netFeeChange(net_fee) {
 
+            this.net_fee = net_fee
+
+            var v = this.inputCount.value;
+            // 没有输入值，返回
+            if (v.length == 0 || v.replace(/(^s*)|(s*$)/g, "").length == 0) {
+                return
+            }
+            // 修改GAS值
+            if (ViewTransCount.transTypename1 == "SGAS2GAS" || ViewTransCount.transTypename1 == "SGASOLD2OLD") {
+                // 退回GAS，需要减去手续费到GAS
+                if (Number(v) - Number(this.net_fee)*2 <= 0 ) {
+                    // 如果有手续费，并且手续费大于兑换金额，提示错误
+                    Main.showErrMsg('pay_makeRefundGasLessThanFee', () => {
+                        this.inputCount.focus()
+
+                        this.divHaveGasAmounts.classList.remove("pc_income")
+                        this.divHaveSGasAmounts.classList.remove("pc_expenditure")
+
+                        this.spanHaveSGasAmounts.textContent = ""
+                        this.spanHaveGasAmounts.textContent = ""
+                    })
+                    return
+                }
+
+                this.divHaveGasAmounts.classList.add("pc_income")
+                this.divHaveSGasAmounts.classList.add("pc_expenditure")
+                this.spanHaveSGasAmounts.textContent = this.inputCount.value;
+                this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.minus(Number(this.inputCount.value), Number(this.net_fee)*2));
+            }
+            else {
+                // 兑换SGAS，需要加上手续费到GAS
+                this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus(Number(v), Number(this.net_fee)));
+            }
+        }
+
+        updateBalance() {
+            // gas
+            this.divHaveGasAmounts.textContent = Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
+            // sgas
+            if (ViewTransCount.transTypename1 == "SGASOLD2OLD") {
+                this.divHaveSGasAmounts.textContent = Main.langMgr.get("pay_transCountSGASOLD") + ViewTransCount.transBalances
+            } else {
+                this.divHaveSGasAmounts.textContent = Main.langMgr.get("pay_transCountSGAS") + Main.getStringNumber(Main.viewMgr.payView.sgas)
+            }
         }
     }
 }

@@ -92,7 +92,7 @@ namespace BlackCat {
             if (params) {
                 try {
                     params = JSON.parse(params)
-                    if (params.hasOwnProperty("nnc")) {
+                    if (params.hasOwnProperty("nnc") || params.hasOwnProperty("toaddr")) {
                         params = [params]
                     }
                     if (params instanceof Array) {

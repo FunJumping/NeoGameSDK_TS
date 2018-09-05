@@ -289,6 +289,8 @@
 
 
 
+
+
             //ForgetPasswordView
             forgetpass_title: "Find Password",
             forgetpass_inputphone: "Please input phone number",
@@ -338,7 +340,9 @@
 
             myinfo_uid: "Account",
             myinfo_area: "Area",
-            modifyArea_empty: "Please choose",
+            myinfo_fee: "Transaction Fee",
+            myinfo_fee_empty: "Please choose",
+            myinfo_area_empty: "Please choose",
             myinfo_security: "Security Center",
             myinfo_set: "Set",
             myinfo_logout: "Logout",
@@ -358,6 +362,8 @@
             modifySex_succ: "Gender modified successfully!",
             modifyArea: "Area",
             modifyArea_succ: "Area modified successfully!",
+            modifyFee: "Transaction Fee",
+            modifyFee_succ: "Transaction Fee modified successfully!",
 
             // ModifyNetworkLineView
             modifyNet: "Network line",
@@ -415,6 +421,7 @@
             pay_transferCountError: "The number of SEND is incorrect!",
             pay_transferDoSucc: "SEND success",
             pay_transferDoFail: "SEND failed!",
+            pay_transferGasNotEnough: "GAS balance is insufficient!",
 
             // PayView
             pay_wallet: "My Wallet",
@@ -434,7 +441,10 @@
             pay_makeMintGasNotEnough: "GAS balance is insufficient",
             pay_makeMintDoFail: "Recharge SGAS failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
             pay_makeMintDoFail2: "Recharge SGAS failed! \r\nFailed to send recharge request! Please check network and try again later!",
+            pay_makeRefundSgasNotEnoughUtxo: "SGAS exchange is busy, please try it again later！",
             pay_makeRefundSgasNotEnough: "SGAS balance is insufficient",
+            pay_makeRefundGasFeeNotEnough: "GAS balance is insufficient.",
+            pay_makeRefundGasLessThanFee: "The amount of GAS cannot be less than the handling fee.",
             pay_makeRefundDoFail: "The extraction contract execution failed! Please wait for the last withdrawal or redemption transaction to complete!",
             pay_makeRefundDoFail2: "Sending an extraction transaction failed! Please check network and try again later!",
             pay_makeRefundGetScriptFail: "Getting extraction contract failed!",
@@ -457,6 +467,7 @@
             pay_walletDetail_export: "Export wallet",
 
             pay_makerawtrans_err: "Transaction failed!",
+            pay_makerawtrans_fee_less: "GAS balance is insufficient.",
 
             // AddressbookView
             addressbook_title: "Mail list",
@@ -504,8 +515,7 @@
             // ViewTransConfirm
             pay_makeRecharge: "Recharge",
             pay_trust_tips: "Trust contracts",
-            pay_trust_Vice_tips: "(no longer pops out)",
-
+            pay_trust_Vice_tips: "Window will not pop up in this trade, please change handling fee in page My information.",
 
             // ViewTransConfirmGas
             pay_transferGas_toaddr: "transfer address",
@@ -515,6 +525,9 @@
             pay_transCount_count: "Exchange",
             pay_transCount_inputCount: "Please input amount",
             pay_transCount_err: "Please input correct sums of amounts",
+            pay_transCountGAS: "GAS:",
+            pay_transCountSGAS: "SGAS:",
+            pay_transCountSGASOLD: "SGAS(old):",
             pay_transCountSGAS2GAS: "GAS",
             pay_transCountGAS2SGAS: "SGAS",
             pay_transCountSGASOLD2OLD: "SGAS(old)",
@@ -525,7 +538,6 @@
             pay_transCount_cost: "Fee：",
             pay_transCount_tips: "Choose the token you want to exchange",
             pay_transCount_tips_err: "Choose the token you want to exchange",
-
 
             // ViewWalletOpen
             pay_walletOpen_password: "password",
