@@ -1,4 +1,5 @@
 * [<strong>BlaCatSDK使用文档</strong>](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#blacatsdk使用文档)
+* [<strong>BlaCatSDK Usage Documentation</strong>](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#blacatsdk-usage-documentation)
 	* [一、BlaCat简介](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#一blacat简介)
 	* [二、基础应用](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#二基础应用)
 		* [1、引入SDK](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1引入sdk)
