@@ -30,7 +30,7 @@ namespace BlackCat {
 
             // 男
             this.inputSex1Obj = this.objCreate("div") as HTMLDivElement
-            this.inputSex1Obj.classList.add("iconfont", "icon-nan1")
+            this.inputSex1Obj.classList.add("iconfont", "icon-bc-nan1")
             this.ObjAppend(this.divSex, this.inputSex1Obj)
 
             // 男单选按钮
@@ -50,7 +50,7 @@ namespace BlackCat {
 
             // 女
             this.inputSex2Obj = this.objCreate("div") as HTMLDivElement
-            this.inputSex2Obj.classList.add("iconfont", "icon-nv1")
+            this.inputSex2Obj.classList.add("iconfont", "icon-bc-nv1")
             this.ObjAppend(this.divSex, this.inputSex2Obj)
 
 

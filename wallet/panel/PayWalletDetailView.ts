@@ -30,7 +30,7 @@ namespace BlackCat {
 
             // 返回按钮
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") //"返回"
             returnA.onclick = () => {
                 this.return()
@@ -59,7 +59,7 @@ namespace BlackCat {
             this.ObjAppend(content, divNotes)
 
             var iMoreshow = this.objCreate("i")
-            iMoreshow.classList.add("iconfont", "icon-gengduo1")
+            iMoreshow.classList.add("iconfont", "icon-bc-gengduo1")
             iMoreshow.onclick = () => {
                 content.classList.add("pc_paydetailshow")
                 iMoreshow.style.display = "none"
@@ -68,7 +68,7 @@ namespace BlackCat {
             this.ObjAppend(divNotes, iMoreshow)
             var iMorehide = this.objCreate("i")
             iMorehide.style.display = "none"
-            iMorehide.classList.add("iconfont", "icon-gengduo1")
+            iMorehide.classList.add("iconfont", "icon-bc-gengduo1")
             iMorehide.onclick = () => {
                 content.classList.remove("pc_paydetailshow")
                 iMorehide.style.display = "none"
@@ -86,7 +86,7 @@ namespace BlackCat {
             this.exportWallet();
 
             var iWalletExport = this.objCreate("i")
-            iWalletExport.classList.add("iconfont", "icon-daochuqianbao")
+            iWalletExport.classList.add("iconfont", "icon-bc-daochuqianbao")
             this.ObjAppend(this.walletExport, iWalletExport)
 
         }

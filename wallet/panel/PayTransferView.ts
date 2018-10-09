@@ -5,7 +5,7 @@ namespace BlackCat {
     // 转账视图
     export class PayTransferView extends ViewBase {
 
-        private inputGasCount: HTMLInputElement;
+        inputGasCount: HTMLInputElement;
         private inputTransferAddr: HTMLInputElement;
         private divTransferAddr: HTMLDivElement;
         private labelName: HTMLLabelElement;
@@ -14,10 +14,17 @@ namespace BlackCat {
         private divHaveGasAmounts: HTMLDivElement;  // GAS余额
         private spanHaveGasAmounts: HTMLSpanElement;    // GAS变化
 
+        private spanBalance: HTMLSpanElement;   //余额
+        private selectType: HTMLSelectElement;  //选择类型
+
         private netFeeCom: NetFeeComponent; // 手续费组件
 
         private gasBalance: string;
+        private bcpBalance: string;
+        private bctBalance: string;
         private toaddress: string;
+
+        private transferType: string;   //转账类型
 
         static address: string = "";
         static contact: contact;
@@ -32,6 +39,10 @@ namespace BlackCat {
 
         start() {
             this.gasBalance = Main.getStringNumber(Main.viewMgr.payView.gas);
+            this.bcpBalance = Main.getStringNumber(Main.viewMgr.payView.bcp);
+            this.bctBalance = Main.getStringNumber(Main.viewMgr.payView.bct);
+
+            this.transferType = "GAS";
 
             super.start()
 
@@ -44,6 +55,7 @@ namespace BlackCat {
         }
 
         create() {
+
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_popup")
 
@@ -66,13 +78,58 @@ namespace BlackCat {
             this.ObjAppend(popupbox, divtransfer)
 
             // 类型
-            var divtransfertype = this.objCreate("div")
-            divtransfertype.classList.add("pc_transfertype")
-            this.ObjAppend(divtransfer, divtransfertype)
+            var divtransferdiv = this.objCreate("div")
+            divtransferdiv.classList.add("pc_transfertype")
+            this.ObjAppend(divtransfer, divtransferdiv)
 
-            var gasBalancetype = this.objCreate("label");
-            gasBalancetype.innerHTML = Main.langMgr.get("pay_transferType") //"转账类型：GAS  " 
-            this.ObjAppend(divtransfertype, gasBalancetype)
+            var balancetype = this.objCreate("label");
+            balancetype.innerHTML = Main.langMgr.get("pay_transferType") //"转账类型：GAS  " 
+            this.ObjAppend(divtransferdiv, balancetype)
+
+            // 类型
+            //var divtransfertype = this.objCreate("div")
+            this.selectType = this.objCreate("select") as HTMLSelectElement
+            this.selectType.classList.add("pc_transfertypes")
+            this.ObjAppend(divtransferdiv, this.selectType)
+
+            this.selectType.onchange = () =>{
+                this.transferType = this.selectType.value;
+
+                switch(this.transferType){
+                    case 'BCP':
+                        this.spanBalance.innerText = this.transferType + ": "+this.bcpBalance;
+                    break;
+                    case 'BCT':
+                        this.spanBalance.innerText = this.transferType + ": "+this.bctBalance;
+                    break;
+                    case 'GAS':
+                        this.spanBalance.innerText = this.transferType + ": "+this.gasBalance;
+                    break;
+                }
+            }
+
+            // 选择GAS类型
+            var optionGas = this.objCreate("option") as HTMLOptionElement
+            optionGas.value = Main.langMgr.get("gas") // "GAS"
+            optionGas.innerHTML =Main.langMgr.get("gas")
+            this.ObjAppend(this.selectType, optionGas)
+
+            // 选择BCP类型
+            var optionBcp = this.objCreate("option") as HTMLOptionElement
+            optionBcp.value = Main.langMgr.get("bcp") // "BCP"
+            optionBcp.innerHTML =Main.langMgr.get("bcp")
+            this.ObjAppend(this.selectType, optionBcp)
+
+            // 选择BCT类型
+            var optionBct = this.objCreate("option") as HTMLOptionElement
+            optionBct.value = Main.langMgr.get("bct") // "BCP"
+            optionBct.innerHTML =Main.langMgr.get("bct")
+            this.ObjAppend(this.selectType, optionBct)
+
+            this.spanBalance = this.objCreate('span');
+            this.spanBalance.classList.add('pc_gasbalancespan');  //添加类样式
+            this.spanBalance.innerText = "GAS: "+this.gasBalance;
+            this.ObjAppend(divtransferdiv,this.spanBalance);
 
             // 余额
             // var gasBalanceObj = this.objCreate("span");
@@ -108,7 +165,7 @@ namespace BlackCat {
 
             //跳到通讯录选择入口
             var aAddresbook = this.objCreate("a")
-            aAddresbook.classList.add("pc_transferaddressbook", "iconfont", "icon-tongxunlu")
+            aAddresbook.classList.add("pc_transferaddressbook", "iconfont", "icon-bc-tongxunlu")
             aAddresbook.onclick = () => {
                 this.hidden()
                 Main.viewMgr.payView.hidden()
@@ -138,7 +195,7 @@ namespace BlackCat {
 
             // 拥有GAS
             this.divHaveGasAmounts = this.objCreate("div") as HTMLDivElement
-            this.divHaveGasAmounts.textContent = Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
+            this.divHaveGasAmounts.textContent = "";//Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
             this.ObjAppend(this.divHaveAmounts, this.divHaveGasAmounts)
 
             // GAS交易数量
@@ -172,7 +229,7 @@ namespace BlackCat {
             var transferObj = this.objCreate("button")
             transferObj.textContent = Main.langMgr.get("ok") // "确认"
             transferObj.onclick = () => {
-                this.doTransfer()
+                this.doTransfer()   //gas转账
             }
             this.ObjAppend(popupbutbox, transferObj)
 
@@ -199,8 +256,8 @@ namespace BlackCat {
                 this.spanHaveGasAmounts.textContent = ""
                 return
             }
-            this.divHaveGasAmounts.classList.add("pc_expenditure")
-            this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus(Number(this.inputGasCount.value), Number(this.net_fee)));
+            //this.divHaveGasAmounts.classList.add("pc_expenditure")
+            //this.spanHaveGasAmounts.textContent = "";// Main.getStringNumber(floatNum.plus(Number(this.inputGasCount.value), Number(this.net_fee)));
         }
 
         gatSelect() {
@@ -251,7 +308,18 @@ namespace BlackCat {
             Main.viewMgr.change("ViewLoading")
 
             try {
-                var res: Result = await tools.CoinTool.rawTransaction(this.toaddress, tools.CoinTool.id_GAS, this.inputGasCount.value, Neo.Fixed8.fromNumber(Number(net_fee)) );
+                switch(this.transferType){
+                    case 'GAS':
+                        //gas转账
+                        var res: Result = await tools.CoinTool.rawTransaction(this.toaddress, tools.CoinTool.id_GAS, this.inputGasCount.value, Neo.Fixed8.fromNumber(Number(net_fee)) );
+                    break;
+                    case 'BCP': //BCP转账
+                       var res: Result = await tools.CoinTool.nep5Transaction(Main.user.info.wallet,this.toaddress,tools.CoinTool.id_BCP,this.inputGasCount.value);
+                    break;
+                    case 'BCT': //BCT转账
+                       var res: Result = await tools.CoinTool.nep5Transaction(Main.user.info.wallet,this.toaddress,tools.CoinTool.id_BCT,this.inputGasCount.value);
+                    break;
+                }
             }
             catch (e) {
                 var res = new Result()
@@ -285,7 +353,7 @@ namespace BlackCat {
                     Main.showInfo(("pay_transferDoSucc"))
 
                     this.remove();
-                    PayTransferView.callback();
+                    if (PayTransferView.callback) PayTransferView.callback();
                     PayTransferView.callback = null;
                 }
                 else {
@@ -312,7 +380,7 @@ namespace BlackCat {
 
         updateBalance() {
             // gas
-            this.divHaveGasAmounts.textContent = Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
+            this.divHaveGasAmounts.textContent = "";//Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
         }
 
     }

@@ -37,7 +37,7 @@ namespace BlackCat {
 
             // 注册logo
             var divLogo = this.objCreate("div")
-            divLogo.classList.add("pc_login_logo", "iconfont", "icon-blacat")
+            divLogo.classList.add("pc_login_logo", "iconfont", "icon-bc-blacat")
             // h1Title.innerText = Main.platName;
             this.ObjAppend(this.div, divLogo)
 
@@ -67,8 +67,8 @@ namespace BlackCat {
                 areaSelect.style.display = "block"
                 aTiletMobile.classList.add("pc_active")
                 aTilEtEmail.classList.remove("pc_active")
-                iIshurushouji.classList.add("icon-shurushouji")
-                iIshurushouji.classList.remove("icon-xinxi")
+                iIshurushouji.classList.add("icon-bc-shurushouji")
+                iIshurushouji.classList.remove("icon-bc-xinxi")
 
                 this.inputAccount.value = ""
                 this.inputCode.value = ""
@@ -84,8 +84,8 @@ namespace BlackCat {
                 areaSelect.style.display = "none"
                 aTilEtEmail.classList.add("pc_active")
                 aTiletMobile.classList.remove("pc_active")
-                iIshurushouji.classList.add("icon-xinxi")
-                iIshurushouji.classList.remove("icon-shurushouji")
+                iIshurushouji.classList.add("icon-bc-xinxi")
+                iIshurushouji.classList.remove("icon-bc-shurushouji")
 
                 this.inputAccount.value = ""
                 this.inputCode.value = ""
@@ -107,7 +107,7 @@ namespace BlackCat {
 
             // 用户名 图标
             var iUserName = this.objCreate("i")
-            iUserName.classList.add("iconfont", "icon-my")
+            iUserName.classList.add("iconfont", "icon-bc-my")
             this.ObjAppend(userName, iUserName)
 
             // 请输入用户名
@@ -126,7 +126,7 @@ namespace BlackCat {
 
             // 地区 图标
             var iRegion = this.objCreate("i")
-            iRegion.classList.add("iconfont", "icon-diqiu")
+            iRegion.classList.add("iconfont", "icon-bc-diqiu")
             this.ObjAppend(areaSelect, iRegion)
 
             // 选择地区
@@ -169,7 +169,7 @@ namespace BlackCat {
 
             // 地区下拉 图标
             var aArea = this.objCreate("a")
-            aArea.classList.add("pc_areaa", "iconfont", "icon-xiala")
+            aArea.classList.add("pc_areaa", "iconfont", "icon-bc-xiala")
             this.ObjAppend(areaSelect, aArea)
 
 
@@ -180,7 +180,7 @@ namespace BlackCat {
 
             // 手机号码 图标
             var iIshurushouji = this.objCreate("i")
-            iIshurushouji.classList.add("iconfont", "icon-shurushouji")
+            iIshurushouji.classList.add("iconfont", "icon-bc-shurushouji")
             this.ObjAppend(divTel, iIshurushouji)
 
             // 请输入手机号码
@@ -199,7 +199,7 @@ namespace BlackCat {
 
             // 验证码 图标
             var iDivCode = this.objCreate("i")
-            iDivCode.classList.add("iconfont", "icon-dunpai1")
+            iDivCode.classList.add("iconfont", "icon-bc-dunpai1")
             this.ObjAppend(divCode, iDivCode)
 
             // 请输入验证码
@@ -216,7 +216,7 @@ namespace BlackCat {
 
             // 密码 图标
             var iPass = this.objCreate("i")
-            iPass.classList.add("iconfont", "icon-mima")
+            iPass.classList.add("iconfont", "icon-bc-mima")
             this.ObjAppend(divPass, iPass)
 
             // 请输入密码
@@ -232,7 +232,7 @@ namespace BlackCat {
 
             // 确认密码 图标
             var iVPass = this.objCreate("i")
-            iVPass.classList.add("iconfont", "icon-mima")
+            iVPass.classList.add("iconfont", "icon-bc-mima")
             this.ObjAppend(divVPass, iVPass)
 
             // 再次输入密码

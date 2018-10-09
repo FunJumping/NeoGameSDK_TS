@@ -25,7 +25,7 @@ namespace BlackCat {
 
             //返回
             var headerReturn = this.objCreate("a")
-            headerReturn.classList.add("iconfont", "icon-fanhui")
+            headerReturn.classList.add("iconfont", "icon-bc-fanhui")
             headerReturn.textContent = Main.langMgr.get("return") // 返回
             headerReturn.onclick = () => {
                 if (AddressbookView.select) {
@@ -45,7 +45,7 @@ namespace BlackCat {
 
             //添加联系人
             var iHeader = this.objCreate("i")
-            iHeader.classList.add("pc_returngame", "iconfont", "icon-jiahao")
+            iHeader.classList.add("pc_returngame", "iconfont", "icon-bc-jiahao")
             iHeader.onclick = () => {
                 this.hidden()
                 AddressbookOpView.refer = "AddressbookView"
@@ -60,7 +60,7 @@ namespace BlackCat {
             this.ObjAppend(this.div, divSearch)
 
             var iSearch = this.objCreate("i")
-            iSearch.classList.add("iconfont", "icon-sousuo")
+            iSearch.classList.add("iconfont", "icon-bc-sousuo")
             this.ObjAppend(divSearch, iSearch)
             //搜索input
             this.inputSearch = this.objCreate("input") as HTMLInputElement

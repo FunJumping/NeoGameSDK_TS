@@ -17,7 +17,7 @@ namespace BlackCat {
 
             // 返回
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
                 this.return()
@@ -49,7 +49,7 @@ namespace BlackCat {
 
             // 信任合约图标
             var iTrust = this.objCreate("i")
-            iTrust.classList.add("iconfont", "icon-gengduo")
+            iTrust.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liTrust, iTrust)
 
             // 信任合约管理
@@ -69,7 +69,7 @@ namespace BlackCat {
 
             // 自动登出钱包设置时间图标
             var iSignOut = this.objCreate("i")
-            iSignOut.classList.add("iconfont", "icon-gengduo")
+            iSignOut.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liSignOut, iSignOut)
 
             // 自动登出钱包设置时间

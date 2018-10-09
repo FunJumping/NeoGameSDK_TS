@@ -17,7 +17,7 @@ namespace BlackCat {
 
             // 返回
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
                 this.return()
@@ -58,7 +58,7 @@ namespace BlackCat {
 
                     // 时间图标
                     var iTime = this.objCreate("i")
-                    iTime.classList.add("iconfont", "icon-gou")
+                    iTime.classList.add("iconfont", "icon-bc-gou")
                     this.ObjAppend(liTime, iTime)
                 }
             )

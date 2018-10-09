@@ -37,7 +37,7 @@ namespace BlackCat {
 
             //返回
             var headerReturn = this.objCreate("a")
-            headerReturn.classList.add("iconfont", "icon-fanhui")
+            headerReturn.classList.add("iconfont", "icon-bc-fanhui")
             headerReturn.textContent = Main.langMgr.get("return") // 返回
             headerReturn.onclick = () => {
                 this.return()
@@ -91,7 +91,7 @@ namespace BlackCat {
 
             // 钱包地址二维码
             var iAddress = this.objCreate("i")
-            iAddress.classList.add("iconfont", "icon-saomiao")
+            iAddress.classList.add("iconfont", "icon-bc-saomiao")
             this.ObjAppend(divAddressBox, iAddress)
 
             // 描述 容器

@@ -26,7 +26,7 @@ namespace BlackCat {
             this.ObjAppend(this.div, header)
 
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
                 this.return()
@@ -53,7 +53,7 @@ namespace BlackCat {
 
             //头像标签
             var iMyinfoimg = this.objCreate("i")
-            iMyinfoimg.classList.add("iconfont", "icon-gengduo")
+            iMyinfoimg.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfoImg, iMyinfoimg)
 
             var spanMyinfoimg = this.objCreate("span")
@@ -76,7 +76,7 @@ namespace BlackCat {
 
             //昵称标签
             var iMyinfoName = this.objCreate("i")
-            iMyinfoName.classList.add("iconfont", "icon-gengduo")
+            iMyinfoName.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfoName, iMyinfoName)
 
             //昵称内容
@@ -95,7 +95,7 @@ namespace BlackCat {
 
             //性别标签
             var iMyinfoSex = this.objCreate("i")
-            iMyinfoSex.classList.add("iconfont", "icon-gengduo")
+            iMyinfoSex.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfoSex, iMyinfoSex)
 
             //性别内容
@@ -126,7 +126,7 @@ namespace BlackCat {
 
             //地区标签
             var iMyinfoArea = this.objCreate("i")
-            iMyinfoArea.classList.add("iconfont", "icon-gengduo")
+            iMyinfoArea.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfoArea, iMyinfoArea)
 
             // 地区内容
@@ -146,7 +146,7 @@ namespace BlackCat {
 
             //手续费标签
             var iMyinfofee = this.objCreate("i")
-            iMyinfofee.classList.add("iconfont", "icon-gengduo")
+            iMyinfofee.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfofee, iMyinfofee)
 
             //手续费内容
@@ -169,7 +169,7 @@ namespace BlackCat {
 
             //网络线路标签
             var iMyinfoNet = this.objCreate("i")
-            iMyinfoNet.classList.add("iconfont", "icon-gengduo")
+            iMyinfoNet.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfoNet, iMyinfoNet)
 
             // 网络线路内容
@@ -183,7 +183,7 @@ namespace BlackCat {
 
             //网络线路高度
             this.divHeight_nodes = this.objCreate("div")
-            this.divHeight_nodes.classList.add("iconfont", "icon-blalian")
+            this.divHeight_nodes.classList.add("iconfont", "icon-bc-blalian")
             this.divHeight_nodes.textContent = "n/a"
             this.ObjAppend(spanNet_nodes, this.divHeight_nodes)
 
@@ -197,7 +197,7 @@ namespace BlackCat {
             this.ObjAppend(spanNet_clis, this.myNet_clis)
 
             this.divHeight_clis = this.objCreate("div")
-            this.divHeight_clis.classList.add("iconfont", "icon-neolian")
+            this.divHeight_clis.classList.add("iconfont", "icon-bc-neolian")
             this.divHeight_clis.textContent = "n/a"
             this.ObjAppend(spanNet_clis, this.divHeight_clis)
 
@@ -213,7 +213,7 @@ namespace BlackCat {
 
             // 安全中心图标
             var iMyinfoTrust = this.objCreate("i")
-            iMyinfoTrust.classList.add("iconfont", "icon-gengduo")
+            iMyinfoTrust.classList.add("iconfont", "icon-bc-gengduo")
             this.ObjAppend(liMyinfoTrust, iMyinfoTrust)
 
             // 安全中心设置

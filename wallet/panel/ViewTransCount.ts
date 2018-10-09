@@ -71,7 +71,7 @@ namespace BlackCat {
 
                 //转换标签
                 var itransfertype = this.objCreate("i")
-                itransfertype.classList.add("iconfont", "icon-jiantou2")
+                itransfertype.classList.add("iconfont", "icon-bc-jiantou1")
                 this.ObjAppend(this.divtransfername, itransfertype)
 
                 //代币名
@@ -81,6 +81,7 @@ namespace BlackCat {
             } else {
                 // 选择交易类型
                 this.selectTransfertype = this.objCreate("select") as HTMLSelectElement
+                this.selectTransfertype.classList.add("iconfont")
                 this.selectTransfertype.onchange = () => {
                     this.dotransfertype()
                 }
@@ -97,13 +98,13 @@ namespace BlackCat {
                 // 选择SGAS类型
                 var optionSgas = this.objCreate("option") as HTMLOptionElement
                 optionSgas.value = Main.langMgr.get("pay_transCountGAS2SGAS") // "SGAS"
-                optionSgas.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + Main.langMgr.get("pay_transCountGAS2SGAS") // "SGAS"
+                optionSgas.innerHTML ="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+ Main.langMgr.get("pay_transCountSGAS2GAS") +"&#xbc635;"+ Main.langMgr.get("pay_transCountGAS2SGAS") // "SGAS"
                 this.ObjAppend(this.selectTransfertype, optionSgas)
 
                 // 选择GAS类型
                 var optionGas = this.objCreate("option") as HTMLOptionElement
                 optionGas.value = Main.langMgr.get("pay_transCountSGAS2GAS") // "GAS"
-                optionGas.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + Main.langMgr.get("pay_transCountSGAS2GAS")
+                optionGas.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + Main.langMgr.get("pay_transCountGAS2SGAS") +"&#xbc635;"+Main.langMgr.get("pay_transCountSGAS2GAS")
                 this.ObjAppend(this.selectTransfertype, optionGas)
 
             }
@@ -191,7 +192,7 @@ namespace BlackCat {
 
         private dotransfertype() {
 
-            if (this.selectTransfertype.value == "GAS") {
+            if (this.selectTransfertype.value == Main.langMgr.get("pay_transCountSGAS2GAS")) {
                 this.divHaveGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.divHaveSGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.inputCount.value = ""
@@ -202,7 +203,7 @@ namespace BlackCat {
                 else {
                     this.netFeeCom.setNetFeeShowRate(2)
                 }
-            } else if (this.selectTransfertype.value == "SGAS") {
+            } else if (this.selectTransfertype.value == Main.langMgr.get("pay_transCountGAS2SGAS")) {
                 this.divHaveGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.divHaveSGasAmounts.classList.remove("pc_income", "pc_expenditure")
                 this.inputCount.value = ""
@@ -247,7 +248,7 @@ namespace BlackCat {
 
         private doConfirm() {
             if (ViewTransCount.transTypename1 != "SGASOLD2OLD") {
-                if (this.selectTransfertype.value != "GAS" && this.selectTransfertype.value != "SGAS") {
+                if (this.selectTransfertype.value != Main.langMgr.get("pay_transCountSGAS2GAS") && this.selectTransfertype.value !=  Main.langMgr.get("pay_transCountGAS2SGAS") ) {
                     Main.showErrMsg('pay_transCount_tips_err', () => {
                         this.inputCount.focus()
                     })

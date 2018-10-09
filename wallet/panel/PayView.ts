@@ -10,6 +10,10 @@ namespace BlackCat {
         // 余额
         gas: number;
         sgas: number;
+
+        bct: number;
+        bcp: number;
+
         listPageNum: number;
         payMyWallet: HTMLElement;
         // cli高度
@@ -19,6 +23,10 @@ namespace BlackCat {
 
         private spanGas: HTMLElement;
         private spanSgas: HTMLElement;
+        private spanBCP: HTMLElement;
+        private spanBCT: HTMLElement;
+        private spanABC: HTMLElement;
+        
         private divHeight_clis: HTMLElement;
         private divHeight_nodes: HTMLElement;
 
@@ -34,9 +42,15 @@ namespace BlackCat {
 
         private s_doGetWalletLists: any;
 
+        private wallet_btn: HTMLElement;
+        private assets_btn: HTMLElement;
+
         reset() {
             this.gas = 0;
             this.sgas = 0;
+
+            this.bcp = 0;
+            this.bct = 0;
 
             this.listPageNum = 10;
 
@@ -74,7 +88,7 @@ namespace BlackCat {
 
             // 我的信息
             var myinfo_a = this.objCreate("a")
-            myinfo_a.classList.add("iconfont", "icon-touxiang")
+            myinfo_a.classList.add("iconfont", "icon-bc-touxiang")
             myinfo_a.onclick = () => {
                 this.hidden()
                 MyInfoView.refer = "PayView"
@@ -84,7 +98,7 @@ namespace BlackCat {
 
             // nodes高度
             this.divHeight_nodes = this.objCreate("div")
-            this.divHeight_nodes.classList.add("pc_payheighet", "iconfont", "icon-blalian", "network")
+            this.divHeight_nodes.classList.add("pc_payheighet", "iconfont", "icon-bc-blalian", "network")
             this.divHeight_nodes.style.top = "5px";
             this.divHeight_nodes.textContent = "n/a"
             this.divHeight_nodes.onclick = () => {
@@ -98,7 +112,7 @@ namespace BlackCat {
 
             // clis高度
             this.divHeight_clis = this.objCreate("div")
-            this.divHeight_clis.classList.add("pc_payheighet", "iconfont", "icon-neolian", "network")
+            this.divHeight_clis.classList.add("pc_payheighet", "iconfont", "icon-bc-neolian", "network")
             this.divHeight_clis.textContent = "n/a"
             this.divHeight_clis.onclick = () => {
                 if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
@@ -133,35 +147,167 @@ namespace BlackCat {
 
             //返回游戏
             var aReturnGame = this.objCreate("i")
-            aReturnGame.classList.add("pc_returngame", "iconfont", "icon-fanhui1")
+            aReturnGame.classList.add("pc_returngame", "iconfont", "icon-bc-fanhui1")
             aReturnGame.onclick = () => {
                 BlackCat.SDK.showIcon()
             }
             this.ObjAppend(headerTitle, aReturnGame)
 
+            // 钱包、虚拟资产按钮
+            // var btnbox = this.objCreate("div")
+            // this.ObjAppend(this.div,btnbox)
+            // btnbox.classList.add("pc_btnbox")
+            // 钱包按钮
+            // this.wallet_btn = this.objCreate("button")
+            // this.wallet_btn.textContent = Main.langMgr.get("pay_walletbtn")
+            // this.wallet_btn.classList.add("pc_active")
+            // this.ObjAppend(btnbox,this.wallet_btn);
+            // this.wallet_btn.onclick = () => {
+            //     assets.style.display = "none"
+            //     paycard.style.display = "block"
+            //     divCurrency.style.display = "block"
+            //     this.divLists.style.display = "block"
+            //     this.assets_btn.classList.remove("pc_active")
+            //     this.wallet_btn.classList.add("pc_active")
+            // }
+            // 虚拟资产
+            // this.assets_btn = this.objCreate("button")
+            // this.assets_btn.textContent = Main.langMgr.get("pay_assets")
+            // this.ObjAppend(btnbox,this.assets_btn);
+            // this.assets_btn.onclick = () => {
+            //     assets.style.display = "block"
+            //     paycard.style.display = "none"
+            //     divCurrency.style.display = "none"
+            //     this.divLists.style.display = "none"
+            //     this.assets_btn.classList.add("pc_active")
+            //     this.wallet_btn.classList.remove("pc_active")
+            // }
+
+            // 虚拟资产div
+            // var assets = this.objCreate("div")
+            // assets.classList.add("pc_assets")
+            // this.ObjAppend(this.div,assets)
+            // var assets_ul = this.objCreate("ul")
+            // assets_ul.classList.add("pc_assetsul")
+            // this.ObjAppend(assets,assets_ul)
+            // var assets_li = this.objCreate("li")
+            // this.ObjAppend(assets_ul,assets_li)
+            // var assets_title = this.objCreate("div")
+            // assets_title.textContent = "疯狂角斗士"
+            // assets_title.classList.add("pc_assets_title")
+            // this.ObjAppend(assets_li,assets_title)
+            // var assets_balance = this.objCreate("div")
+            // assets_balance.classList.add("pc_assets_balance")
+            // this.ObjAppend(assets_li,assets_balance)
+            // var balanceimg = this.objCreate("div")
+            // balanceimg.classList.add("pc_balanceimg")
+            // this.ObjAppend(assets_balance,balanceimg)
+            // var img = this.objCreate("img") as HTMLImageElement
+            // img.src = "res/img/gas.png"
+            // this.ObjAppend(balanceimg,img)
+            // var balancename = this.objCreate("span")
+            // balancename.classList.add("pc_balancename")
+            // balancename.textContent = "ABC余额"
+            // this.ObjAppend(assets_balance,balancename)
+            // var balance = this.objCreate("span")
+            // balance.classList.add("pc_balance")
+            // balance.textContent = "1531515313,152156416565"
+            // this.ObjAppend(assets_balance,balance)
+            // var assets_prop = this.objCreate("div")
+            // assets_prop.classList.add("pc_assetsprop")
+            // this.ObjAppend(assets_li,assets_prop)
+            // for(var i=0; i<5; i++){
+            //     var prop = this.objCreate("a")
+            //     prop.classList.add("pc_prop")
+            //     this.ObjAppend(assets_prop,prop)
+            //     var propimg = this.objCreate("img") as HTMLImageElement
+            //     propimg.src = "res/img/game0.png"
+            //     this.ObjAppend(prop,propimg)
+            //     var propname = this.objCreate("span")
+            //     this.ObjAppend(prop,propname)
+            //     propname.textContent = "撒旦之力什么鬼"
+            // }
+            // var assets_more = this.objCreate("div")
+            // assets_more.classList.add("pc_assetsmore")
+            // this.ObjAppend(assets_li,assets_more)
+            // var more_btn = this.objCreate("button")
+            // more_btn.classList.add("pc_assetsmorebtn","iconfont","icon-bc-gengduo1")
+            // this.ObjAppend(assets_more,more_btn)
+            //  // 虚拟资产div
+            //  var assets_ul = this.objCreate("ul")
+            //  assets_ul.classList.add("pc_assetsul")
+            //  this.ObjAppend(assets,assets_ul)
+            //  var assets_li = this.objCreate("li")
+            //  this.ObjAppend(assets_ul,assets_li)
+             
+            //  var assets_title = this.objCreate("div")
+            //  assets_title.textContent = "疯狂角斗士"
+            //  assets_title.classList.add("pc_assets_title")
+            //  this.ObjAppend(assets_li,assets_title)
+            //  var assets_balance = this.objCreate("div")
+            //  assets_balance.classList.add("pc_assets_balance")
+            //  this.ObjAppend(assets_li,assets_balance)
+            //  var balanceimg = this.objCreate("div")
+            //  balanceimg.classList.add("pc_balanceimg")
+            //  this.ObjAppend(assets_balance,balanceimg)
+            //  var img = this.objCreate("img") as HTMLImageElement
+            //  img.src = "res/img/gas.png"
+            //  this.ObjAppend(balanceimg,img)
+            //  var balancename = this.objCreate("span")
+            //  balancename.classList.add("pc_balancename")
+            //  balancename.textContent = "ABC余额"
+            //  this.ObjAppend(assets_balance,balancename)
+            //  var balance = this.objCreate("span")
+            //  balance.classList.add("pc_balance")
+            //  balance.textContent = "1531515313,152156416565"
+            //  this.ObjAppend(assets_balance,balance)
+            //  var assets_prop = this.objCreate("div")
+            //  assets_prop.classList.add("pc_assetsprop")
+            //  this.ObjAppend(assets_li,assets_prop)
+            //  for(var i=0; i<5; i++){
+            //      var prop = this.objCreate("a")
+            //      prop.classList.add("pc_prop")
+            //      this.ObjAppend(assets_prop,prop)
+            //      var propimg = this.objCreate("img") as HTMLImageElement
+            //      propimg.src = "res/img/game0.png"
+            //      this.ObjAppend(prop,propimg)
+            //      var propname = this.objCreate("span")
+            //      this.ObjAppend(prop,propname)
+            //      propname.textContent = "撒旦之力什么鬼"
+            //  }
+            //  var assets_more = this.objCreate("div")
+            //  assets_more.classList.add("pc_assetsmore")
+            //  this.ObjAppend(assets_li,assets_more)
+            //  var more_btn = this.objCreate("button")
+            //  more_btn.classList.add("pc_assetsmorebtn","iconfont","icon-bc-gengduo1")
+            //  this.ObjAppend(assets_more,more_btn)
+            
 
             // 钱包卡片
             var paycard = this.objCreate("div")
             paycard.classList.add("pc_card")
             this.ObjAppend(this.div, paycard)
+            var iconbtn = this.objCreate("div")
+            iconbtn.style.overflow = "hidden"
+            this.ObjAppend(paycard, iconbtn)
 
             // 详情
             var aWalletDetail = this.objCreate("a")
-            aWalletDetail.classList.add("pc_mydetail", "iconfont", "icon-xiangqing")
+            aWalletDetail.classList.add("pc_mydetail", "iconfont", "icon-bc-xiangqing")
             aWalletDetail.onclick = () => {
                 this.wallet_detail()
             }
-            this.ObjAppend(paycard, aWalletDetail)
+            this.ObjAppend(iconbtn, aWalletDetail)
 
             // 通讯录
             var payAddressbook = this.objCreate("a")
-            payAddressbook.classList.add("pc_mydetail", "iconfont", "icon-tongxunlu")
+            payAddressbook.classList.add("pc_mydetail", "iconfont", "icon-bc-tongxunlu")
             payAddressbook.onclick = () => {
                 this.hidden()
                 AddressbookView.refer = "PayView"
                 Main.viewMgr.change("AddressbookView")
             }
-            this.ObjAppend(paycard, payAddressbook)
+            this.ObjAppend(iconbtn, payAddressbook)
 
             // 我的(缩略)钱包地址
             var divWallet = this.objCreate("div")
@@ -172,26 +318,26 @@ namespace BlackCat {
 
 
             // 刷新
-            var payRefresh = this.objCreate("div")
-            payRefresh.classList.add("pc_cardrefresh")
-            payRefresh.textContent = Main.langMgr.get("pay_refresh") // "刷新"
-            payRefresh.onclick = () => {
-                this.doGetBalances()
-                this.doGetWalletLists(1)
-            }
-            this.ObjAppend(paycard, payRefresh)
+            // var payRefresh = this.objCreate("div")
+            // payRefresh.classList.add("pc_cardrefresh")
+            // payRefresh.textContent = Main.langMgr.get("pay_refresh") // "刷新"
+            // payRefresh.onclick = () => {
+            //     this.doGetBalances()
+            //     this.doGetWalletLists(1)
+            // }
+            // this.ObjAppend(paycard, payRefresh)
 
             //刷新图标            
-            var iRefresh = this.objCreate("i")
-            iRefresh.classList.add("iconfont", "icon-shuaxin")
-            this.ObjAppend(payRefresh, iRefresh)
+            // var iRefresh = this.objCreate("i")
+            // iRefresh.classList.add("iconfont", "icon-bc-shuaxin")
+            // this.ObjAppend(payRefresh, iRefresh)
 
 
             //收款及转账
             var divWalletUser = this.objCreate("div")
             divWalletUser.classList.add("pc_cardtransaction")
             // divWalletUser.textContent = Main.user.info.name
-            this.ObjAppend(paycard, divWalletUser)
+            this.ObjAppend(divWallet, divWalletUser)
 
             // 收款
             var butReceivables = this.objCreate("button")
@@ -217,22 +363,81 @@ namespace BlackCat {
 
 
             // 代币
-            var divCurrencyNumber = this.objCreate("div")
-            divCurrencyNumber.classList.add("pc_currencynumber")
-            this.ObjAppend(divCurrency, divCurrencyNumber)
-            var spanCurrencyNumber = this.objCreate("div")
-            spanCurrencyNumber.innerText = Main.langMgr.get("pay_coin_name") //"代币"
-            this.ObjAppend(divCurrencyNumber, spanCurrencyNumber)
+            // var divCurrencyNumber = this.objCreate("div")
+            // divCurrencyNumber.classList.add("pc_currencynumber")
+            // this.ObjAppend(divCurrency, divCurrencyNumber)
+            // var spanCurrencyNumber = this.objCreate("div")
+            // spanCurrencyNumber.innerText = Main.langMgr.get("pay_coin_name") //"代币"
+            // this.ObjAppend(divCurrencyNumber, spanCurrencyNumber)
 
-            // SGAS(旧)提现
-            if (tools.CoinTool.id_SGAS_OLD && tools.CoinTool.id_SGAS_OLD.length > 0) {
-                var bntCurrencyNumber = this.objCreate("button")
-                bntCurrencyNumber.textContent = Main.langMgr.get("pay_coin_old") //"SGAS(旧)提现"
-                bntCurrencyNumber.onclick = () => {
-                    this.doMakeRefundOld()
-                }
-                this.ObjAppend(divCurrencyNumber, bntCurrencyNumber)
-            }
+            
+            // // BCT余额
+            // var divBCT = this.objCreate("div")
+            // divBCT.innerHTML = "BCT"//"Gas"
+            // this.ObjAppend(divCurrency, divBCT)
+            
+            // //BCT的问号
+            // var labelBCT = this.objCreate("label")
+            // labelBCT.classList.add("iconfont", "icon-bc-help")
+            // this.ObjAppend(divBCT, labelBCT)
+ 
+ 
+            // //BCT余额
+            // this.spanBCT = this.objCreate("span")
+            // this.spanBCT.textContent = "0"
+            // this.ObjAppend(divBCT, this.spanBCT)
+
+            // //什么是BCT
+            // var divBCTcon = this.objCreate("div")
+            // divBCTcon.classList.add("pc_bctcon")
+            // divBCTcon.textContent = Main.langMgr.get("pay_bct_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
+            // this.ObjAppend(labelBCT, divBCTcon)
+
+            // //获取BCT余额信息按钮
+            // var BCT_btn = this.objCreate("button")
+            // BCT_btn.textContent = Main.langMgr.get("pay_get") //获取
+            // this.ObjAppend(divBCT, BCT_btn)
+            // BCT_btn.onclick = () => {
+            //     this.doExchangeBCT();
+            // }
+
+
+            // //BCP余额
+            // var divBCP = this.objCreate("div")
+            // divBCP.innerHTML = "BCP"//"Gas"
+            // this.ObjAppend(divCurrency, divBCP)
+            
+            // //BCP的问号
+            // var labelBCP = this.objCreate("label")
+            // labelBCP.classList.add("iconfont", "icon-bc-help")
+            // this.ObjAppend(divBCP, labelBCP)
+
+
+            // //BCP余额
+            // this.spanBCP = this.objCreate("span")
+            // this.spanBCP.textContent = "0"
+            // this.ObjAppend(divBCP, this.spanBCP)
+
+            // //什么是BCP
+            // var divBCPcon = this.objCreate("div")
+            // divBCPcon.classList.add("pc_bcpcon")
+            // divBCPcon.textContent = Main.langMgr.get("pay_bcp_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
+            // this.ObjAppend(labelBCP, divBCPcon)
+
+            // //获取BCP余额信息按钮
+            // var BCP_btn = this.objCreate("button")
+            // BCP_btn.textContent = Main.langMgr.get("pay_get") //获取
+            // this.ObjAppend(divBCP, BCP_btn)
+            // BCP_btn.onclick = () => {
+            //     this.doExchangeBCP();
+            // }
+
+            // var makePurchaseObj = this.objCreate("button")
+            // makePurchaseObj.textContent = "获取" //"购买"
+            // this.ObjAppend(divBCP, makePurchaseObj)
+
+
+
 
             // NEOGas余额
             var divGas = this.objCreate("div")
@@ -241,7 +446,7 @@ namespace BlackCat {
 
             //Gas的问号
             var labelGas = this.objCreate("label")
-            labelGas.classList.add("iconfont", "icon-help")
+            labelGas.classList.add("iconfont", "icon-bc-help")
             this.ObjAppend(divGas, labelGas)
 
 
@@ -263,7 +468,7 @@ namespace BlackCat {
 
             //SGas的问号
             var labelSGas = this.objCreate("label")
-            labelSGas.classList.add("iconfont", "icon-help")
+            labelSGas.classList.add("iconfont", "icon-bc-help")
             this.ObjAppend(divSGas, labelSGas)
 
 
@@ -289,17 +494,17 @@ namespace BlackCat {
             // this.ObjAppend(divGas, makeRefundObj)
 
             // 购买（主网）
-            // var makePurchaseObj = this.objCreate("button")
-            // makePurchaseObj.textContent = Main.langMgr.get("pay_purchase") //"购买"
-            // makePurchaseObj.onclick = () => {
-            //     if (Main.netMgr.type == 1) {
-            //         this.doMakePurchase()
-            //     }
-            //     else {
-            //         Main.showToast("pay_purchase_testnet_cant_buy")
-            //     }
-            // }
-            // this.ObjAppend(divGas, makePurchaseObj)
+            var makePurchaseObj = this.objCreate("button")
+            makePurchaseObj.textContent = Main.langMgr.get("pay_purchase") //"购买"
+            makePurchaseObj.onclick = () => {
+                if (Main.netMgr.type == 1) {
+                    this.doMakePurchase()
+                }
+                else {
+                    Main.showToast("pay_purchase_testnet_cant_buy")
+                }
+            }
+            this.ObjAppend(divGas, makePurchaseObj)
 
 
             // 兑换
@@ -309,6 +514,40 @@ namespace BlackCat {
                 this.doMakeMintToken()
             }
             this.ObjAppend(divSGas, makeMintTokenObj)
+
+            // SGAS(旧)提现
+            if (tools.CoinTool.id_SGAS_OLD && tools.CoinTool.id_SGAS_OLD.length > 0) {
+                var bntCurrencyNumber = this.objCreate("button")
+                bntCurrencyNumber.style.width = "100px"
+                bntCurrencyNumber.style.borderColor = "#a7a8ba"
+                bntCurrencyNumber.style.color = "#a7a8ba"
+                bntCurrencyNumber.textContent = Main.langMgr.get("pay_coin_old") //"SGAS(旧)提现"
+                bntCurrencyNumber.onclick = () => {
+                    this.doMakeRefundOld()
+                }
+                this.ObjAppend(divSGas, bntCurrencyNumber)
+            }
+            
+            // // ABC余额
+            // var divABC = this.objCreate("div")
+            // this.ObjAppend(divCurrency, divABC)
+            // divABC.classList.add("pc_divabc")
+            // var img = this.objCreate("img") as HTMLImageElement
+            // img.src = "res/img/gas.png"
+            // this.ObjAppend(divABC,img)
+            
+            // var ABCname = this.objCreate("div")
+            // ABCname.innerHTML = "ACB余额"//"ABC"
+            // this.ObjAppend(divABC, ABCname)
+
+            // //ABC余额
+            // this.spanABC = this.objCreate("span")
+            // this.spanABC.textContent = "0"
+            // this.ObjAppend(divABC, this.spanABC)
+     
+
+
+
 
 
 
@@ -375,8 +614,12 @@ namespace BlackCat {
             // }
 
             this.sgas = await Main.getSgasBalanceByAddress(tools.CoinTool.id_SGAS, Main.user.info.wallet)
+            // this.bcp = await Main.getNep5BalanceByAddress(tools.CoinTool.id_BCP, Main.user.info.wallet, 100000000)
+            // this.bct = await Main.getNep5BalanceByAddress(tools.CoinTool.id_BCT, Main.user.info.wallet, 10000)
             // 判断一下有没有减号，不用科学计数法表示
             this.spanSgas.textContent = Main.getStringNumber(this.sgas)
+            // this.spanBCP.textContent = Main.getStringNumber(this.bcp)
+            // this.spanBCT.textContent = Main.getStringNumber(this.bct)
 
             // 通知其他界面更新余额
             Main.viewMgr.updateBalance()
@@ -419,6 +662,46 @@ namespace BlackCat {
                 // this.hidden()
             }
 
+        }
+
+        private async doExchangeBCT(){
+            if (Main.isWalletOpen()) {
+                // 打开钱包了
+
+                // 打开输入数量
+                PayExchangeBCTView.refer = "PayView"
+                this.hidden()
+                Main.viewMgr.change("PayExchangeBCTView")
+
+            } else {
+                // 未打开钱包
+                ViewWalletOpen.refer = "PayView"
+                ViewWalletOpen.callback = () => {
+                    this.doExchangeBCT();
+                }
+                Main.viewMgr.change("ViewWalletOpen")
+                // this.hidden()
+            }
+        }
+
+        private async doExchangeBCP(){
+            if (Main.isWalletOpen()) {
+                // 打开钱包了
+
+                // 打开输入数量
+                PayExchangeBCPView.refer = "PayView"
+                this.hidden()
+                Main.viewMgr.change("PayExchangeBCPView")
+
+            } else {
+                // 未打开钱包
+                ViewWalletOpen.refer = "PayView"
+                ViewWalletOpen.callback = () => {
+                    this.doExchangeBCP();
+                }
+                Main.viewMgr.change("ViewWalletOpen")
+                // this.hidden()
+            }
         }
 
         private async doMakePurchase() {
@@ -478,6 +761,7 @@ namespace BlackCat {
             var spanRecord = this.objCreate("div")
             spanRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
             this.ObjAppend(liRecord, spanRecord)
+            
 
             // 更多钱包记录
             this.divListsMore = this.objCreate("button")
@@ -487,11 +771,10 @@ namespace BlackCat {
                 this.hidden()
                 Main.viewMgr.change("PayListMoreView")
             }
-            this.divListsMore.style.display = "none"
             this.ObjAppend(liRecord, this.divListsMore)
 
             var iListsMore = this.objCreate("i")
-            iListsMore.classList.add("iconfont", "icon-sanjiaoxing")
+            iListsMore.classList.add("iconfont", "icon-bc-sanjiaoxing")
             this.ObjAppend(this.divListsMore, iListsMore)
 
 
@@ -899,12 +1182,12 @@ namespace BlackCat {
                     var state_button0 = this.objCreate("div")
                     state_button0.classList.add("pc_verification")
                     if (i == 1) {
-                        state_button0.classList.add("iconfont", "icon-dengdai")
+                        state_button0.classList.add("iconfont", "icon-bc-dengdai")
                         state_button0.innerHTML = "<label>" + pct + "</label>"
                     } else {
                         // 感叹号
                         var obja = this.objCreate("a")
-                        obja.classList.add("iconfont", "icon-jinhangzhong")
+                        obja.classList.add("iconfont", "icon-bc-jinhangzhong")
                         obja.innerHTML = '<label>' + pct + '</label>';
                         obja.onclick = () => {
                             Main.continueRefund()
@@ -916,11 +1199,11 @@ namespace BlackCat {
                     return state_button0;
                 case '1':
                     var state_a1 = this.objCreate("a")
-                    state_a1.classList.add("iconfont", "icon-gou")
+                    state_a1.classList.add("iconfont", "icon-bc-gou")
                     return state_a1;
                 case '2':
                     var state_a2 = this.objCreate("a")
-                    state_a2.classList.add("iconfont", "icon-chacha")
+                    state_a2.classList.add("iconfont", "icon-bc-chacha")
                     return state_a2;
             }
         }
@@ -991,6 +1274,22 @@ namespace BlackCat {
 
                 return;
             }
+
+            // gas转cgas，如果inputs+outputs的数量>=60，会超GAS,需要提示用户自己给自己转账后再操作
+            var inputs_counts: number = makeTranRes.info.tran.hasOwnProperty("inputs") ? makeTranRes.info.tran.inputs.length : 0;
+            var outputs_counts: number = makeTranRes.info.tran.hasOwnProperty("outputs") ? makeTranRes.info.tran.outputs.length : 0;
+            var utxo_counts = inputs_counts + outputs_counts
+            if (utxo_counts >= 50) {
+                Main.viewMgr.viewLoading.remove()
+                Main.showErrMsg("pay_makeMintGasUtxoCountsLimit", () => {
+                    PayTransferView.callback = null
+                    PayTransferView.address = Main.user.info.wallet
+                    Main.viewMgr.change("PayTransferView")
+                    Main.viewMgr.payTransferView.inputGasCount.value = mintCount
+                }, {gas: mintCount})
+                return
+            }
+
 
             var sb = new ThinNeo.ScriptBuilder();
             //Parameter inversion
@@ -1094,7 +1393,8 @@ namespace BlackCat {
             var login = tools.LoginInfo.getCurrentLogin();
 
             //获取sgas合约地址的资产列表
-            var utxos_assets = await tools.CoinTool.getsgasAssets(id_SGAS);
+            // var utxos_assets = await tools.CoinTool.getsgasAssets(id_SGAS);
+            var utxos_assets = await tools.CoinTool.getCgasAssets(id_SGAS, Number(refundCount));
 
             var us = utxos_assets[tools.CoinTool.id_GAS];
             if (us == undefined) {

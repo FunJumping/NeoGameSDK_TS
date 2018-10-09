@@ -174,5 +174,10 @@ namespace BlackCat {
         static async getExchangeInfo(uid: string, token: string, src_coin: number) {
             return this.common('user_gas.get_info', { uid: uid, token: token, src_coin: src_coin })
         }
+
+        //获取bcp信息
+        static async getExchangeBCPInfo(uid: string, token: string, src_coin: number) {
+            return this.common('user_bcp.get_info', { uid: uid, token: token, src_coin: src_coin })
+        }
     }
 }

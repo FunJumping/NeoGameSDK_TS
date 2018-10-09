@@ -19,7 +19,7 @@ namespace BlackCat {
 
             // 返回
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
                 this.return()

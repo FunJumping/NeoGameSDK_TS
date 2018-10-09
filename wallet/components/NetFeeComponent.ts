@@ -76,7 +76,7 @@ namespace BlackCat {
 
             // 免费选择
             this.inputFree = this.objCreate("input") as HTMLInputElement
-            this.inputFree.classList.add("iconfont", "icon-shandian")
+            this.inputFree.classList.add("iconfont", "icon-bc-shandian")
             this.inputFree.type = "radio"
             this.inputFree.onclick = () => {
                 this.dofree()

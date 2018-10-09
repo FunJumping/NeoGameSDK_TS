@@ -10,8 +10,10 @@
             info: "Information",
             content: "Content",
             retry: "Retry",
-            sgas: "SGAS",
+            sgas: "CGAS",
             gas: "GAS",
+            bct: "BCT",
+            bcp: "BCP",
 
             // 地区代码
             area_code_CN: 'China',
@@ -413,7 +415,7 @@
 
             // PayTransferView
             pay_transfer: "SEND",
-            pay_transferType: "Token：GAS",
+            pay_transferType: "Token：",
             pay_transferBalance: "Balance:",
             pay_transferToAddr: "Address",
             pay_transferCount: "Amounts",
@@ -428,34 +430,37 @@
             pay_refresh: "Refresh",
             pay_wallet_detail: "Details",
             pay_coin_name: "Token",
-            pay_coin_old: "SGAS(old)Exchange",
+            pay_coin_old: "CGAS(old)Exchange",
             pay_gas: "GAS",
             pay_gas_desc: "GAS is a digital currency on NEO chain that can be obtained through exchanges",
-            pay_sgas: "SGAS",
-            pay_sgas_desc: "SGAS is a universal chip that Bla Cat offers to players.",
+            pay_sgas: "CGAS",
+            pay_sgas_desc: "CGAS is a universal chip that BlaCat offers to players.",
             pay_send: "SEND",
             pay_purchase: "Purchase",
             pay_purchase_testnet_cant_buy: "Please switch Mainnet to buy GAS!",
             pay_makeMint: "Exchange",
             pay_recentLists: "Recent records",
             pay_makeMintGasNotEnough: "GAS balance is insufficient",
-            pay_makeMintDoFail: "Recharge SGAS failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
-            pay_makeMintDoFail2: "Recharge SGAS failed! \r\nFailed to send recharge request! Please check network and try again later!",
-            pay_makeRefundSgasNotEnoughUtxo: "SGAS exchange is busy, please try it again later！",
-            pay_makeRefundSgasNotEnough: "SGAS balance is insufficient",
+            pay_makeMintDoFail: "Recharge CGAS failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
+            pay_makeMintDoFail2: "Recharge CGAS failed! \r\nFailed to send recharge request! Please check network and try again later!",
+            pay_makeRefundSgasNotEnoughUtxo: "CGAS exchange is busy, please try it again later！",
+            pay_makeRefundSgasNotEnough: "CGAS balance is insufficient",
             pay_makeRefundGasFeeNotEnough: "GAS balance is insufficient.",
             pay_makeRefundGasLessThanFee: "The amount of GAS cannot be less than the handling fee.",
             pay_makeRefundDoFail: "The extraction contract execution failed! Please wait for the last withdrawal or redemption transaction to complete!",
             pay_makeRefundDoFail2: "Sending an extraction transaction failed! Please check network and try again later!",
             pay_makeRefundGetScriptFail: "Getting extraction contract failed!",
-            pay_makeRefundSgasOldNotEnough: "SGAS(old) balance is insufficient",
-
+            pay_makeRefundSgasOldNotEnough: "CGAS(old) balance is insufficient",
+            pay_makeMintGasUtxoCountsLimit: "Assets exceed the maximum, please input your wallet address then transfer %gas% GAS to your own wallet first.",
+            pay_walletbtn: "Wallet",
+            pay_assets: "Virtual assets",
 
             pay_not_enough_money: "Insufficient balance",
             pay_not_enough_utxo: "Please wait for the last transaction to complete before executing!",
 
             pay_nettype_1: "Mainnet",
             pay_nettype_2: "Testnet",
+            pay_get: "Get",
 
             // PayWalletDetailView
             pay_walletDetail: "Wallet details",
@@ -526,11 +531,11 @@
             pay_transCount_inputCount: "Please input amount",
             pay_transCount_err: "Please input correct sums of amounts",
             pay_transCountGAS: "GAS:",
-            pay_transCountSGAS: "SGAS:",
-            pay_transCountSGASOLD: "SGAS(old):",
+            pay_transCountSGAS: "CGAS:",
+            pay_transCountSGASOLD: "CGAS(old):",
             pay_transCountSGAS2GAS: "GAS",
-            pay_transCountGAS2SGAS: "SGAS",
-            pay_transCountSGASOLD2OLD: "SGAS(old)",
+            pay_transCountGAS2SGAS: "CGAS",
+            pay_transCountSGASOLD2OLD: "CGAS(old)",
             pay_transCountTips_free: "Free",
             pay_transCountTips_slow: "Slow",
             pay_transCountTips_fast: "Fast",
@@ -625,6 +630,10 @@
             netmgr_select_cli_slow: "Communication with the nodes on the chain is abnormal, please check the network and try it later!",
             netmgr_connecting: "Connecting ...",
             netmgr_connecting_fail: "Connection failed. Please check the network and try it again!",
+
+            //bct,bcp
+            pay_exchange_bcp: "BCP购买",
+            pay_exchange_bct: "",
         }
     }
 }

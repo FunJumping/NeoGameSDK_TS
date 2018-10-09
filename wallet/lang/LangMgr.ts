@@ -19,6 +19,10 @@ namespace BlackCat {
                     this.lang = new LangEN();
                     this.type = type
                     break;
+                case "jp":
+                    this.lang = new LangJP();
+                    this.type = type
+                    break;
                 default:
                     this.lang = new LangCN();
                     this.type = "cn"

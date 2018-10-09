@@ -1,10 +1,8 @@
 ﻿@import url(../font/iconfont.css);
-
-
 .pc_window  a{color:#666;text-decoration:none}
 .pc_window ol,.pc_window ul{list-style:none}
 .pc_window button{cursor: pointer}
-.pc_window input,.pc_window button{outline: 0;background-color: transparent;line-height: 1.5;box-sizing: inherit;}
+.pc_window input,.pc_window button{outline: 0;background-color: transparent;line-height: 1.5;box-sizing: content-box;}
 .pc_window img{width: 100%;border: none;vertical-align: middle}
 .pc_fl{float:left !important}
 .pc_fr{float:right !important}
@@ -20,9 +18,20 @@
 .pc_window{position: fixed;right: 0;top: 0;z-index: 99;max-height: 667px;overflow: hidden;background-color: #343643;-webkit-transition: all 0.3s linear;transition: all 0.3s linear;-webkit-animation: pc_window 0.3s linear; animation: pc_window 0.3s linear}
 .pc_window_mask{position: fixed;left: 0;right: 0;top: 0;bottom: 0;z-index: 0;cursor: pointer;}
 .pc_window *{margin: 0;padding: 0;border: 0;word-wrap:break-word;}
+
+
 @-webkit-keyframes pc_window{0%{-webkit-transform: translate(375px)}100%{-webkit-transform: translate(0)}}
 @keyframes pc_window{0%{transform: translate(375px)}100%{transform: translate(0)}}
 .pc_windowhide{-webkit-transform: translate(375px);transform: translate(375px)}
+/* base公共样式 */
+.mainbox{padding: 10px 20px;}
+.firstdiv{margin-top: 45px; }
+.white_title{border-left: 3px solid #dbdde9;padding-left: 10px;color: #dbdde9;display: inline-block;font-size: 16px}
+
+
+
+
+
 
 /*icon小图标*/
 .pc_icon{position: fixed;top: 0px;right: 0px;width: 64px;height: 64px;background: url(../img/BlackCaticon5.png) 0% 0% / cover;cursor: pointer;z-index: 98;}
@@ -139,22 +148,28 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 
 /*转账弹窗 GAS提取 兑换*/
 .pc_transfertype{width: 270px;height: 25px;font-size: 14px;line-height: 25px;margin: 0 auto;padding: 10px 0; color: #9c9ead;position: relative;}
+.pc_transfertypes{width: 64px;height: 20px;font-size: 14px;line-height: 25px;margin: 0 auto;color: #9c9ead;position: relative;}
 .pc_transfer .pc_transferbox input{width: 230px;height: 25px;margin:auto auto;text-align: left;padding: 0 35px 0 5px;text-align: center}
 .pc_transfer .pc_transaddress{padding: 0 35px 0 5px;width: 230px;}
 .pc_transfer .pc_transferaddressbook{position: absolute;top: 14px;right: 3px;line-height: 1;font-size: 20px;color: #30313b;cursor: pointer;}
 .pc_transfername{position: absolute;top:10px;left: 5px;color: #30313b;display: none}
 .pc_transfer_active .pc_transfername{display: inline-block;}
 .pc_transfer_active .pc_transaddress{color: #808080}
+.pc_gasbalancespan{float:right;}
 .pc_transfertype input::-webkit-input-placeholder {color:#9b9ca0;}
 .pc_transfertype input:-moz-placeholder {color:#9b9ca0;}
 .pc_transfertype input::-moz-placeholder { color:#9b9ca0;}
 .pc_transfertype input:-ms-input-placeholder {color:#9b9ca0;}
-.pc_token select{width: 100%;height: 25px; border: 1px solid #9c9ead;background-color: #c3c4c9;box-sizing: inherit; display: block;color: #2f323b;font-size: 14px;cursor: pointer;}
+.pc_transfertypes input::-webkit-input-placeholder {color:#9b9ca0;}
+.pc_transfertypes input:-moz-placeholder {color:#9b9ca0;}
+.pc_transfertypes input::-moz-placeholder { color:#9b9ca0;}
+.pc_transfertypes input:-ms-input-placeholder {color:#9b9ca0;}
+.pc_token select{width: 100%;height: 25px; border: 1px solid #9c9ead;background-color: #c3c4c9;display: block;color: #2f323b;font-size: 14px;cursor: pointer;}
 .pc_token{width: 80%;font-size: 16px;text-align: center;color: #ccc;margin: 30px auto 20px;padding: 0;}
 .pc_token label{position: absolute;user-select: none;top: -2px}
 .pc_token label:first-child{right:160px;}
-.pc_token label:last-child{margin-left: 8px}
-.pc_token i{font-size: 30px;margin: auto 5px;}
+.pc_token label:last-child{margin-left: 5px}
+.pc_token i{font-size: 24px;margin: auto 5px;}
 .pc_old .pc_token{font-size: 14px}
 .pc_haveamounts{width: 80%;margin: 0 auto;font-size: 13px;color: #999;line-height: 2}
 .pc_haveamounts span{float: right;}
@@ -213,45 +228,65 @@ button.pc_cancel{background-color: #3b3d4a !important;color: #b2b2b2 !important;
 
 /* 我的钱包 */
 .pc_header{position: fixed;right: 0;top: 0;z-index: 8; width: 375px; height: 45px;line-height: 45px;background-color: #343643; box-shadow: 1px 2px 2px #262837;}
-.pc_header a{font-size: 28px;color: #9c9ead;position: absolute;padding: 0 12px;cursor: pointer;}
-.pc_header .icon-fanhui{font-size: 16px;padding: 0 10px;}
+.pc_header a{font-size: 28px;color: #dbdde9;position: absolute;padding: 0 12px;cursor: pointer;}
+.pc_header .icon-bc-fanhui{font-size: 16px;padding: 0 10px;}
 .pc_payheighet{position: absolute;left: 50px;color: #9c9ead;line-height: 47px;cursor: pointer;}
 .pc_header h1{font-size: 16px;text-align: center;color: #fed968;font-weight: 500;line-height: 45px;position: absolute;top: 0;left: 0;right: 0;z-index: -1;}
 .pc_header .network{font-size: 12px;line-height: 15px;display: inline;top: 21px}
 .pc_net,.pc_netbox{position: absolute;right: 46px;top: 11px;width: 70px;text-align: center; background-color: #343643;border: 1px solid #fed968;color: #fed968;line-height: 1.5;padding:1px 3px;font-size: 14px;cursor: pointer;}
-.pc_net::after{content: "\e606";font-size: 12px}
+.pc_net::after{content: "\bc606";font-size: 12px}
 .pc_netbox{top: 33px;border-top: none}
 .pc_netbox>div{border-top: 1px solid #fed968;}
 .pc_returngame{position: absolute;left: auto;right: 10px;font-size: 28px;color: #fff;top: 0;padding: 0 8px;cursor: pointer;}
-.pc_returngame.icon-fanhui1{font-size: 20px}
-.pc_card{position: relative;width: 320px;height: 204px;padding: 12px; background: url(../img/card.png) no-repeat;background-size: 100% 100%;margin:65px auto 20px auto;border-radius: 5px;box-shadow: 0 7px 14px rgba(0, 0, 0, 0.6);color: #fff}
-.pc_card .pc_mydetail{font-size: 20px;color: #e7e7e7;border: 1px solid #666;padding: 2px 5px;border-radius: 3px;float: left;cursor: pointer;}
-.pc_card .pc_mydetail.icon-tongxunlu{float: right;}
-.pc_cardcon{color: #c8ab73;font-size: 40px;line-height: 1; position: absolute;top: 60px;left: 0;right: 0; margin:auto;text-align: center}
-.pc_cardrefresh{position: absolute;left: 0;right: 0;top: 110px;text-align: center;cursor: pointer;}
+.pc_returngame.icon-bc-fanhui1{font-size: 20px}
+.pc_btnbox{width: 100%;margin: 65px auto 0 auto;text-align: center}
+.pc_card{margin:55px auto 20px;color: #fff;padding: 0 10px;}
+.pc_card .pc_mydetail{font-size: 20px;color: #e7e7e7;padding: 2px 5px;border-radius: 3px;float: left;cursor: pointer;}
+.pc_card .pc_mydetail.icon-bc-tongxunlu{float: right;}
+.pc_cardcon{color: #f3ce87;font-size: 21px;line-height: 1; margin:auto;text-align: left;margin-top: 10px;overflow: hidden;}
+.pc_cardrefresh{text-align: center;cursor: pointer;}
 .pc_cardrefresh span{cursor: pointer;font-size: 14px}
-.pc_cardtransaction{position: absolute;left: 0;right: 0; bottom: 0;height: 55px;border-top:2px solid #383534;text-align: center}
-.pc_cardtransaction button{border: 1px solid #f3ce87;color:#f3ce87;margin-top: 15px; padding: 2px 0;width: 70px; border-radius: 3px;font-weight: bold}
+.pc_cardtransaction{display: inline-block;float: right;}
+.pc_cardtransaction button{border: 1px solid #f3ce87;color:#f3ce87; padding: 2px 0;width: 70px; border-radius: 3px;font-weight: bold}
 .pc_cardtransaction button:active{background-color: #f3ce87;color: #5c544c;text-shadow: 0 0 0}
-.pc_cardtransaction button:last-child{margin-left: 30px;}
-.pc_currency{padding: 0 20px;}
-.pc_currency>div{border-bottom: 1px solid #3a3c4a;height: 40px;line-height: 40px;color: #a7a8ba;}
-.pc_currency .pc_currencynumber{color: #dbdde9;border-bottom: none}
+.pc_cardtransaction button:last-child{margin-left: 10px;}
+.pc_currency{ padding: 0 20px;}
+.pc_currency>div{border-bottom: 1px solid #3a3c4a;  line-height: 40px;color: #a7a8ba;}
+.pc_currency .pc_currencynumber{color: #dbdde9;padding-bottom: 15px;}
 .pc_currency .pc_currencynumber div,.pc_payrecord div{border-left: 3px solid #fff;padding-left: 10px;color: #fff;display: inline;}
 .pc_currency .pc_currencynumber button{width: auto;right: 20px;left: auto;padding: 1px 5px;}
 .pc_currency label{cursor: pointer;margin-left: 10px;color: #ff4242}
 .pc_currency label:hover .pc_sgascon{display: block;}
 .pc_sgascon{position: absolute;max-width: 85%; background-color: rgba(0, 0, 0, 0.8);color: #c8ab73;font-size: 12px;font-family: none; line-height: 1.5; padding:10px; border-radius: 5px;display: none;margin-top: -70px;z-index: 1;}
+.pc_bctcon{position: absolute;max-width: 85%; background-color: rgba(0, 0, 0, 0.8);color: #c8ab73;font-size: 12px;font-family: none; line-height: 1.5; padding:10px; border-radius: 5px;display: none;margin-top: -70px;z-index: 1;}
+.pc_bcpcon{position: absolute;max-width: 85%; background-color: rgba(0, 0, 0, 0.8);color: #c8ab73;font-size: 12px;font-family: none; line-height: 1.5; padding:10px; border-radius: 5px;display: none;margin-top: -70px;z-index: 1;}
+.pc_divabc img{height: 20px; width: 20px;padding-right: 10px}
+.pc_divabc div{display: inline-block;}
 
-.pc_currency div span{float: right;color: #c8ab73}
-.pc_currency button{border: 1px solid #dbdce8;color:#dbdce8;padding: 1px 0;width: 75px;font-weight: bold; border-radius: 3px;position: absolute;left: 7em;margin-top: 9px}
+
+/* 虚拟资产 */
+.pc_assets{display: none;}
+.pc_assets .pc_assetsul li{margin: 10px 20px 10px;border-bottom: 1px solid #424453;font-size: 16px;color:#dbdde9;padding-bottom: 5px}
+.pc_assets .pc_assets_title{border-left: 3px solid #fff;padding-left: 10px; color: #fff;display: inline; line-height: 40px;}
+.pc_assets .pc_balanceimg{width: 13px;height: 13px;display: inline-block;}
+.pc_assets .pc_balancename{color: #9a9bad;font-size: 14px;padding-left: 5px;}
+.pc_assets .pc_balance{color: #f3ce87;font-size: 14px;float: right}
+.pc_assets .pc_assetsprop{margin: 20px auto 0;}
+.pc_assets .pc_assetsprop .pc_prop{display: inline-block;width: 50px;cursor: pointer;margin-right: 15px;}
+.pc_assets .pc_assetsprop .pc_prop span{font-size: 8px;color: #9a9bad;overflow: hidden;white-space: nowrap; text-overflow: ellipsis;width: 50px;display: block;margin-top: 5px}
+.pc_assets .pc_assetsmore{text-align: center}
+.pc_assets .pc_assetsmorebtn{color: #9a9bad;font-size: 26px;line-height: 40px}
+
+
+.pc_currency div span{float: right;color: #a7a8ba}
+.pc_currency button{border: 1px solid #f3ce87;color:#f3ce87;padding: 1px 0;width: 75px;font-weight: bold; border-radius: 3px;margin-top: 9px;margin-left: 10px}
 .pc_currency button:active{background-color: #f3ce87;border-color: #f3ce87;color: #5c544c}
 .pc_paymore{float: right;margin-top: 10px;color:#dbdce8;}
 .pc_paymore:active{color: #c8ab73}
 .pc_paymore i{font-size: 12px}
 
-.pc_paylists{padding-bottom: 10px;}
-.pc_paylists li{height: 40px;padding: 10px 0;margin: 0 20px; border-bottom: 1px solid #424453;position: relative; cursor: pointer}
+.pc_paylists{ padding: 10px 0;}
+.pc_paylists li{height: 40px;padding: 10px 0;margin: 0 20px;position: relative; cursor: pointer}
 .pc_paylists li:last-child{border-bottom: none}
 .pc_paylists .pc_listdate{font-size: 12px}
 
@@ -287,11 +322,11 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_listname,.pc_method{line-height: 1.5;overflow: hidden;text-overflow: ellipsis;white-space: nowrap}
 .pc_cnts{float: right;font-size: 14px;text-align: right;line-height: 1}
 .pc_cnts a{font-size: 28px;float: right;margin-left: 5px;position: relative;}
-.pc_cnts .icon-gou{color: #309368;}
-.pc_cnts .icon-chacha{color: #93304b;}
+.pc_cnts .icon-bc-gou{color: #309368;}
+.pc_cnts .icon-bc-chacha{color: #93304b;}
 
 .pc_cnts .pc_verification{width: 28px;height: 28px;position: relative;display: inline-block;margin-left: 5px;margin-top: -5px;font-size: 24px;color: #5676bc; line-height: 1}
-.pc_cnts .icon-jinhangzhong{color: #9c3b98}
+.pc_cnts .icon-bc-jinhangzhong{color: #9c3b98}
 .pc_cnts label{font-size: 10px !important;position: absolute;top: 23px;text-align: center;width: 33px;left: -1.5px;color: #a7a8ba}
 .pc_cnts span{line-height: 2;position: absolute;top: 29px; right: 30px; width: 32%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
 .pc_listdate{color: #a7a8ba;font-size: 14px;line-height: 1.5;position: relative;}
@@ -301,7 +336,7 @@ li.pc_payrecord{font-size: 16px;color: #dbdde9;line-height: 40px;padding: 0;curs
 .pc_expenditure{color: #a7a8ba}
 .pc_expenditure span::before{content: "-"}
 .pc_listmore{text-align: center;color: #fff;cursor: pointer;margin: 10px auto 30px;padding: 10px 0; clear:both;}
-.pc_verification.icon-dengdai::before{-webkit-animation: pc_turn 1.5s infinite ;animation: pc_turn 1.5s infinite ;display: inline-block}
+.pc_verification.icon-bc-dengdai::before{-webkit-animation: pc_turn 1.5s infinite ;animation: pc_turn 1.5s infinite ;display: inline-block}
 @-webkit-keyframes pc_turn{0%{-webkit-transform: rotate(0deg)}100%{-webkit-transform: rotate(360deg)}}
 @keyframes pc_turn{0%{transform: rotate(0deg)}100%{transform: rotate(360deg)}}
 
@@ -406,11 +441,11 @@ div.pc_modifysex_active{background-color: #f3ce87;color: #33353e;border-color: #
 .pc_spannet>div{display: inline-block;font-size: 12px;}
 .pc_myinfolist .pc_spannet_clis{position: absolute;right: 21px;bottom: 5px}
 .pc_moifynet .pc_divnettype{margin-top: 70px;text-align: center}
-.pc_moifynet button{border: 1px solid #c8ab73; padding: 5px 0 5px 15px; border-radius: 30px 0 0 30px; width: 80px;color: #c8ab73;}
-.pc_moifynet button:last-child{border-radius: 0px 30px 30px 0;padding: 5px 15px 5px 0px}
-.pc_divnettype button.pc_active{background-color: #c8ab73; color: #343643}
-.icon-blalian:before{font-size: 24px;position: relative;top: 4px}
-.icon-neolian:before{font-size: 24px;position: relative;top: 4px}
+.pc_moifynet button,.pc_btnbox button{border: 1px solid #c8ab73; padding: 5px 0 5px 15px; border-radius: 30px 0 0 30px; width: 80px;color: #c8ab73;}
+.pc_moifynet button:last-child,.pc_btnbox button:last-child{border-radius: 0px 30px 30px 0;padding: 5px 5px 5px 10px}
+.pc_divnettype button.pc_active,.pc_btnbox button.pc_active{background-color: #c8ab73; color: #343643}
+.icon-bc-blalian:before{font-size: 24px;position: relative;top: 4px}
+.icon-bc-neolian:before{font-size: 24px;position: relative;top: 4px}
 /* 安全中心 */
 .pc_security li{margin: 0;padding:0 15px;border-color: #232436;border-top: 1px solid #232436;margin-top: 15px}
 .pc_signout_tips{line-height: 1.2;font-size: 12px;color: #7d7e80;text-align: justify;margin-top: 5px}
@@ -463,3 +498,25 @@ div.pc_modifysex_active{background-color: #f3ce87;color: #33353e;border-color: #
     /* 移动时显示扫二维码 */
     .pc_addressbookop i{display: inline-block;}
 }
+
+/* 91币充值 */
+.waybox{box-shadow: 0px 5px 2px #262837;}
+.way_title{margin: 20px 0;}
+.way_a{display: inline-block;border: 1px solid #3c3e4c;padding: 5px 20px;border-radius: 30px;cursor: pointer;margin-right: 10px;}
+.waybtnbox a.active{border: 1px solid #f3ce87}
+.way_a img{width: 15px;height: 15px;position: relative; top: -2px;}
+.way_a span{display: inline-block;color: #fff;padding-left: 8px;font-size: 14px;position: relative; top: -2px;}
+.goods .goods_item, .input_item{line-height: 60px;color: #f3ce87;border-bottom: 1px solid #3a3c4a;cursor: pointer}
+.goods .goods_item .item_txt{width: 30%;display: inline-block;}
+.goods .goods_item ._91b{color: #dbdde9;padding-left: 5px}
+.goods .goods_item .icon-bc-gou{font-size: 30px;font-weight: normal; display: none; position: relative; top: -2px; float: right;}
+.goods input{background: #8e8e96;padding: 5px 10px; width: 60px; color: #343543;}
+.goods input::-webkit-input-placeholder { /* WebKit browsers */color:#343543;}
+.goods input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */color:#343543;}
+.goods input::-moz-placeholder { /* Mozilla Firefox 19+ */color:#343543;}
+.goods input:-ms-input-placeholder { /* Internet Explorer 10+ */color:#343543;}
+.goods_pay{padding-top: 20px}
+.goods_pay .payment{display: inline-block;width: 50%;padding-top: 5px;}
+.goods_pay .payment .paymenttxt{font-size: 10px;color:#8e8e96; }
+.goods_pay .payment .paymentnum{font-size: 16px;color: #f3ce87;}
+.goods_pay .paymentbtn{border: 1px solid #f3ce87;padding: 5px 50px;border-radius: 5px;color: #f3ce87;font-size: 16px;float: right;}

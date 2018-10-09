@@ -26,7 +26,7 @@ namespace BlackCat {
                 headerObj.classList.add("pc_header")
                 // 返回按钮
                 var returnBtn = this.objCreate("a")
-                returnBtn.classList.add("iconfont", "icon-fanhui")
+                returnBtn.classList.add("iconfont", "icon-bc-fanhui")
                 returnBtn.textContent = Main.langMgr.get("return") // "返回"
                 returnBtn.onclick = () => {
                     this.return()
@@ -53,7 +53,7 @@ namespace BlackCat {
                     + '<div class="pc_cnts ' + Main.viewMgr.payView.getListCntsClass(PayListDetailView.list) + ' "><span>'
                     + this.getCnts()
                     + '</span>'
-                    + '<div class="pc_payheighet iconfont icon-diejia">' + Main.viewMgr.payView.getListBlockindex(PayListDetailView.list) + '</div>'
+                    + '<div class="pc_payheighet iconfont icon-bc-diejia">' + Main.viewMgr.payView.getListBlockindex(PayListDetailView.list) + '</div>'
                     + Main.viewMgr.payView.getListState(PayListDetailView.list).outerHTML
                     // +           this.getStats()
                     + '</div>'

@@ -118,12 +118,12 @@ namespace BlackCat {
             }
         }
 
-        // 获取sgas余额
-        static async getSgasBalanceByAddress(id_SGAS: string, address: string) {
+        //获取余额信息
+        static async getNep5BalanceByAddress(id_hash: string, address: string, bits: number = 100000000) {
             var params = {
                 sbParamJson: ["(addr)" + address],
                 sbPushString: "balanceOf",
-                nnc: id_SGAS
+                nnc: id_hash
             }
             try {
                 let res = await Main.wallet.invokescript(params)
@@ -132,14 +132,19 @@ namespace BlackCat {
                     if (data["stack"] && data["stack"].length > 0) {
                         let balances = data["stack"][0]
                         let balance = new Neo.BigInteger(balances.value.hexToBytes()).toString()
-                        return Number(balance) / 100000000
+                        return Number(balance) / bits
                     }
                 }
             }
             catch (e) {
-                console.log("[BlaCat]", '[main]', 'getSgasBalanceByAddress =>', e)
+                console.log("[BlaCat]", '[main]', 'getNep5BalanceByAddress =>', e, 'hash =>', id_hash)
             }
             return 0
+        }
+
+        // 获取sgas余额
+        static async getSgasBalanceByAddress(id_SGAS: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_SGAS, address, 100000000)
         }
 
 
@@ -223,6 +228,8 @@ namespace BlackCat {
         async getBalance() {
             var sgas = 0;
             var gas = 0;
+            var bcp = 0;
+            var bct = 0;
             var balances = (await tools.WWW.api_getBalance(Main.user.info.wallet)) as tools.BalanceInfo[];
             if (balances) {
                 //余额不唯空
@@ -242,10 +249,14 @@ namespace BlackCat {
             //     sgas = Number(nep5balances[0]['nep5balance'])
             // }
             sgas = await Main.getSgasBalanceByAddress(tools.CoinTool.id_SGAS, Main.user.info.wallet)
+            bcp = await Main.getSgasBalanceByAddress(tools.CoinTool.id_BCP, Main.user.info.wallet)
+            bct = await Main.getSgasBalanceByAddress(tools.CoinTool.id_BCT, Main.user.info.wallet)
 
             var callback_data = {
                 sgas: sgas,
-                gas: gas
+                gas: gas,
+                bcp: bcp,
+                bct: bct
             }
             Main.listenerCallback("getBalanceRes", callback_data);
             return callback_data;

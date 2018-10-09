@@ -20,12 +20,14 @@ namespace BlackCat {
 
             this.apis = [
                 // 调试服
-                ["CN", "https://api00.9191wyx.com/apic_v2/"],
+                // ["CN", "https://api00.9191wyx.com/apic_v2/"],
+                // ["CN", "http://192.168.23.128/apic_v2/"],
+                // ["CN", "https://blacat.9191wyx.com/apic/"],
                 // ["CN", "http://10.1.8.132/new/nel/api_c/"],
 
                 // 正式服
-                // ["CN", "//apip01.9191wyx.com/apic/"], // gateway
-                // ["HK", "//api01.blacat.org/apic/"],
+                ["CN", "//apip01.9191wyx.com/apic/"], // gateway
+                ["HK", "//api01.blacat.org/apic/"],
             ]
 
             this.nodes = {}
@@ -249,7 +251,7 @@ namespace BlackCat {
                 type = this.default_type;
             }
             if (this.type != type) {
-                console.log("[BlaCat]", '[NetType]', ' change to type => ', type)
+                console.log("[BlaCat]", '[NetMgr]', 'change, type => ', type)
                 switch (type) {
                     case 1: // 主网
                         this.change2Main(callback)
@@ -261,7 +263,7 @@ namespace BlackCat {
             }
         }
         setDefault(type: number) {
-            console.log("[BlaCat]", '[NetType]', ' default type => ', type)
+            console.log("[BlaCat]", '[NetMgr]', 'setDefault, type => ', type)
             this.default_type = type;
         }
 
@@ -273,8 +275,16 @@ namespace BlackCat {
                 // 测试网
                 this.type = 2;
                 // sgas合约地址、SGAS旧合约地址
-                tools.CoinTool.id_SGAS = "0x9121e89e8a0849857262d67c8408601b5e8e0524";
+                tools.CoinTool.id_SGAS = "0x74f2dc36a68fdc4682034178eb2220729231db76";
                 tools.CoinTool.id_SGAS_OLD = ["0x961e628cc93d61bf636dc0443cf0548947a50dbe"]
+
+                // BCT/BCP
+                tools.CoinTool.id_BCT = "0x40a80749ef62da6fc3d74dbf6fc7745148922372"
+                tools.CoinTool.id_BCP = "0x04e31cee0443bb916534dad2adf508458920e66d"
+
+                // cgas协调退款地址
+                tools.WWW.api_cgas = 'https://apiwallet.nel.group/api/testnet';
+
                 // 回调
                 callback()
             }, 2)
@@ -286,8 +296,12 @@ namespace BlackCat {
                 // 主网
                 this.type = 1;
                 // sgas合约地址、SGAS旧合约地址
-                tools.CoinTool.id_SGAS = "0x9121e89e8a0849857262d67c8408601b5e8e0524";
+                tools.CoinTool.id_SGAS = "0x74f2dc36a68fdc4682034178eb2220729231db76";
                 tools.CoinTool.id_SGAS_OLD = ["0x961e628cc93d61bf636dc0443cf0548947a50dbe"]
+
+                // cgas协调退款地址
+                tools.WWW.api_cgas = 'https://apiwallet.nel.group/api/mainnet';
+
                 // 回调
                 callback()
             }, 1)

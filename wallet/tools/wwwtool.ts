@@ -9,6 +9,7 @@ namespace BlackCat.tools {
         static api_nodes: string
         // static apiaggr: string;
         static api_clis: string;
+        static api_cgas: string;
 
         static makeRpcUrl(url: string, method: string, ..._params: any[]) {
             var urlout = url + "?jsonrpc=2.0&id=1&method=" + method + "&params=[";
@@ -103,9 +104,9 @@ namespace BlackCat.tools {
             return r;
         }
 
-        static async api_getUTXOsToPay(address: string, asset: string, value: number, fromMax: number = 0) {
-            var postdata = WWW.makeRpcPostBody("getutxostopay", address, asset, value, fromMax);
-            var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
+        static async api_getAvailableUTXOS(address: string, amount: number) {
+            var postdata = WWW.makeRpcPostBody("getavailableutxos", address, amount);
+            var result = await fetch(WWW.api_cgas, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
             var r = json["result"];
             return r;

@@ -67,7 +67,7 @@ namespace BlackCat {
             // 导入钱包图标
             var inputFileI = this.objCreate("i")
             // inputFileI.type = "text"
-            inputFileI.classList.add("pc_upload", "iconfont", "icon-wenjianjia")
+            inputFileI.classList.add("pc_upload", "iconfont", "icon-bc-wenjianjia")
             this.ObjAppend(popupbox, inputFileI)
 
             // 导入钱包

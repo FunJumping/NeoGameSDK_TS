@@ -22,7 +22,7 @@ namespace BlackCat {
 
             // 返回
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
                 this.return()
@@ -112,17 +112,17 @@ namespace BlackCat {
                         //网络线路高度
                         var divHeight = this.objCreate("div")
                         if (type == "nodes") {
-                            divHeight.classList.add("pc_payheighet", "iconfont", "icon-blalian")
+                            divHeight.classList.add("pc_payheighet", "iconfont", "icon-bc-blalian")
                         }
                         if (type == "clis") {
-                            divHeight.classList.add("pc_payheighet", "iconfont", "icon-neolian")
+                            divHeight.classList.add("pc_payheighet", "iconfont", "icon-bc-neolian")
                         }
                         divHeight.textContent = "n/a"
                         this.ObjAppend(li, divHeight)
 
                         // 选中网络路线图标
                         var iArea = this.objCreate("i")
-                        iArea.classList.add("iconfont", "icon-gou")
+                        iArea.classList.add("iconfont", "icon-bc-gou")
                         this.ObjAppend(li, iArea)
 
                         this.getHeight(type, nodelist, divHeight, li, currNodeInfo)

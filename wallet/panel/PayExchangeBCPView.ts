@@ -3,7 +3,7 @@
 
 namespace BlackCat {
     // 交易所
-    export class PayExchangeView extends ViewBase {
+    export class PayExchangeBCPView extends ViewBase {
 
 
         private exchange_type_buy: HTMLElement
@@ -36,7 +36,7 @@ namespace BlackCat {
 
             //标题
             var headerH1 = this.objCreate("h1")
-            headerH1.textContent = Main.langMgr.get("pay_exchange_gas") // "购买GAS"
+            headerH1.textContent = Main.langMgr.get("pay_exchange_bcp") // "购买BCP"
             this.ObjAppend(header, headerH1)
 
 
@@ -52,8 +52,8 @@ namespace BlackCat {
             this.ObjAppend(this.div, this.exchange_detail)
             
 
-            // 获取gas/btc行情
-            this.getExchangeInfo(0)
+            // 获取BCP/btc行情
+            this.getExchangeBCPInfo(0)
 
         }
 
@@ -71,21 +71,21 @@ namespace BlackCat {
         }
 
         toRefer() {
-            if (PayExchangeView.refer) {
-                Main.viewMgr.change(PayExchangeView.refer)
-                PayExchangeView.refer = null;
+            if (PayExchangeBCPView.refer) {
+                Main.viewMgr.change(PayExchangeBCPView.refer)
+                PayExchangeBCPView.refer = null;
             }
         }
 
-        private async getExchangeInfo(src_coin: number) {
+        private async getExchangeBCPInfo(src_coin: number) {
             try {
-                var res = await ApiTool.getExchangeInfo(Main.user.info.uid, Main.user.info.token, src_coin)
+                var res = await ApiTool.getExchangeBCPInfo(Main.user.info.uid, Main.user.info.token, src_coin)
                 if (res.r) {
                     let data = res.data;
-                    console.log("[BlaCat]", '[PayExchangeView]', 'getExchangeInfo, data =>', data)
+                    console.log("[BlaCat]", '[PayExchangeBCPView]', 'getExchangeBCPInfo, data =>', data)
                     if (data && data.hasOwnProperty("info") && data.hasOwnProperty("coin") && data.hasOwnProperty("jys")) {
                         this.exchange_info = data;
-                        this.showExchangeInfo()
+                        this.showExchangeBCPInfo()
                     }
                 }
                 else {
@@ -97,9 +97,9 @@ namespace BlackCat {
             }
         }
 
-        private showExchangeInfo() {
+        private showExchangeBCPInfo() {
 
-            console.log("[BlaCat]", '[PayExchangeView]', 'showExchangeInfo ...')
+            console.log("[BlaCat]", '[PayExchangeBCPView]', 'showExchangeBCPInfo ...')
             // 当前币种
             this.exchange_coin_type = this.exchange_info.coin[0][0];
             // 兑换币种类显示
@@ -155,11 +155,12 @@ namespace BlackCat {
             this.ObjAppend(buyObj_name, buyObj_name_img)
             //名称内容
             var buyObj_name_content = this.objCreate("label")
+            //buyObj_name_content.textContent = "Bla Cat"
             buyObj_name_content.textContent = Main.platName
             this.ObjAppend(buyObj_name, buyObj_name_content)
             //名称类型
             var buyObj_name_type = this.objCreate("p")
-            buyObj_name_type.textContent = "GAS/" + this.exchange_coin_name
+            buyObj_name_type.textContent = "BCP/" + this.exchange_coin_name
             this.ObjAppend(buyObj_name, buyObj_name_type)
             this.ObjAppend(this.exchange_buyObj, buyObj_name)
 
@@ -184,7 +185,7 @@ namespace BlackCat {
             buyObj_buy_btn.textContent = Main.langMgr.get("pay_exchange_purchase") // "购买"
             buyObj_buy_btn.onclick = () => {
                 this.hidden()
-                PayExchangeDetailView.refer = "PayExchangeView"
+                PayExchangeDetailView.refer = "PayExchangeBCPView"
                 Main.viewMgr.change("PayExchangeDetailView")
             }
             this.ObjAppend(buyObj_buy, buyObj_buy_btn)
@@ -220,7 +221,7 @@ namespace BlackCat {
                         this.ObjAppend(li_name, li_name_content)
                         // 名称类型
                         var li_name_coin = this.objCreate("p")
-                        li_name_coin.textContent = "GAS/" + this.exchange_coin_name
+                        li_name_coin.textContent = "BCP/" + this.exchange_coin_name
                         this.ObjAppend(li_name, li_name_coin)
                         this.ObjAppend(detail_li, li_name)
 

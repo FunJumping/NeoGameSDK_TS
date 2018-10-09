@@ -18,7 +18,7 @@ namespace BlackCat {
 
             //返回
             var returnA = this.objCreate("a")
-            returnA.classList.add("iconfont", "icon-fanhui")
+            returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
                 this.return()
@@ -191,7 +191,7 @@ namespace BlackCat {
 
             //下载二维码"
             var qr_download = this.objCreate("a")
-            qr_download.classList.add("iconfont", "icon-xiazai")
+            qr_download.classList.add("iconfont", "icon-bc-xiazai")
             qr_download.textContent = Main.langMgr.get("addressbook_det_download") // "下载二维码"
             this.ObjAppend(divQRCode, qr_download)
 

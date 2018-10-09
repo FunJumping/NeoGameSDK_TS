@@ -9,6 +9,10 @@ namespace BlackCat.tools {
         static id_SGAS: string = "";
         static id_SGAS_OLD: Array<string> = [];
 
+        static id_BCT: string = "";
+        static id_BCP: string = "";
+
+
         // static readonly id_SGAS_RATE: number = 100000000;
         static assetID2name: { [id: string]: string } = {};
         static name2assetID: { [id: string]: string } = {};
@@ -662,6 +666,33 @@ namespace BlackCat.tools {
                 }
                 let utxo = new UTXO();
                 utxo.addr = item.addr;
+                utxo.asset = item.asset;
+                utxo.n = item.n;
+                utxo.txid = item.txid;
+                utxo.count = Neo.Fixed8.parse(item.value);
+                assets[asset].push(utxo);
+            }
+
+            return assets;
+        }
+
+
+        /**
+         * 协调获取CGAS的UTXO
+         */
+        static async getCgasAssets(id_SGAS: string = this.id_SGAS, amount: number): Promise<{ [id: string]: UTXO[] }> {
+            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_SGAS.hexToBytes().reverse())
+            var utxos = await tools.WWW.api_getAvailableUTXOS(scriptHash, amount);   //获得utxo
+
+            var assets = {};        //对utxo进行归类，并且将count由string转换成 Neo.Fixed8
+            for (var i in utxos) {
+                var item = utxos[i];
+                var asset = CoinTool.id_GAS;
+                if (assets[asset] == undefined || assets[asset] == null) {
+                    assets[asset] = [];
+                }
+                let utxo = new UTXO();
+                utxo.addr = scriptHash;
                 utxo.asset = item.asset;
                 utxo.n = item.n;
                 utxo.txid = item.txid;

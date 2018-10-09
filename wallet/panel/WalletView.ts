@@ -17,7 +17,7 @@ namespace BlackCat {
             this.ObjAppend(this.div, walletTitle)
 
             var walletTitleH1 = this.objCreate("h1")
-            walletTitleH1.classList.add("iconfont", "icon-blacat")
+            walletTitleH1.classList.add("iconfont", "icon-bc-blacat")
             // walletTitleH1.innerText = Main.platName
             this.ObjAppend(walletTitle, walletTitleH1)
 
@@ -37,7 +37,7 @@ namespace BlackCat {
             this.ObjAppend(this.div, createWallet)
 
             var iCreateWallet = this.objCreate("i")
-            iCreateWallet.classList.add("iconfont", "icon-chuangjian1")
+            iCreateWallet.classList.add("iconfont", "icon-bc-chuangjian1")
             this.ObjAppend(createWallet, iCreateWallet)
 
 
@@ -51,7 +51,7 @@ namespace BlackCat {
             this.ObjAppend(this.div, importWallet)
 
             var iImportWallet = this.objCreate("i")
-            iImportWallet.classList.add("iconfont", "icon-daoru1")
+            iImportWallet.classList.add("iconfont", "icon-bc-daoru1")
             this.ObjAppend(importWallet, iImportWallet)
         }
 

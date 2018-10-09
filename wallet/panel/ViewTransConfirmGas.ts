@@ -45,7 +45,7 @@ namespace BlackCat {
                 headerTitle.classList.add("pc_header")
                 // 返回按钮
                 var returnBtn = this.objCreate("a")
-                returnBtn.classList.add("iconfont", "icon-fanhui")
+                returnBtn.classList.add("iconfont", "icon-bc-fanhui")
                 returnBtn.textContent = Main.langMgr.get("return") // "返回"
                 returnBtn.onclick = () => {
                     this.return()

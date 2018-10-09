@@ -42,6 +42,7 @@ namespace BlackCat {
 
         payWalletDetailView: PayWalletDetailView; // 钱包详情
         payExchangeView: PayExchangeView; // 交易所
+        payExchangeBCPView: PayExchangeBCPView; // BCP兑换
         payExchangeDetailView: PayExchangeDetailView; //交易购买所详情
         payReceivablesView: PayReceivablesView;//收款
         payTransferView: PayTransferView; // 转账
@@ -51,6 +52,8 @@ namespace BlackCat {
         addressbookOpView: AddressbookOpView; //通讯录操作联系人信息
 
         viewConnecting: ViewConnecting; // 连接中
+
+        payExchangeBCTView: PayExchangeBCTView; //91币充值
 
 
         constructor() {
@@ -182,6 +185,14 @@ namespace BlackCat {
                         this.views[type] = this.payExchangeView
                     }
                     this.payExchangeView.start()
+                    break;
+                case "PayExchangeBCPView":
+                    console.log("[BlaCat]", '[ViewMgr]', '显示交易所(' + type + ') ...')
+                    if (!this.payExchangeBCPView) {
+                        this.payExchangeBCPView = new PayExchangeBCPView();
+                        this.views[type] = this.payExchangeBCPView
+                    }
+                    this.payExchangeBCPView.start()
                     break;
                 case "PayExchangeDetailView":
                     console.log("[BlaCat]", '[ViewMgr]', '显示交易所购买详情(' + type + ') ...')
@@ -366,7 +377,13 @@ namespace BlackCat {
                     }
                     this.viewConnecting.start()
                     break;
-
+                case "PayExchangeBCTView" :
+                    if (!this.payExchangeBCTView) {
+                        this.payExchangeBCTView = new PayExchangeBCTView();
+                        this.views[type] = this.payExchangeBCTView
+                    }
+                    this.payExchangeBCTView.start()
+                    break;
             }
         }
 

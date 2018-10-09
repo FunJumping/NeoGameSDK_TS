@@ -36,6 +36,7 @@
     <hr>
     <button onclick="setLang('en')">英文</button>
     <button onclick="setLang('cn')" style="margin-left:2px">中文</button>
+    <button onclick="setLang('jp')" style="margin-left:2px">日文</button>
     <button onclick="showMain()" style="margin-left:20px">显示</button>
     <button onclick="showIcon()" style="margin-left:2px">隐藏</button>
 
@@ -231,13 +232,18 @@
             }
         };
 
-        // var appid = "1000000";
-        var appid = "5";
+        var appid = "";
         var appkey = "";
 
-        initSDK()
-        setDefaultNetType(2)
-        login()
+        if (appid == "" || appkey == "") {
+            alert("请先设置appid和appkey! \r\n Please set appid and appkey first! ")
+        }
+        else {
+            initSDK()
+            setDefaultNetType(2)
+
+            login()
+        }
 
 
         function showDiv(id) {
