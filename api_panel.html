@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>BlackCat SDK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="res/css/panel.css" type="text/css" />
 
@@ -20,38 +21,56 @@
 
 </head>
 
-<body style="background-color: cadetblue">
-    <button onclick="initSDK()">初始化SDK</button>
-    <button onclick="login()" style="margin-left:20px">登录</button>
-    <button onclick="showDiv('makerechargediv')" style="margin-left:20px">充值</button>
+<body style="background-color: cadetblue;">
 
-    <button onclick="getbalance()" style="margin-left:20px">余额</button>
-    <button onclick="getUserInfo()" style="margin-left:20px">用户信息</button>
-    <button onclick="getNetType()" style="margin-left:20px">网络类型</button>
+<style>
+.sdkbutton {
+    padding: 3px; margin: 5px; position: relative; float: left;
+}
+.sdkhr {
+    width: 100%
+}
+</style>
+
+    <br/>
+    <button class="sdkbutton" onclick="initSDK()">初始化</button>
+    <button class="sdkbutton" onclick="initexSDK()">初始化EX</button>
+    <button class="sdkbutton" onclick="login()">登录</button>
+    <br/><br/>
+
+    <hr class="sdkhr">
+    <button class="sdkbutton" onclick="getUserInfo()">用户信息</button>
+    <button class="sdkbutton" onclick="getbalance()">代币余额</button>
+    <button class="sdkbutton" onclick="getNetType()">网络类型</button>
+    <button class="sdkbutton" onclick="getHeight()">钱包高度</button>
+    <br/><br/>
+
+    <hr class="sdkhr">
+    <button class="sdkbutton" onclick="showDiv('invokescriptdiv')">合约读取</button>
+    <button class="sdkbutton" onclick="showDiv('makerawtransactiondiv')">合约交易</button>
+    <button class="sdkbutton" onclick="showDiv('confirmNotifydiv')">确认通知</button>
+    <br><br>
+
+    <hr class="sdkhr">
+    <button class="sdkbutton" onclick="showDiv('makerechargediv')">充值</button>
+    <button class="sdkbutton" onclick="showDiv('makeTransferdiv')">转账</button>
+    <button class="sdkbutton" onclick="showDiv('makeGasTransferMultidiv')">Gas批量转账</button>
+    <br><br>
     
-    <hr>
-    <button onclick="showDiv('invokescriptdiv')">合约读取</button>
-    <button onclick="showDiv('makerawtransactiondiv')" style="margin-left:20px">合约交易</button>
+    <hr width="100%">
+    <button class="sdkbutton" onclick="setLang('cn')">中文</button>
+    <button class="sdkbutton" onclick="setLang('en')">英文</button>
+    <button class="sdkbutton" onclick="setLang('jp')">日文</button>
+    <button class="sdkbutton" onclick="showMain()">显示</button>
+    <button class="sdkbutton" onclick="showIcon()">隐藏</button>
+    <button class="sdkbutton" onclick="setDefaultNetType(1)">默认主网</button>
+    <button class="sdkbutton" onclick="setDefaultNetType(2)">默认测试网</button>
+    <br><br>
 
-    <hr>
-    <button onclick="setLang('en')">英文</button>
-    <button onclick="setLang('cn')" style="margin-left:2px">中文</button>
-    <button onclick="setLang('jp')" style="margin-left:2px">日文</button>
-    <button onclick="showMain()" style="margin-left:20px">显示</button>
-    <button onclick="showIcon()" style="margin-left:2px">隐藏</button>
-
-    <button onclick="setDefaultNetType(1)" style="margin-left:20px">默认主网</button>
-    <button onclick="setDefaultNetType(2)" style="margin-left:2px">默认测试网</button>
-
-
-
-    <hr>
     
-    <button onclick="showDiv('makeGasTransferdiv')" style="margin-left:0px">Gas转账</button>
-    <button onclick="showDiv('makeGasTransferMultidiv')" style="margin-left:20px">Gas批量转账</button>
-    <button onclick="showDiv('confirmNotifydiv')" style="margin-left:20px">确认通知</button>
+    
 
-    <hr>
+    <hr class="sdkhr">
 
     <div class="dis" id="invokescriptdiv" style="display:none">
         nnc（合约地址）:
@@ -91,6 +110,10 @@
     </div>
 
     <div class="dis" id="makerechargediv" style="display: none">
+        type(类型: cgas、cneo、bct、bcp、btc、eth)：
+        <br/>
+        <input style="width: 100%" type="text" id="makerecharge_type" name="makerecharge_type" value="cgas">
+        <br/>
         count（充值金额）:
         <br/>
         <input style="width: 100%" type="text" id="count" name="count" value="0.001">
@@ -126,6 +149,38 @@
         <br/>
         <button onclick="makeGasTransfer()">确认</button>
     </div>
+    <div class="dis" id="makeNeoTransferdiv" style="display: none">
+        toaddr（转账地址）:
+        <br/>
+        <input style="width: 100%" type="text" id="neo_toaddr" name="neo_toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5">
+        <br/> count（转账数量）:
+        <br/>
+        <input style="width: 100%" type="text" id="neo_count" name="neo_count" value="1">
+        <br/> extString（透传参数）:
+        <br/>
+        <input style="width: 100%" type="text" id="neo_extString" name="neo_extString" value="makeNeoTransfer">
+        <br/>
+        <br/>
+        <button onclick="makeNeoTransfer()">确认</button>
+    </div>
+
+    <div class="dis" id="makeTransferdiv" style="display: none">
+        转账币种：(gas/neo/cgas/cneo/bcp/bct/btc/eth)
+        <input style="width: 100%" type="text" id="trans_type" name="trans_type" value="btc">
+        <br/>
+        toaddr（转账地址）:
+        <br/>
+        <input style="width: 100%" type="text" id="trans_toaddr" name="trans_toaddr" value="AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5">
+        <br/> count（转账数量）:
+        <br/>
+        <input style="width: 100%" type="text" id="trans_count" name="trans_count" value="1">
+        <br/> extString（透传参数）:
+        <br/>
+        <input style="width: 100%" type="text" id="trans_extString" name="trans_extString" value="makeTransfer">
+        <br/>
+        <br/>
+        <button onclick="makeTransfer()">确认</button>
+    </div>
 
     <div class="dis" id="makeGasTransferMultidiv" style="display: none">
         toaddr（转账地址1）:
@@ -154,13 +209,98 @@
         <button onclick="makeGasTransferMulti()">确认</button>
     </div>
 
+    <div class="dis" id="bancordiv" style="display: none">
+        asset（代币合约地址）:
+        <br/>
+        <input style="width: 100%" type="text" id="bancor_asset" name="bancor_asset" value="0x663bb7074294e8bcefe89e30e87db55ec3b70c65">
+        <br/> count（数量）:
+        <br/>
+        <input style="width: 100%" type="text" id="bancor_count" name="bancor_count" value="1">
+        <br/>买卖类型（买：1，卖：2）
+        <br/>
+        <input style="width: 100%" type="text" id="bancor_type" name="bancor_type" value="1">
+        <br/> extString（透传参数）:
+        <br/>
+        <input style="width: 100%" type="text" id="bancor_ext" name="bancor_ext" value="bancor">
+        <br/>
+        <br/>
+        <button onclick="bancor()">确认</button>
+    </div>
+
+    <div class="dis" id="buyvipdiv" style="display: none">
+        month:
+        <br/>
+        <input style="width: 100%" type="text" id="buyvip_month" name="buyvip_month" value="1">
+        <br/> coinType(bcp/bct):
+        <br/>
+        <input style="width: 100%" type="text" id="buyvip_pay_way" name="buyvip_pay_way" value="bct">
+        <br/>invite:
+        <br/>
+        <input style="width: 100%" type="text" id="buyvip_invite" name="buyvip_invite" value="">
+        <br/> extString（透传参数）:
+        <br/>
+        <input style="width: 100%" type="text" id="buyvip_ext" name="buyvip_ext" value="buyvip">
+        <br/>
+        <br/>
+        <button onclick="buyVip()">确认</button>
+    </div>
 
 
-    <hr>
+    <div class="dis" id="pbuydiv" style="display: none">
+        bct_nnc:
+        <input style="width: 100%" type="text" id="pbuy_nnc" name="pbuy_nnc" value="0x40a80749ef62da6fc3d74dbf6fc7745148922372">
+        
+        <br/>my_wallet（我的钱包地址）:
+        <input style="width: 100%" type="text" id="pbuy_my_wallet" name="pbuy_my_wallet" value="">
+        
+        <br/>bct_wallet（收款地址）:
+        <input style="width: 100%" type="text" id="pbuy_bct_wallet" name="pbuy_bct_wallet" value="AM5ho5nEodQiai1mCTFDV3YUNYApCorMCX">
+        
+        <br/>bct:
+        <input style="width: 100%" type="text" id="pbuy_bct" name="pbuy_bct" value="1699">
+
+        <br/>inviter:(AbN2K2trYzgx8WMg2H7U7JHH6RQVzz2fnx)
+        <input style="width: 100%" type="text" id="pbuy_inviter" name="pbuy_inviter" value="AbN2K2trYzgx8WMg2H7U7JHH6RQVzz2fnx">
+        
+        <br/> extString（透传参数）:
+        <br/>
+        <input style="width: 100%" type="text" id="pbuy_ext" name="pbuy_ext" value="partner_buy">
+        <br/>
+        <br/>
+        <button onclick="partnerBuy()">确认购买</button>
+    </div>
+
+
+    <div class="dis" id="pupgradediv" style="display: none">
+        bct_nnc:
+        <input style="width: 100%" type="text" id="pupgrade_nnc" name="pupgrade_nnc" value="0x40a80749ef62da6fc3d74dbf6fc7745148922372">
+        
+        <br/>my_wallet（我的钱包地址）:
+        <input style="width: 100%" type="text" id="pupgrade_my_wallet" name="pupgrade_my_wallet" value="">
+        
+        <br/>bct_wallet（收款地址）:
+        <input style="width: 100%" type="text" id="pupgrade_bct_wallet" name="pupgrade_bct_wallet" value="AM5ho5nEodQiai1mCTFDV3YUNYApCorMCX">
+        
+        <br/>bct:
+        <input style="width: 100%" type="text" id="pupgrade_bct" name="pupgrade_bct" value="1699">
+
+        <br/>lv:(升级等级: 2,3,4)
+        <input style="width: 100%" type="text" id="pupgrade_lv" name="pupgrade_lv" value="2">
+        
+        <br/> extString（透传参数）:
+        <br/>
+        <input style="width: 100%" type="text" id="pupgrade_ext" name="pupgrade_ext" value="partner_upgrade">
+        <br/>
+        <br/>
+        <button onclick="partnerUpgrade()">确认升级</button>
+    </div>
+    
+    <hr class="sdkhr">
     <div id="res"></div>
 
     <script>
-        
+        var appid = "1";
+        var appkey = "1";
         var listener = function (data) {
             // 页面显示
             var resObj = document.getElementById('res')
@@ -229,21 +369,13 @@
                         BlackCat.SDK.confirmAppNotify({txid: txid})
                     }
                     break;
+                case "bancorRes": // bancor回调
+                    
+                    break;
             }
         };
 
-        var appid = "";
-        var appkey = "";
 
-        if (appid == "" || appkey == "") {
-            alert("请先设置appid和appkey! \r\n Please set appid and appkey first! ")
-        }
-        else {
-            initSDK()
-            setDefaultNetType(2)
-
-            login()
-        }
 
 
         function showDiv(id) {
@@ -252,7 +384,13 @@
             document.getElementById("makerechargediv").style.display = "none";
             document.getElementById("confirmNotifydiv").style.display = "none";
             document.getElementById("makeGasTransferdiv").style.display = "none";
+            document.getElementById("makeNeoTransferdiv").style.display = "none";
             document.getElementById("makeGasTransferMultidiv").style.display = "none";
+            document.getElementById("bancordiv").style.display = "none";
+            document.getElementById("buyvipdiv").style.display = "none";
+            document.getElementById("pbuydiv").style.display = "none";
+            document.getElementById("pupgradediv").style.display = "none";
+            document.getElementById("makeTransferdiv").style.display = "none"
 
             document.getElementById(id).style.display = ""
         }
@@ -261,6 +399,18 @@
             BlackCat.SDK.init(appid, appkey, listener, "cn")
         }
 
+        function initexSDK() {
+            var params = {
+                appid: appid,
+                appkey: appkey,
+                listener: listener,
+                lang: "en",
+                default_net: 1,
+            }
+            BlackCat.SDK.initex(params, function(res){
+                console.log("[BlaCat]", 'initexSDK.callback.function.res => ', res)
+            })
+        }
         function setLang(lang) {
             BlackCat.SDK.setLang(lang)
         }
@@ -300,6 +450,7 @@
 
         function makerecharge() {
             var data = {
+                type: document.getElementById("makerecharge_type").value,
                 count: document.getElementById('count').value,
                 extString: document.getElementById('extString3').value
             }
@@ -349,6 +500,27 @@
                 console.log("makeGasTransfer.callback.function.res ", res)
             })
         }
+        function makeNeoTransfer() {
+            var data = {
+                toaddr: document.getElementById('neo_toaddr').value,
+                count: document.getElementById('neo_count').value,
+                extString: document.getElementById('neo_extString').value
+            }
+            BlackCat.SDK.makeNeoTransfer(data, function (res) {
+                console.log("makeNeoTransfer.callback.function.res ", res)
+            })
+        }
+        function makeTransfer() {
+            var data = {
+                type: document.getElementById("trans_type").value,
+                toaddr: document.getElementById('trans_toaddr').value,
+                count: document.getElementById('trans_count').value,
+                extString: document.getElementById('trans_extString').value
+            }
+            BlackCat.SDK.makeTransfer(data, function (res) {
+                console.log("makeTransfer.callback.function.res ", res)
+            })
+        }
 
         function makeGasTransferMulti() {
             var data = [
@@ -376,6 +548,94 @@
 
         function setDefaultNetType(type) {
             BlackCat.SDK.setDefaultNetType(type)
+        }
+
+        function bancor() {
+            var data = {
+                asset: document.getElementById('bancor_asset').value,
+                count: document.getElementById('bancor_count').value,
+                type: document.getElementById('bancor_type').value,
+                extString: document.getElementById('bancor_ext').value
+            }
+            BlackCat.SDK.bancor(data, function (res) {
+                console.log("bancor.callback.function.res ", res)
+            })
+        }
+
+        function getHeight() {
+            BlackCat.SDK.getHeight(function(res) {
+                console.log("getHeight.function.res ", res)
+            })
+        }
+
+        function buyVip() {
+            var data = {
+                month: document.getElementById("buyvip_month").value,
+                pay_way: document.getElementById('buyvip_pay_way').value,
+                invite: document.getElementById("buyvip_invite").value,
+                extString: document.getElementById("buyvip_ext").value,
+            }
+            BlackCat.SDK.buyVip(data, function(res) {
+                console.log("buyVip.function.res ", res)
+            })
+        }
+
+        function partnerBuy() {
+            var bct_nnc = document.getElementById('pupgrade_nnc').value;
+            var bct_mywallet = document.getElementById('pbuy_my_wallet').value;
+            var bct_wallet = document.getElementById('pbuy_bct_wallet').value;
+            var bct_value = document.getElementById('pbuy_bct').value;
+            
+            var inviter = document.getElementById('pbuy_inviter').value;
+
+            var data = {
+                action: "buy",
+                inviter: inviter,
+                nnc: bct_nnc,
+                sbParamJson: ["(addr)"+bct_mywallet,"(address)"+bct_wallet,"(integer)"+bct_value+"0000"],
+                sbPushString: "transfer",
+                extString: document.getElementById('pbuy_ext').value
+            }
+
+            BlackCat.SDK.makeRawTransaction(data, function (res) {
+                console.log("[BlaCat]", 'makerawtransaction.partnerBuy.callback.function.res => ', res)
+            })
+        }
+
+        function partnerExchange() {
+
+        }
+
+        function partnerUpgrade() {
+            var bct_nnc = document.getElementById('pupgrade_nnc').value;
+            var bct_mywallet = document.getElementById('pupgrade_my_wallet').value;
+            var bct_wallet = document.getElementById('pupgrade_bct_wallet').value;
+            var bct_value = document.getElementById('pupgrade_bct').value;
+            
+            var lv = document.getElementById('pupgrade_lv').value;
+
+            var data = {
+                action: "upgrade",
+                lv: lv,
+                nnc: bct_nnc,
+                sbParamJson: ["(addr)"+bct_mywallet,"(address)"+bct_wallet,"(integer)"+bct_value+"0000"],
+                sbPushString: "transfer",
+                extString: document.getElementById('pupgrade_ext').value
+            }
+
+            BlackCat.SDK.makeRawTransaction(data, function (res) {
+                console.log("[BlaCat]", 'makerawtransaction.partnerUpgrade.callback.function.res => ', res)
+            })
+        }
+
+
+        if (appid == "" || appkey == "") {
+            alert("请先设置appid和appkey! \r\n Please set appid and appkey first! ")
+        }
+        else {
+            initSDK()
+            setDefaultNetType(2)
+            login()
         }
     </script>
 </body>

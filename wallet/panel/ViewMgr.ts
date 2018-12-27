@@ -8,9 +8,9 @@ namespace BlackCat {
         mainView: MainView; // 主界面
 
         viewWalletOpen: ViewWalletOpen; // 打开钱包
-        viewTransCount: ViewTransCount; // 输入交易sgas数量
-        viewTransConfirm: ViewTransConfirm; // 交易确认框
-        viewTransConfirmGas: ViewTransConfirmGas; // Gas交易确认框
+        viewTransferCount: ViewTransferCount; // 输入交易cgas/cneo数量
+        viewTransactionConfirm: ViewTransactionConfirm; // 交易确认框
+        viewTransferConfirm: ViewTransferConfirm; // Gas交易确认框
         viewAlert: ViewAlert;//提示
         viewConfirm: ViewConfirm;//确认
         viewToast: ViewToast;//自动消失
@@ -28,6 +28,7 @@ namespace BlackCat {
         payListDetailView: PayListDetailView; // 钱包记录详细
         payListMoreView: PayListMoreView; // 更多记录
 
+        personalCenterView: PersonalCenterView; //个人中心
         myInfoView: MyInfoView; // 我的信息
         modifyImgView: ModifyImgView; //修改头像
         modifyNameView: ModifyNameView; //修改昵称
@@ -35,6 +36,7 @@ namespace BlackCat {
         modifyAreaView: ModifyAreaView;//修改地区
         modifyTransactionFeeView: ModifyTransactionFeeView;//修改手续费
         modifyNetworkLineView: ModifyNetworkLineView;//修改网络线路
+        modifyVipView: ModifyVipView;//开通会员
 
         securityCenterView: SecurityCenterView; //安全中心
         trustContractView: TrustContractView; //信任合约
@@ -42,7 +44,6 @@ namespace BlackCat {
 
         payWalletDetailView: PayWalletDetailView; // 钱包详情
         payExchangeView: PayExchangeView; // 交易所
-        payExchangeBCPView: PayExchangeBCPView; // BCP兑换
         payExchangeDetailView: PayExchangeDetailView; //交易购买所详情
         payReceivablesView: PayReceivablesView;//收款
         payTransferView: PayTransferView; // 转账
@@ -54,6 +55,8 @@ namespace BlackCat {
         viewConnecting: ViewConnecting; // 连接中
 
         payExchangeBCTView: PayExchangeBCTView; //91币充值
+        payExchangeShowWalletView: PayExchangeShowWalletView; // 显示交易时的NEO/BTC/ETH钱包二维码
+
 
 
         constructor() {
@@ -74,23 +77,23 @@ namespace BlackCat {
                     }
                     this.viewWalletOpen.start()
                     break;
-                // 输入sgas交易数量
-                case "ViewTransCount":
+                // 输入cgas/cneo交易数量
+                case "ViewTransferCount":
                     console.log("[BlaCat]", '[ViewMgr]', '显示输入交易数量界面(' + type + ') ...')
-                    if (!this.viewTransCount) {
-                        this.viewTransCount = new ViewTransCount();
-                        this.views[type] = this.viewTransCount
+                    if (!this.viewTransferCount) {
+                        this.viewTransferCount = new ViewTransferCount();
+                        this.views[type] = this.viewTransferCount
                     }
-                    this.viewTransCount.start()
+                    this.viewTransferCount.start()
                     break;
                 // 交易确认
-                case "ViewTransConfirm":
+                case "ViewTransactionConfirm":
                     console.log("[BlaCat]", '[viewMgr]', '显示确认交易界面(' + type + ') ...')
-                    if (!this.viewTransConfirm) {
-                        this.viewTransConfirm = new ViewTransConfirm();
-                        this.views[type] = this.viewTransConfirm
+                    if (!this.viewTransactionConfirm) {
+                        this.viewTransactionConfirm = new ViewTransactionConfirm();
+                        this.views[type] = this.viewTransactionConfirm
                     }
-                    this.viewTransConfirm.start()
+                    this.viewTransactionConfirm.start()
                     break;
                 // 小图标
                 case "IconView":
@@ -169,6 +172,14 @@ namespace BlackCat {
                     }
                     this.myInfoView.start()
                     break;
+                case "PersonalCenterView":
+                console.log("[BlaCat]", '[ViewMgr]', '显示个人中心(' + type + ') ...')
+                if (!this.personalCenterView) {
+                    this.personalCenterView = new PersonalCenterView();
+                    this.views[type] = this.personalCenterView
+                }
+                this.personalCenterView.start()
+                break;
 
                 case "PayWalletDetailView":
                     console.log("[BlaCat]", '[ViewMgr]', '显示钱包详情(' + type + ') ...')
@@ -185,14 +196,6 @@ namespace BlackCat {
                         this.views[type] = this.payExchangeView
                     }
                     this.payExchangeView.start()
-                    break;
-                case "PayExchangeBCPView":
-                    console.log("[BlaCat]", '[ViewMgr]', '显示交易所(' + type + ') ...')
-                    if (!this.payExchangeBCPView) {
-                        this.payExchangeBCPView = new PayExchangeBCPView();
-                        this.views[type] = this.payExchangeBCPView
-                    }
-                    this.payExchangeBCPView.start()
                     break;
                 case "PayExchangeDetailView":
                     console.log("[BlaCat]", '[ViewMgr]', '显示交易所购买详情(' + type + ') ...')
@@ -249,13 +252,13 @@ namespace BlackCat {
                     }
                     this.viewLoading.start()
                     break;
-                case "ViewTransConfirmGas":
-                    console.log("[BlaCat]", '[ViewMgr]', '显示Gas转账确认(' + type + ') ...')
-                    if (!this.viewTransConfirmGas) {
-                        this.viewTransConfirmGas = new ViewTransConfirmGas();
-                        this.views[type] = this.viewTransConfirmGas
+                case "ViewTransferConfirm":
+                    console.log("[BlaCat]", '[ViewMgr]', '显示转账确认(' + type + ') ...')
+                    if (!this.viewTransferConfirm) {
+                        this.viewTransferConfirm = new ViewTransferConfirm();
+                        this.views[type] = this.viewTransferConfirm
                     }
-                    this.viewTransConfirmGas.start()
+                    this.viewTransferConfirm.start()
                     break;
                 case "RegisterView":
                     console.log("[BlaCat]", '[ViewMgr]', '注册(' + type + ') ...')
@@ -321,6 +324,14 @@ namespace BlackCat {
                     }
                     this.modifyNetworkLineView.start()
                     break;
+                case "ModifyVipView":
+                console.log("[BlaCat]", '[ViewMgr]', '显示开通会员(' + type + ') ...')
+                if (!this.modifyVipView) {
+                    this.modifyVipView = new ModifyVipView()
+                    this.views[type] = this.modifyVipView
+                }
+                this.modifyVipView.start()
+                break;
                 case "SecurityCenterView":
                     console.log("[BlaCat]", '[ViewMgr]', '显示安全中心(' + type + ') ...')
                     if (!this.securityCenterView) {
@@ -384,6 +395,13 @@ namespace BlackCat {
                     }
                     this.payExchangeBCTView.start()
                     break;
+                case "PayExchangeShowWalletView" :
+                    if (!this.payExchangeShowWalletView) {
+                        this.payExchangeShowWalletView = new PayExchangeShowWalletView();
+                        this.views[type] = this.payExchangeShowWalletView
+                    }
+                    this.payExchangeShowWalletView.start()
+                break;
             }
         }
 

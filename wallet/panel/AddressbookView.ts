@@ -28,13 +28,7 @@ namespace BlackCat {
             headerReturn.classList.add("iconfont", "icon-bc-fanhui")
             headerReturn.textContent = Main.langMgr.get("return") // 返回
             headerReturn.onclick = () => {
-                if (AddressbookView.select) {
-                    this.remove()
-                    Main.viewMgr.payView.show()
-                    Main.viewMgr.payTransferView.show()
-                } else {
-                    this.return()
-                }
+                this.doCancel()
             }
             this.ObjAppend(header, headerReturn)
 
@@ -83,6 +77,20 @@ namespace BlackCat {
             if (AddressbookView.refer) {
                 Main.viewMgr.change(AddressbookView.refer)
                 AddressbookView.refer = null;
+            }
+        }
+
+        key_esc() {
+            this.doCancel()
+        }
+
+        private doCancel() {
+            if (AddressbookView.select) {
+                this.remove()
+                Main.viewMgr.payView.show()
+                Main.viewMgr.payTransferView.show()
+            } else {
+                this.return()
             }
         }
 

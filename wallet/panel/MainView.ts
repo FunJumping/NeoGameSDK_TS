@@ -12,6 +12,17 @@ namespace BlackCat {
                 this.isCreated = true;
                 this.bodyAppend(this.div)
             }
+            //判断是否为手机端，是的话添加pc_mobile类名
+            if(/AppleWebKit.*mobile/i.test(navigator.userAgent) || (/MIDP|SymbianOS|NOKIA|SAMSUNG|LG|NEC|TCL|Alcatel|BIRD|DBTEL|Dopod|PHILIPS|HAIER|LENOVO|MOT-|Nokia|SonyEricsson|SIE-|Amoi|ZTE/.test(navigator.userAgent))) {
+				if(window.location.href.indexOf("?mobile") < 0) {
+					try {
+						if(/iPad/i.test(navigator.userAgent)) {
+						} else {
+							this.div.classList.add("pc_mobile")
+						}
+					} catch(e) {}
+				}
+			}
         }
 
         create() {

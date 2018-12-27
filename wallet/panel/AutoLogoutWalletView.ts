@@ -65,10 +65,10 @@ namespace BlackCat {
         }
 
         toRefer() {
-            Main.viewMgr.securityCenterView.show()
+            if (AutoLogoutWalletView.refer) {
+                Main.viewMgr.change(AutoLogoutWalletView.refer)
+                AutoLogoutWalletView.refer = null;
+            }
         }
-
-
-
     }
 }

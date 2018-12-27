@@ -5,30 +5,48 @@ namespace BlackCat {
     // 钱包视图
     export class PayView extends ViewBase {
 
-        // 钱包
-        wallet_addr: string
-        // 余额
-        gas: number;
-        sgas: number;
+        // === 种类
+        static tokens: Array<string> = ["blacat", "neo", "other"]
+        // === 币种
+        static tokens_coin: Array<Array<string>> = [
+            ["bct", "bcp"],
+            ["gas", "cgas", "neo", "cneo"],
+            ["btc", "eth"],
+        ]
+        // === 老币种
+        static tokens_old: Object = {
+            neo: ["cgas", "cneo"],
+        }
 
+        // 钱包地址
+        wallet_addr: string
+        wallet_addr_other: any
+
+        // 各种币
+        // === blacat
         bct: number;
         bcp: number;
+        // === neo
+        gas: number;
+        cgas: number;
+        neo: number;
+        cneo: number;
+        // === other
+        btc: number
+        eth: number
 
-        listPageNum: number;
-        payMyWallet: HTMLElement;
         // cli高度
         height_clis: number;
-        height_nodes: number;
-
-
-        private spanGas: HTMLElement;
-        private spanSgas: HTMLElement;
-        private spanBCP: HTMLElement;
-        private spanBCT: HTMLElement;
-        private spanABC: HTMLElement;
-        
         private divHeight_clis: HTMLElement;
+        height_nodes: number;
         private divHeight_nodes: HTMLElement;
+
+        // 记录每页显示数量
+        listPageNum: number;
+
+        // 钱包记录
+        private walletListsHash: string;
+
 
         private divLists: HTMLDivElement;
         private divListsMore: HTMLElement;
@@ -37,32 +55,54 @@ namespace BlackCat {
         private getWalletListsTimeout: number;
         private getWalletListsTimeout_min: number;
         private WalletListsNeedConfirm: boolean;
-        walletListsNeedConfirmCounts: number;
-        private WalletListsHashString: string;
 
         private s_doGetWalletLists: any;
 
         private wallet_btn: HTMLElement;
         private assets_btn: HTMLElement;
 
+        private game_assets_element: HTMLElement // 游戏assets视图
+        private game_assets: any    // 游戏assets信息
+        private game_assets_ts: any // 游戏assets获取时间
+        private game_assets_update: number  // game_assets缓存时间
+        private allnep5_balance: any // 所有nep5资产余额
+
+        private pendingListsElement: HTMLElement; // 正在处理的记录
+
         reset() {
-            this.gas = 0;
-            this.sgas = 0;
 
-            this.bcp = 0;
-            this.bct = 0;
-
-            this.listPageNum = 10;
-
+            // 数量归零
+            PayView.tokens_coin.forEach((coins) => {
+                coins.forEach((coin) => {
+                    this[coin] = 0
+                })
+            })
+            // 旧合约数量归零
+            for (let token in PayView.tokens_old) {
+                PayView.tokens_old[token].forEach((coin) => {
+                    if (tools.CoinTool["id_" + coin.toUpperCase() + "_OLD"].length > 0) {
+                        tools.CoinTool["id_" + coin.toUpperCase() + "_OLD"].forEach((old) => {
+                            this[coin + "_old" + old] = 0
+                            this["span" + coin.toUpperCase() + "_OLD" + old] = null
+                        })
+                    }
+                })
+            }
+            
+            // 高度归零
             this.height_clis = 0;
             this.height_nodes = 0;
+
+            this.listPageNum = 10;
+            this.walletListsHash = null
 
             this.getWalletListsTimeout = 20000; // 15s出块，所以最小间隔20s
             this.getWalletListsTimeout_min = 10000; // 在>1个块时间并且<3个出块时间内，最小时间
             this.WalletListsNeedConfirm = false;
-            this.WalletListsHashString = "";
 
-            this.walletListsNeedConfirmCounts = 0;
+            this.game_assets_update = 1000 * 5; // 5s缓存
+            this.allnep5_balance = {}
+            this.game_assets_ts = null
 
             this.clearTimeout()
         }
@@ -91,8 +131,8 @@ namespace BlackCat {
             myinfo_a.classList.add("iconfont", "icon-bc-touxiang")
             myinfo_a.onclick = () => {
                 this.hidden()
-                MyInfoView.refer = "PayView"
-                Main.viewMgr.change("MyInfoView")
+                PersonalCenterView.refer = "PayView"
+                Main.viewMgr.change("PersonalCenterView")
             }
             this.ObjAppend(headerTitle, myinfo_a)
 
@@ -151,145 +191,53 @@ namespace BlackCat {
             aReturnGame.onclick = () => {
                 BlackCat.SDK.showIcon()
             }
-            this.ObjAppend(headerTitle, aReturnGame)
+            if (!window.hasOwnProperty("BC_androidSDK")) {
+                this.ObjAppend(headerTitle, aReturnGame)
+            }
 
             // 钱包、虚拟资产按钮
-            // var btnbox = this.objCreate("div")
-            // this.ObjAppend(this.div,btnbox)
-            // btnbox.classList.add("pc_btnbox")
+            var btnbox = this.objCreate("div")
+            this.ObjAppend(this.div, btnbox)
+            btnbox.classList.add("pc_btnbox")
             // 钱包按钮
-            // this.wallet_btn = this.objCreate("button")
-            // this.wallet_btn.textContent = Main.langMgr.get("pay_walletbtn")
-            // this.wallet_btn.classList.add("pc_active")
-            // this.ObjAppend(btnbox,this.wallet_btn);
-            // this.wallet_btn.onclick = () => {
-            //     assets.style.display = "none"
-            //     paycard.style.display = "block"
-            //     divCurrency.style.display = "block"
-            //     this.divLists.style.display = "block"
-            //     this.assets_btn.classList.remove("pc_active")
-            //     this.wallet_btn.classList.add("pc_active")
-            // }
+            this.wallet_btn = this.objCreate("button")
+            this.wallet_btn.textContent = Main.langMgr.get("pay_walletbtn")
+            this.wallet_btn.classList.add("pc_active")
+            this.ObjAppend(btnbox, this.wallet_btn);
+            this.wallet_btn.onclick = () => {
+                this.game_assets_element.style.display = "none"
+                paycard.style.display = "block"
+                divCurrency.style.display = "block"
+                this.divLists.style.display = "block"
+                this.assets_btn.classList.remove("pc_active")
+                this.wallet_btn.classList.add("pc_active")
+            }
             // 虚拟资产
-            // this.assets_btn = this.objCreate("button")
-            // this.assets_btn.textContent = Main.langMgr.get("pay_assets")
-            // this.ObjAppend(btnbox,this.assets_btn);
-            // this.assets_btn.onclick = () => {
-            //     assets.style.display = "block"
-            //     paycard.style.display = "none"
-            //     divCurrency.style.display = "none"
-            //     this.divLists.style.display = "none"
-            //     this.assets_btn.classList.add("pc_active")
-            //     this.wallet_btn.classList.remove("pc_active")
-            // }
+            this.assets_btn = this.objCreate("button")
+            this.assets_btn.textContent = Main.langMgr.get("pay_assets")
+            this.ObjAppend(btnbox, this.assets_btn);
+            this.assets_btn.onclick = () => {
+                this.game_assets_element.style.display = "block"
+                paycard.style.display = "none"
+                divCurrency.style.display = "none"
+                this.divLists.style.display = "none"
+                this.assets_btn.classList.add("pc_active")
+                this.wallet_btn.classList.remove("pc_active")
+
+                this.my_asset()
+            }
 
             // 虚拟资产div
-            // var assets = this.objCreate("div")
-            // assets.classList.add("pc_assets")
-            // this.ObjAppend(this.div,assets)
-            // var assets_ul = this.objCreate("ul")
-            // assets_ul.classList.add("pc_assetsul")
-            // this.ObjAppend(assets,assets_ul)
-            // var assets_li = this.objCreate("li")
-            // this.ObjAppend(assets_ul,assets_li)
-            // var assets_title = this.objCreate("div")
-            // assets_title.textContent = "疯狂角斗士"
-            // assets_title.classList.add("pc_assets_title")
-            // this.ObjAppend(assets_li,assets_title)
-            // var assets_balance = this.objCreate("div")
-            // assets_balance.classList.add("pc_assets_balance")
-            // this.ObjAppend(assets_li,assets_balance)
-            // var balanceimg = this.objCreate("div")
-            // balanceimg.classList.add("pc_balanceimg")
-            // this.ObjAppend(assets_balance,balanceimg)
-            // var img = this.objCreate("img") as HTMLImageElement
-            // img.src = "res/img/gas.png"
-            // this.ObjAppend(balanceimg,img)
-            // var balancename = this.objCreate("span")
-            // balancename.classList.add("pc_balancename")
-            // balancename.textContent = "ABC余额"
-            // this.ObjAppend(assets_balance,balancename)
-            // var balance = this.objCreate("span")
-            // balance.classList.add("pc_balance")
-            // balance.textContent = "1531515313,152156416565"
-            // this.ObjAppend(assets_balance,balance)
-            // var assets_prop = this.objCreate("div")
-            // assets_prop.classList.add("pc_assetsprop")
-            // this.ObjAppend(assets_li,assets_prop)
-            // for(var i=0; i<5; i++){
-            //     var prop = this.objCreate("a")
-            //     prop.classList.add("pc_prop")
-            //     this.ObjAppend(assets_prop,prop)
-            //     var propimg = this.objCreate("img") as HTMLImageElement
-            //     propimg.src = "res/img/game0.png"
-            //     this.ObjAppend(prop,propimg)
-            //     var propname = this.objCreate("span")
-            //     this.ObjAppend(prop,propname)
-            //     propname.textContent = "撒旦之力什么鬼"
-            // }
-            // var assets_more = this.objCreate("div")
-            // assets_more.classList.add("pc_assetsmore")
-            // this.ObjAppend(assets_li,assets_more)
-            // var more_btn = this.objCreate("button")
-            // more_btn.classList.add("pc_assetsmorebtn","iconfont","icon-bc-gengduo1")
-            // this.ObjAppend(assets_more,more_btn)
-            //  // 虚拟资产div
-            //  var assets_ul = this.objCreate("ul")
-            //  assets_ul.classList.add("pc_assetsul")
-            //  this.ObjAppend(assets,assets_ul)
-            //  var assets_li = this.objCreate("li")
-            //  this.ObjAppend(assets_ul,assets_li)
-             
-            //  var assets_title = this.objCreate("div")
-            //  assets_title.textContent = "疯狂角斗士"
-            //  assets_title.classList.add("pc_assets_title")
-            //  this.ObjAppend(assets_li,assets_title)
-            //  var assets_balance = this.objCreate("div")
-            //  assets_balance.classList.add("pc_assets_balance")
-            //  this.ObjAppend(assets_li,assets_balance)
-            //  var balanceimg = this.objCreate("div")
-            //  balanceimg.classList.add("pc_balanceimg")
-            //  this.ObjAppend(assets_balance,balanceimg)
-            //  var img = this.objCreate("img") as HTMLImageElement
-            //  img.src = "res/img/gas.png"
-            //  this.ObjAppend(balanceimg,img)
-            //  var balancename = this.objCreate("span")
-            //  balancename.classList.add("pc_balancename")
-            //  balancename.textContent = "ABC余额"
-            //  this.ObjAppend(assets_balance,balancename)
-            //  var balance = this.objCreate("span")
-            //  balance.classList.add("pc_balance")
-            //  balance.textContent = "1531515313,152156416565"
-            //  this.ObjAppend(assets_balance,balance)
-            //  var assets_prop = this.objCreate("div")
-            //  assets_prop.classList.add("pc_assetsprop")
-            //  this.ObjAppend(assets_li,assets_prop)
-            //  for(var i=0; i<5; i++){
-            //      var prop = this.objCreate("a")
-            //      prop.classList.add("pc_prop")
-            //      this.ObjAppend(assets_prop,prop)
-            //      var propimg = this.objCreate("img") as HTMLImageElement
-            //      propimg.src = "res/img/game0.png"
-            //      this.ObjAppend(prop,propimg)
-            //      var propname = this.objCreate("span")
-            //      this.ObjAppend(prop,propname)
-            //      propname.textContent = "撒旦之力什么鬼"
-            //  }
-            //  var assets_more = this.objCreate("div")
-            //  assets_more.classList.add("pc_assetsmore")
-            //  this.ObjAppend(assets_li,assets_more)
-            //  var more_btn = this.objCreate("button")
-            //  more_btn.classList.add("pc_assetsmorebtn","iconfont","icon-bc-gengduo1")
-            //  this.ObjAppend(assets_more,more_btn)
-            
+            // this.game_assets_element = this.objCreate("div")
+            // this.game_assets_element.classList.add("pc_assets")
+            // this.ObjAppend(this.div, this.game_assets_element)
+
+
 
             // 钱包卡片
             var paycard = this.objCreate("div")
             paycard.classList.add("pc_card")
             this.ObjAppend(this.div, paycard)
-            var iconbtn = this.objCreate("div")
-            iconbtn.style.overflow = "hidden"
-            this.ObjAppend(paycard, iconbtn)
 
             // 详情
             var aWalletDetail = this.objCreate("a")
@@ -297,7 +245,7 @@ namespace BlackCat {
             aWalletDetail.onclick = () => {
                 this.wallet_detail()
             }
-            this.ObjAppend(iconbtn, aWalletDetail)
+            this.ObjAppend(paycard, aWalletDetail)
 
             // 通讯录
             var payAddressbook = this.objCreate("a")
@@ -307,7 +255,7 @@ namespace BlackCat {
                 AddressbookView.refer = "PayView"
                 Main.viewMgr.change("AddressbookView")
             }
-            this.ObjAppend(iconbtn, payAddressbook)
+            this.ObjAppend(paycard, payAddressbook)
 
             // 我的(缩略)钱包地址
             var divWallet = this.objCreate("div")
@@ -318,26 +266,28 @@ namespace BlackCat {
 
 
             // 刷新
-            // var payRefresh = this.objCreate("div")
-            // payRefresh.classList.add("pc_cardrefresh")
-            // payRefresh.textContent = Main.langMgr.get("pay_refresh") // "刷新"
-            // payRefresh.onclick = () => {
-            //     this.doGetBalances()
-            //     this.doGetWalletLists(1)
-            // }
-            // this.ObjAppend(paycard, payRefresh)
+            var payRefresh = this.objCreate("div")
+            payRefresh.classList.add("pc_cardrefresh")
+            payRefresh.textContent = Main.langMgr.get("pay_refresh") // "刷新"
+            payRefresh.onclick = async () => {
+                Main.viewMgr.change("ViewLoading")
+                await this.doGetBalances()
+                await this.doGetWalletLists(1)
+                Main.viewMgr.viewLoading.remove()
+            }
+            this.ObjAppend(paycard, payRefresh)
 
             //刷新图标            
-            // var iRefresh = this.objCreate("i")
-            // iRefresh.classList.add("iconfont", "icon-bc-shuaxin")
-            // this.ObjAppend(payRefresh, iRefresh)
+            var iRefresh = this.objCreate("i")
+            iRefresh.classList.add("iconfont", "icon-bc-shuaxin")
+            this.ObjAppend(payRefresh, iRefresh)
 
 
             //收款及转账
             var divWalletUser = this.objCreate("div")
             divWalletUser.classList.add("pc_cardtransaction")
             // divWalletUser.textContent = Main.user.info.name
-            this.ObjAppend(divWallet, divWalletUser)
+            this.ObjAppend(paycard, divWalletUser)
 
             // 收款
             var butReceivables = this.objCreate("button")
@@ -356,206 +306,158 @@ namespace BlackCat {
             this.ObjAppend(divWalletUser, makeTransferObj)
 
 
-            //代币
+            // 代币
             var divCurrency = this.objCreate("div")
             divCurrency.classList.add("pc_currency")
             this.ObjAppend(this.div, divCurrency)
 
+            // === 代币导航栏
+            var divCurrencyNumber = this.objCreate("div")
+            divCurrencyNumber.classList.add("pc_currencynumber")
+            this.ObjAppend(divCurrency, divCurrencyNumber)
 
-            // 代币
-            // var divCurrencyNumber = this.objCreate("div")
-            // divCurrencyNumber.classList.add("pc_currencynumber")
-            // this.ObjAppend(divCurrency, divCurrencyNumber)
-            // var spanCurrencyNumber = this.objCreate("div")
-            // spanCurrencyNumber.innerText = Main.langMgr.get("pay_coin_name") //"代币"
-            // this.ObjAppend(divCurrencyNumber, spanCurrencyNumber)
+            for (let i = 0; i < PayView.tokens.length; i++) {
+                let token = PayView.tokens[i]
 
-            
-            // // BCT余额
-            // var divBCT = this.objCreate("div")
-            // divBCT.innerHTML = "BCT"//"Gas"
-            // this.ObjAppend(divCurrency, divBCT)
-            
-            // //BCT的问号
-            // var labelBCT = this.objCreate("label")
-            // labelBCT.classList.add("iconfont", "icon-bc-help")
-            // this.ObjAppend(divBCT, labelBCT)
- 
- 
-            // //BCT余额
-            // this.spanBCT = this.objCreate("span")
-            // this.spanBCT.textContent = "0"
-            // this.ObjAppend(divBCT, this.spanBCT)
-
-            // //什么是BCT
-            // var divBCTcon = this.objCreate("div")
-            // divBCTcon.classList.add("pc_bctcon")
-            // divBCTcon.textContent = Main.langMgr.get("pay_bct_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
-            // this.ObjAppend(labelBCT, divBCTcon)
-
-            // //获取BCT余额信息按钮
-            // var BCT_btn = this.objCreate("button")
-            // BCT_btn.textContent = Main.langMgr.get("pay_get") //获取
-            // this.ObjAppend(divBCT, BCT_btn)
-            // BCT_btn.onclick = () => {
-            //     this.doExchangeBCT();
-            // }
-
-
-            // //BCP余额
-            // var divBCP = this.objCreate("div")
-            // divBCP.innerHTML = "BCP"//"Gas"
-            // this.ObjAppend(divCurrency, divBCP)
-            
-            // //BCP的问号
-            // var labelBCP = this.objCreate("label")
-            // labelBCP.classList.add("iconfont", "icon-bc-help")
-            // this.ObjAppend(divBCP, labelBCP)
-
-
-            // //BCP余额
-            // this.spanBCP = this.objCreate("span")
-            // this.spanBCP.textContent = "0"
-            // this.ObjAppend(divBCP, this.spanBCP)
-
-            // //什么是BCP
-            // var divBCPcon = this.objCreate("div")
-            // divBCPcon.classList.add("pc_bcpcon")
-            // divBCPcon.textContent = Main.langMgr.get("pay_bcp_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
-            // this.ObjAppend(labelBCP, divBCPcon)
-
-            // //获取BCP余额信息按钮
-            // var BCP_btn = this.objCreate("button")
-            // BCP_btn.textContent = Main.langMgr.get("pay_get") //获取
-            // this.ObjAppend(divBCP, BCP_btn)
-            // BCP_btn.onclick = () => {
-            //     this.doExchangeBCP();
-            // }
-
-            // var makePurchaseObj = this.objCreate("button")
-            // makePurchaseObj.textContent = "获取" //"购买"
-            // this.ObjAppend(divBCP, makePurchaseObj)
-
-
-
-
-            // NEOGas余额
-            var divGas = this.objCreate("div")
-            divGas.innerHTML = Main.langMgr.get("pay_gas")//"Gas"
-            this.ObjAppend(divCurrency, divGas)
-
-            //Gas的问号
-            var labelGas = this.objCreate("label")
-            labelGas.classList.add("iconfont", "icon-bc-help")
-            this.ObjAppend(divGas, labelGas)
-
-
-            //Gas余额
-            this.spanGas = this.objCreate("span")
-            this.spanGas.textContent = "0"
-            this.ObjAppend(divGas, this.spanGas)
-
-            //什么是Gas
-            var divSGascon = this.objCreate("div")
-            divSGascon.classList.add("pc_sgascon")
-            divSGascon.textContent = Main.langMgr.get("pay_gas_desc") // "GAS是NEO链上的数字货币，可以通过交易所获取"
-            this.ObjAppend(labelGas, divSGascon)
-
-            // SGas余额
-            var divSGas = this.objCreate("div")
-            divSGas.innerHTML = Main.langMgr.get("pay_sgas") // "SGas"
-            this.ObjAppend(divCurrency, divSGas)
-
-            //SGas的问号
-            var labelSGas = this.objCreate("label")
-            labelSGas.classList.add("iconfont", "icon-bc-help")
-            this.ObjAppend(divSGas, labelSGas)
-
-
-            //SGas余额
-            this.spanSgas = this.objCreate("span")
-            this.spanSgas.textContent = "0"
-            this.ObjAppend(divSGas, this.spanSgas)
-
-            //什么是SGas
-            var divSGascon = this.objCreate("div")
-            divSGascon.classList.add("pc_sgascon")
-            divSGascon.textContent = Main.langMgr.get("pay_sgas_desc") //"SGas是Bla Cat提供给玩家消费用的通用筹码"
-            this.ObjAppend(labelSGas, divSGascon)
-
-
-
-            // 提现
-            // var makeRefundObj = this.objCreate("button")
-            // makeRefundObj.textContent = Main.langMgr.get("pay_refund") //"提现"
-            // makeRefundObj.onclick = () => {
-            //     this.doMakeRefund()
-            // }
-            // this.ObjAppend(divGas, makeRefundObj)
-
-            // 购买（主网）
-            var makePurchaseObj = this.objCreate("button")
-            makePurchaseObj.textContent = Main.langMgr.get("pay_purchase") //"购买"
-            makePurchaseObj.onclick = () => {
-                if (Main.netMgr.type == 1) {
-                    this.doMakePurchase()
+                // 导航栏
+                this["token_" + token] = this.objCreate("div")
+                this["token_" + token].innerText = Main.langMgr.get("pay_coin_" + token)
+                this["token_" + token].onclick = () => {
+                    this.changeToken(token);
                 }
-                else {
-                    Main.showToast("pay_purchase_testnet_cant_buy")
+                this.ObjAppend(divCurrencyNumber, this["token_" + token])
+
+                // 数字币种list，默认不显示
+                this["token_list_" + token] = this.objCreate("div")
+                this["token_list_" + token].classList.add("pc_currencylist")
+                this["token_list_" + token].style.display = "none"
+                this.ObjAppend(divCurrency, this["token_list_" + token])
+
+                // 数字币种具体
+                for (let k = 0; k < PayView.tokens_coin[i].length; k++) {
+                    let coin = PayView.tokens_coin[i][k]
+
+                    let coinElement = this.objCreate("div")
+                    coinElement.classList.add("coinli")
+                    // 名称
+                    coinElement.innerHTML = Main.langMgr.get(coin)
+                    this.ObjAppend(this["token_list_" + token], coinElement)
+                    // LOGO
+                    let logoElement = this.objCreate("img") as HTMLImageElement
+                    logoElement.src = Main.resHost + "res/img/" + coin + ".png"
+                    logoElement.classList.add("coinlogo")
+                    this.ObjAppend(coinElement, logoElement)
+                    // ?号
+                    let labelElement = this.objCreate("label")
+                    labelElement.classList.add("iconfont", "icon-bc-help")
+                    this.ObjAppend(coinElement, labelElement)
+                    let descText = Main.langMgr.get("pay_" + coin + "_desc")
+                    if (descText != "") {
+                        // ?描述
+                        let descElement = this.objCreate("div")
+                        descElement.classList.add("pc_coincon")
+                        descElement.textContent = Main.langMgr.get("pay_" + coin + "_desc")
+                        this.ObjAppend(labelElement, descElement)
+                    }
+                    else {
+                        labelElement.style.display = "none"
+                    }
+                    // 字体图标">"
+                    let moreElement = this.objCreate("i")
+                    moreElement.classList.add("iconfont", "icon-bc-gengduo")
+                    this.ObjAppend(coinElement, moreElement)
+                    // 余额
+                    this["span" + coin.toUpperCase()] = this.objCreate("span")
+                    this["span" + coin.toUpperCase()].textContent = "0"
+                    this.ObjAppend(coinElement, this["span" + coin.toUpperCase()])
+                    // 点击事件
+                    coinElement.onclick = () => {
+                        this["doExchange" + coin.toUpperCase()]()
+                    }
                 }
             }
-            this.ObjAppend(divGas, makePurchaseObj)
+            // 显示第一组代币
+            this["token_" + PayView.tokens[0]].classList.add("active")
+            this["token_list_" + PayView.tokens[0]].style.display = ""
 
-
-            // 兑换
-            var makeMintTokenObj = this.objCreate("button")
-            makeMintTokenObj.textContent = Main.langMgr.get("pay_makeMint") //"兑换"
-            makeMintTokenObj.onclick = () => {
-                this.doMakeMintToken()
+            // cgas_old/cneo_old信息
+            for (let token in PayView.tokens_old) {
+                PayView.tokens_old[token].forEach((coin) => {
+                    let coin_upcase = coin.toUpperCase() + "_OLD"
+                    if (tools.CoinTool["id_" + coin_upcase].length > 0) {
+                        tools.CoinTool["id_" + coin_upcase].forEach((old) => {
+                            let coinElement = this.objCreate("div")
+                            // 名称
+                            coinElement.innerHTML = Main.langMgr.get("pay_" + coin)
+                            this.ObjAppend(this["token_list_" + token], coinElement)
+                            // LOGO
+                            let logoElement = this.objCreate("img") as HTMLImageElement
+                            logoElement.src = Main.resHost + "res/img/old" + coin + ".png"
+                            logoElement.classList.add("coinlogo")
+                            this.ObjAppend(coinElement, logoElement)
+                            // ?号
+                            let labelElement = this.objCreate("label")
+                            labelElement.classList.add("iconfont", "icon-bc-help")
+                            this.ObjAppend(coinElement, labelElement)
+                            // ?描述
+                            let descElement = this.objCreate("div")
+                            descElement.classList.add("pc_coincon")
+                            descElement.textContent = old
+                            this.ObjAppend(labelElement, descElement)
+                            // 字体图标">"
+                            let moreElement = this.objCreate("i")
+                            moreElement.classList.add("iconfont", "icon-bc-gengduo")
+                            this.ObjAppend(coinElement, moreElement)
+                            // 余额
+                            this["span"+ coin_upcase + old] = this.objCreate("span")
+                            this["span"+ coin_upcase + old].textContent = "0"
+                            this.ObjAppend(coinElement, this["span" + coin_upcase + old])
+                            // 点击事件
+                            coinElement.onclick = () => {
+                                this.doMakeRefundOld(old, coin_upcase)
+                            }
+                        })
+                    }
+                })
             }
-            this.ObjAppend(divSGas, makeMintTokenObj)
-
-            // SGAS(旧)提现
-            if (tools.CoinTool.id_SGAS_OLD && tools.CoinTool.id_SGAS_OLD.length > 0) {
-                var bntCurrencyNumber = this.objCreate("button")
-                bntCurrencyNumber.style.width = "100px"
-                bntCurrencyNumber.style.borderColor = "#a7a8ba"
-                bntCurrencyNumber.style.color = "#a7a8ba"
-                bntCurrencyNumber.textContent = Main.langMgr.get("pay_coin_old") //"SGAS(旧)提现"
-                bntCurrencyNumber.onclick = () => {
-                    this.doMakeRefundOld()
-                }
-                this.ObjAppend(divSGas, bntCurrencyNumber)
-            }
+             // 简化版虚拟资产div
+            this.game_assets_element = this.objCreate("div")
+            this.ObjAppend(this["token_list_" + PayView.tokens[0]], this.game_assets_element)
             
-            // // ABC余额
-            // var divABC = this.objCreate("div")
-            // this.ObjAppend(divCurrency, divABC)
-            // divABC.classList.add("pc_divabc")
-            // var img = this.objCreate("img") as HTMLImageElement
-            // img.src = "res/img/gas.png"
-            // this.ObjAppend(divABC,img)
-            
-            // var ABCname = this.objCreate("div")
-            // ABCname.innerHTML = "ACB余额"//"ABC"
-            // this.ObjAppend(divABC, ABCname)
-
-            // //ABC余额
-            // this.spanABC = this.objCreate("span")
-            // this.spanABC.textContent = "0"
-            // this.ObjAppend(divABC, this.spanABC)
-     
-
-
-
-
-
-
             // 钱包记录
             this.divLists = this.objCreate("ul") as HTMLDivElement
             this.divLists.classList.add("pc_paylists")
             this.ObjAppend(this.div, this.divLists)
 
+
+            var liRecord = this.objCreate("li")
+            liRecord.classList.add("pc_payrecord")
+            // liRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
+            this.ObjAppend(this.divLists, liRecord)
+
+            var spanRecord = this.objCreate("div")
+            spanRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
+            this.ObjAppend(liRecord, spanRecord)
+
+            // 更多钱包记录
+            this.divListsMore = this.objCreate("button")
+            this.divListsMore.classList.add("pc_paymore")
+            this.divListsMore.textContent = Main.langMgr.get("pay_more") // "更多"
+            this.divListsMore.onclick = () => {
+                this.hidden()
+                PayListMoreView.refer = "PayView"
+                Main.viewMgr.change("PayListMoreView")
+            }
+            // this.divListsMore.style.display = "none"
+            this.ObjAppend(liRecord, this.divListsMore)
+
+            var iListsMore = this.objCreate("i")
+            iListsMore.classList.add("iconfont", "icon-bc-sanjiaoxing")
+            this.ObjAppend(this.divListsMore, iListsMore)
+
+            // 正在处理的
+            this.pendingListsElement = this.objCreate("div")
+            this.ObjAppend(this.divLists, this.pendingListsElement)
 
 
             this.doGetBalances()
@@ -572,6 +474,10 @@ namespace BlackCat {
             this.reset()
             super.update()
             if (isHidden) this.hidden()
+        }
+
+        key_esc() {
+
         }
 
         private clearTimeout() {
@@ -592,71 +498,97 @@ namespace BlackCat {
                         if (balance.asset == tools.CoinTool.id_GAS) {
                             this.gas = balance.balance;
                             // 判断一下有没有减号，不用科学计数法表示
-                            this.spanGas.textContent = Main.getStringNumber(this.gas)
+                            this["spanGAS"].textContent = Main.getStringNumber(this.gas)
+                        }
+                        else if (balance.asset == tools.CoinTool.id_NEO) {
+                            this.neo = balance.balance
+                            this["spanNEO"].textContent = Main.getStringNumber(this.neo)
                         }
                     }
                 );
             }
             else {
                 this.gas = 0;
-                this.spanGas.textContent = "0";
+                this.neo = 0;
+                this["spanGAS"].textContent = "0";
+                this["spanNEO"].textContent = "0"
             }
 
-            // 获取sgas余额
-            // var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
-            // if (nep5balances) {
-            //     this.sgas = nep5balances[0]['nep5balance'];
-            //     this.spanSgas.textContent = nep5balances[0]['nep5balance'].toString();
-            // }
-            // else {
-            //     this.sgas = 0;
-            //     this.spanSgas.textContent = "0";
-            // }
-
-            this.sgas = await Main.getSgasBalanceByAddress(tools.CoinTool.id_SGAS, Main.user.info.wallet)
-            // this.bcp = await Main.getNep5BalanceByAddress(tools.CoinTool.id_BCP, Main.user.info.wallet, 100000000)
-            // this.bct = await Main.getNep5BalanceByAddress(tools.CoinTool.id_BCT, Main.user.info.wallet, 10000)
-            // 判断一下有没有减号，不用科学计数法表示
-            this.spanSgas.textContent = Main.getStringNumber(this.sgas)
-            // this.spanBCP.textContent = Main.getStringNumber(this.bcp)
-            // this.spanBCT.textContent = Main.getStringNumber(this.bct)
-
-            // 通知其他界面更新余额
-            Main.viewMgr.updateBalance()
-
+            // 获取NEP5余额
+            PayView.tokens_coin.forEach( token => {
+                token.forEach( coin => {
+                    if (coin != "gas" && coin != "neo") {
+                        this.getNep5Balance(coin.toUpperCase())
+                    }
+                })
+            })
+            // 获取CGAS_OLD/CNEO_OLD余额
+            for (let k in PayView.tokens_old) {
+                PayView.tokens_old[k].forEach( coin => {
+                    this.getNep5BalanceOld(coin.toUpperCase() + "_OLD")
+                })
+            }
+            // MINI
+            await this.my_asset()
         }
-        private async doMakeRefundOld() {
+
+        private async getNep5BalanceOld(coin: string) {
+            try {
+                let coin_lowcase = coin.toLowerCase()
+                await tools.CoinTool["id_" + coin].forEach(async (old) => {
+                    this[coin_lowcase + old] = await Main["get" + coin + "BalanceByAddress"](old, Main.user.info.wallet)
+                    this["span" + coin + old].textContent = Main.getStringNumber(this[coin_lowcase + old])
+                })
+            }
+            catch (e) { }
+        }
+
+        private async getNep5Balance(coin: string) {
+            try {
+                let coin_lowcase = coin.toLowerCase()
+                this[coin_lowcase] = await Main["get" + coin + "BalanceByAddress"](tools.CoinTool["id_" + coin], Main.user.info.wallet)
+                this["span" + coin].textContent = Main.getStringNumber(this[coin_lowcase])
+
+                // 通知其他界面更新余额
+                Main.viewMgr.updateBalance()
+            }
+            catch (e) { }
+        }
+
+        private async doMakeRefundOld(id_old: string, type: string = "CGAS_OLD") {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
-                // 获取sgas合约地址
+                // 获取cgas合约地址
                 // 暂时以第一个合约地址为准，后续如果多个，新开view显示
-                let id_SGAS = tools.CoinTool.id_SGAS_OLD[0]
-                // 获取sgas余额
-                // let id_SGAS_balance = "0"
-                // let id_SGAS_balances = await tools.WWW.api_getnep5balanceofaddress(id_SGAS, Main.user.info.wallet);
-                // if (id_SGAS_balances) {
-                //     id_SGAS_balance = id_SGAS_balances[0]['nep5balance'].toString();
-                // }
-                let sgas = await Main.getSgasBalanceByAddress(id_SGAS, Main.user.info.wallet)
-                let id_SGAS_balance = sgas.toString()
+                let id_OLD = id_old
+
+                // 获取cgas余额
+                let balance = await Main["get" + type + "BalanceByAddress"](id_OLD, Main.user.info.wallet)
+                let id_balance = balance.toString()
 
                 // 打开输入数量
-                ViewTransCount.transTypename1 = "SGASOLD2OLD"
-                ViewTransCount.transTypename2 = "SGAS2GAS"
+                ViewTransferCount.transType = "refund"
+                ViewTransferCount.transNncOld = id_OLD
 
-                ViewTransCount.transBalances = id_SGAS_balance
-                ViewTransCount.refer = "PayView"
-                ViewTransCount.callback = () => {
-                    this.makeRefundTransaction(id_SGAS)
+                if (type == "CGAS_OLD") {
+                    ViewTransferCount.coinType = "CGAS"
                 }
-                Main.viewMgr.change("ViewTransCount")
+                else if (type == "CNEO_OLD") {
+                    ViewTransferCount.coinType = "CNEO"
+                }
+
+                ViewTransferCount.refer = "PayView"
+                ViewTransferCount.callback = () => {
+                    this.makeRefundTransaction(id_old, type)
+                }
+                Main.viewMgr.change("ViewTransferCount")
 
             } else {
                 // 未打开钱包
                 ViewWalletOpen.refer = "PayView"
                 ViewWalletOpen.callback = () => {
-                    this.doMakeRefundOld()
+                    this.doMakeRefundOld(id_old, type)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
                 // this.hidden()
@@ -664,7 +596,15 @@ namespace BlackCat {
 
         }
 
-        private async doExchangeBCT(){
+        private async doExchangeGAS() {
+            this.doExchangeToken("CGAS")
+        }
+
+        private async doExchangeCNEO() {
+            this.doExchangeToken("CNEO")
+        }
+
+        private async doExchangeBCT() {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
@@ -684,14 +624,15 @@ namespace BlackCat {
             }
         }
 
-        private async doExchangeBCP(){
+        private async doExchangeBCP() {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
                 // 打开输入数量
-                PayExchangeBCPView.refer = "PayView"
+                PayExchangeView.refer = "PayView"
                 this.hidden()
-                Main.viewMgr.change("PayExchangeBCPView")
+                PayExchangeView.type_src = "bcp"
+                Main.viewMgr.change("PayExchangeView")
 
             } else {
                 // 未打开钱包
@@ -704,84 +645,135 @@ namespace BlackCat {
             }
         }
 
-        private async doMakePurchase() {
+        private async doExchangeCGAS() {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
 
                 // 打开输入数量
                 PayExchangeView.refer = "PayView"
                 this.hidden()
+                PayExchangeView.type_src = "cgas"
                 Main.viewMgr.change("PayExchangeView")
 
             } else {
                 // 未打开钱包
                 ViewWalletOpen.refer = "PayView"
                 ViewWalletOpen.callback = () => {
-                    this.doMakePurchase()
+                    this.doExchangeCGAS()
                 }
                 Main.viewMgr.change("ViewWalletOpen")
                 // this.hidden()
             }
         }
 
-        private async doMakeMintToken() {
+        private async doExchangeToken(coinType: string = "CGAS") {
             if (Main.isWalletOpen()) {
                 // 打开钱包了
                 // 打开输入数量
-                ViewTransCount.transTypename1 = ""
+                ViewTransferCount.coinType = coinType
+                ViewTransferCount.transType = ""
+                ViewTransferCount.transNncOld = ""
 
-                ViewTransCount.refer = "PayView"
-                ViewTransCount.callback = () => {
-                    if (ViewTransCount.transTypename1 == "GAS2SGAS") {
-                        this.makeMintTokenTransaction()
-                    } else if (ViewTransCount.transTypename1 == "SGAS2GAS") {
-                        this.makeRefundTransaction()
+                ViewTransferCount.refer = "PayView"
+                ViewTransferCount.callback = () => {
+                    switch (ViewTransferCount.transType) {
+                        case "mint":
+                            this.makeMintTokenTransaction(coinType)
+                            break
+                        case "refund":
+                            this.makeRefundTransaction(tools.CoinTool["id_" + coinType], coinType)
+                            break;
                     }
                 }
-                Main.viewMgr.change("ViewTransCount")
+                Main.viewMgr.change("ViewTransferCount")
 
             } else {
                 // 未打开钱包
                 ViewWalletOpen.refer = "PayView"
                 ViewWalletOpen.callback = () => {
-                    this.doMakeMintToken()
+                    this.doExchangeToken(coinType)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
                 // this.hidden()
             }
         }
 
-        private divLists_recreate() {
-            this.divLists.innerHTML = "";
-            var liRecord = this.objCreate("li")
-            liRecord.classList.add("pc_payrecord")
-            // liRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
-            this.ObjAppend(this.divLists, liRecord)
+        private async doExchangeNEO() {
 
-            var spanRecord = this.objCreate("div")
-            spanRecord.innerText = Main.langMgr.get("pay_recentLists") //"近期记录"
-            this.ObjAppend(liRecord, spanRecord)
-            
+            this.hidden()
 
-            // 更多钱包记录
-            this.divListsMore = this.objCreate("button")
-            this.divListsMore.classList.add("pc_paymore")
-            this.divListsMore.textContent = Main.langMgr.get("more") // "更多"
-            this.divListsMore.onclick = () => {
-                this.hidden()
-                Main.viewMgr.change("PayListMoreView")
+            var res: any = {}
+            res['data'] = {
+                address: Main.user.info.wallet
             }
-            this.ObjAppend(liRecord, this.divListsMore)
 
-            var iListsMore = this.objCreate("i")
-            iListsMore.classList.add("iconfont", "icon-bc-sanjiaoxing")
-            this.ObjAppend(this.divListsMore, iListsMore)
+            PayExchangeShowWalletView.refer = "PayView"
+            PayExchangeShowWalletView.balance = Main.viewMgr.payView.neo
+            PayExchangeShowWalletView.callback_params = {
+                type_src: "NEO",
+                data: res.data,
+            }
+            Main.viewMgr.change("PayExchangeShowWalletView")
+        }
 
+        private async doExchangeBTC() {
+            this._doExchangeOther("btc")
+        }
 
+        private async doExchangeETH() {
+            this._doExchangeOther("eth")
+        }
+
+        // 获取其他类型的交易钱包地址，注意：type是小写字符串
+        async getWalletAddrOther(type: string) {
+            if (!this.wallet_addr_other) {
+                this.wallet_addr_other = {}
+            }
+            if (!this.wallet_addr_other.hasOwnProperty[type]) {
+                Main.viewMgr.change("ViewLoading")
+                try {
+                    // 获取交易钱包地址
+                    var res = await ApiTool.getOtherAddress(Main.user.info.uid, Main.user.info.token, type, Main.netMgr.type)
+                }
+                catch (e) {
+
+                }
+                Main.viewMgr.viewLoading.remove()
+
+                if (!res || !res.r) {
+                    // 获取失败
+                    Main.showErrMsg("pay_exchange_create_wallet_fail")
+                    return null
+                }
+
+                this.wallet_addr_other[type] = res.data.address
+            }
+            return this.wallet_addr_other[type]
+        }
+
+        // 交易钱包储值（btc/eth)，注意：type是小写字符串
+        private async _doExchangeOther(type: string) {
+            var address = await this.getWalletAddrOther(type)
+            if (address) {
+                this.hidden()
+                PayExchangeShowWalletView.refer = "PayView"
+                PayExchangeShowWalletView.balance = this[type]
+                PayExchangeShowWalletView.callback_params = {
+                    type_src: type.toUpperCase(),
+                    data: {
+                        address: address
+                    }
+                }
+                Main.viewMgr.change("PayExchangeShowWalletView")
+            }
+        }
+
+        private divLists_recreate() {
+            this.pendingListsElement.innerHTML = "";
         }
 
         async doGetWalletLists(force = 0) {
-            console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, force => ', force)
+            console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 获取交易记录，force => ', force)
             if (!Main.user.info.token) {
                 console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 已退出登录，本次请求取消')
                 return;
@@ -798,94 +790,32 @@ namespace BlackCat {
                 this.s_doGetWalletLists = null
             }
 
-            var res = await ApiTool.getWalletListss(Main.user.info.uid, Main.user.info.token, 1, this.listPageNum, Main.netMgr.type);
+            // 获取pending数据
+            var res = await ApiTool.getWalletListss(Main.user.info.uid, Main.user.info.token, 1, this.listPageNum, Main.netMgr.type, 1);
 
             if (res.r) {
+                // 清理原始数据显示
+                this.divLists_recreate()
+
+                // 刷新icon
+                Main.viewMgr.iconView.flushProcess(res.data.length)
+
+                // 有待确认交易
                 if (res.data && res.data.length > 0) {
-                    Main.walletLogId = Number(res.data[0].id);
-                    if (Main.walletLogId < Main.appWalletLogId || Main.walletLogId < Main.platWalletLogId) {
-                        // 钱包记录数据不全，重新获取
-                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 钱包记录要重新获取 ..')
-                        this.doGetWalletLists(1);
-                        return;
-                    }
 
-                    // 有无待确认交易，有的话，要重新获取
-                    var hasNeedConfirm = false; // 是否有待确认的记录
-
+                    // 刷新时间初始化
                     var next_timeout = this.getWalletListsTimeout; // 下次刷新间隔
                     var curr_ts = Math.round((new Date()).getTime() / 1000); // 当前时间戳
 
-                    this.walletListsNeedConfirmCounts = 0;
+                    // 显示pending&优化刷新时间
                     await res.data.forEach(
                         list => {
-                            // WalletListsHashString_tmp += "[" + list.id + "_" + list.state + "]";
-                            // 判断有没有待确认记录
-                            if (list.state == '0') {
-                                hasNeedConfirm = true;
-                                this.walletListsNeedConfirmCounts += 1;
 
-                                // 计算间隔时间
-                                let last_ts = (curr_ts - list.ctm) * 1000 - Main.tsOffset
-                                console.log('[BlaCat]', '[PayView]', 'doGetWalletLists, last_ts =>', last_ts)
-                                if (last_ts >= this.getWalletListsTimeout && last_ts < this.getWalletListsTimeout * 3) {
-                                    // 此记录持续时间超过出块时间，并且在3个出块时间内
-                                    next_timeout = this.getWalletListsTimeout_min
-                                }
+                            // 优化间隔时间，此记录持续时间超过默认出块时间间隔，并且在3个出块时间内，使用最小刷新时间间隔
+                            let last_ts = (curr_ts - list.ctm) * 1000 - Main.tsOffset
+                            if (last_ts >= this.getWalletListsTimeout && last_ts < this.getWalletListsTimeout * 3) {
+                                next_timeout = this.getWalletListsTimeout_min
                             }
-                            else if (list.type == "2") {
-                                // 平台sgas->gas，特殊处理下
-                                if (list.client_notify == "0") {
-                                    this.walletListsNeedConfirmCounts += 1;
-                                }
-                            }
-                        }
-                    )
-                    this.WalletListsNeedConfirm = hasNeedConfirm;
-                    Main.viewMgr.iconView.flushProcess(this.walletListsNeedConfirmCounts)
-
-                    if (this.WalletListsNeedConfirm) {
-                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 有待确认交易，轮询查询')
-                        // 有待确认，自己加刷新
-                        console.log('[BlaCat]', '[PayView]', 'doGetWalletLists, next_timeout =>', next_timeout)
-                        this.s_doGetWalletLists = setTimeout(() => { this.doGetWalletLists(1) }, next_timeout);
-                    }
-
-                    var WalletListsHashString_tmp: string = JSON.stringify(res.data); // 记录hash  
-                    if (WalletListsHashString_tmp == this.WalletListsHashString) {
-                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 交易记录没有更新 ..')
-                        return;
-                    }
-
-                    // 交易记录有更新
-                    console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 交易记录有更新')
-                    // console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, WalletListsHashString_tmp => ', WalletListsHashString_tmp)
-                    // console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, WalletListsHashString => ', this.WalletListsHashString)
-
-                    // 是否第一次显示
-                    var isFirstShow = false;
-                    if (this.WalletListsHashString == "") {
-                        // 是第一次显示
-                        isFirstShow = true;
-                    }
-                    this.WalletListsHashString = WalletListsHashString_tmp;
-
-                    if (!isFirstShow) {
-                        // 第一次显示获取的余额已经是最新的了，不用再次刷新
-                        console.log("[BlaCat]", '[PayView]', 'doGetWalletLists, 交易记录有更新，刷新余额')
-                        this.doGetBalances()
-                    }
-
-                    // 清理原始数据显示
-                    this.divLists_recreate()
-
-                    if (res.data && res.data.length == this.listPageNum) {
-                        // 要显示更多按钮
-                        this.divListsMore.style.display = ""
-                    }
-
-                    await res.data.forEach(
-                        list => {
 
                             // li
                             var listObj = this.objCreate("li")
@@ -913,7 +843,6 @@ namespace BlackCat {
                             content_name_div.textContent = this.getListName(list)
                             this.ObjAppend(content_div, content_name_div)
 
-
                             //合约方法
                             var content_ctm_p = this.objCreate("p")
                             content_ctm_p.classList.add("pc_method")
@@ -923,45 +852,59 @@ namespace BlackCat {
                             this.ObjAppend(listObj, content_div)
 
                             // cnts & state
-
                             var state_cnts_div = this.objCreate("div")
                             state_cnts_div.classList.add("pc_cnts")
 
-
-                            //时间
+                            // 时间
                             var content_ctm_span = this.objCreate("div")
                             content_ctm_span.classList.add("pc_listdate", "listCtm") // listCtm不要随便修改，后面刷新时间(flushListCtm)用到了这个class
                             content_ctm_span.textContent = this.getListCtmMsg(list)
                             content_ctm_span.setAttribute("ctm", list.ctm)
                             this.ObjAppend(state_cnts_div, content_ctm_span)
 
+                            // 数量
                             var cnts = this.getListCnts(list)
                             if (cnts) {
                                 this.ObjAppend(state_cnts_div, cnts);
-
                                 var cnts_class = this.getListCntsClass(list);
                                 if (cnts_class) state_cnts_div.classList.add(cnts_class)
                             }
 
+                            // 状态
                             var state = this.getListState(list);
                             if (state) this.ObjAppend(state_cnts_div, state)
-
                             this.ObjAppend(listObj, state_cnts_div)
 
-
-                            this.ObjAppend(this.divLists, listObj)
+                            this.ObjAppend(this.pendingListsElement, listObj)
                         }
                     );
 
+                    // 设置刷新任务
+                    console.log('[BlaCat]', '[PayView]', 'doGetWalletLists, ', next_timeout / 1000, "(s)后再次获取")
+                    this.s_doGetWalletLists = setTimeout(() => { this.doGetWalletLists(1) }, next_timeout);
+                    this.WalletListsNeedConfirm = true
                 }
+
+                // 获取余额判定
+                let walletListsHash_tmp = JSON.stringify(res.data)
+                if (this.walletListsHash != null && walletListsHash_tmp != this.walletListsHash) {
+                    // 第一次，不需要获取余额
+                    console.log('[BlaCat]', '[PayView]', 'doGetWalletLists, 更新余额')
+                    this.doGetBalances()
+                }
+                this.walletListsHash = walletListsHash_tmp
             }
             else {
                 Main.showErrCode(res.errCode)
             }
-
         }
 
-        private getSgasIcon(v): string {
+        /**
+         * 获取币种图标
+         * @param v 钱包交易记录list数据
+         * @param type 币种，小写
+         */
+        private getCoinIcon(v, coin_type: string): string {
             try {
                 var params = JSON.parse(v.params)
                 if (params.hasOwnProperty("nnc")) {
@@ -970,8 +913,8 @@ namespace BlackCat {
                 if (params instanceof Array) {
                     for (let k in params) {
                         if (params[k].hasOwnProperty('nnc')) {
-                            if (params[k].nnc == tools.CoinTool.id_SGAS) {
-                                return Main.resHost + "res/img/sgas.png";
+                            if (params[k].nnc == tools.CoinTool["id_" + coin_type.toUpperCase()]) {
+                                return Main.resHost + "res/img/" + coin_type.toLowerCase() + ".png";
                             }
                         }
                     }
@@ -980,23 +923,32 @@ namespace BlackCat {
             catch (e) {
                 console.log("[BlaCat]", '[PayView]', 'getListImg, v.type=' + v.type + ', error => ', e)
             }
-            return Main.resHost + "res/img/oldsgas.png";
+            return Main.resHost + "res/img/old" + coin_type.toLowerCase() + ".png";
         }
 
         getListImg(v) {
-            if (v.state == "0") {
+            if (v.state == "0" && v.type == "5") {
                 // 未确认，统一返回未确认图标
                 return Main.resHost + "res/img/transconfirm.png";
             }
 
             switch (v.type) {
-                case "1": // gas->sgas
-                case "2": // sgas->gas
-                case "3": // sgas充值到游戏
-                case "4": // game->sgas退款
-                    return this.getSgasIcon(v)
+                case "1": // utxo->nep5(gas->cgas、neo->cneo)
+                case "2": // nep5->utxo(cgas->gas、cneo->neo)
+                case "3": // nep5(cgas、cneo）充值到游戏(nep5->game)
+                case "4": // nep5(cgas、cneo）退款(game->nep5)
+                    if (v.type_detail == "0") {
+                        return this.getCoinIcon(v, 'cgas')
+                    }
+                    for (let k in PayTransferView.log_type_detail) {
+                        if (PayTransferView.log_type_detail[k] == v.type_detail) {
+                            return this.getCoinIcon(v, k)
+                        }
+                    }
+                    break;
                 case "5": // 游戏交易
-                    // 判断params里面是否有sgas合约，有的话标记成sgas图标
+                    // 判断params里面是否有cgas合约，有的话标记成cgas图标
+                    var nep5Type = ['gas', 'cgas', 'neo', 'cneo', 'bcp', 'bct']
                     try {
                         var params = JSON.parse(v.params)
                         if (params.hasOwnProperty("nnc")) {
@@ -1005,50 +957,156 @@ namespace BlackCat {
                         if (params instanceof Array) {
                             for (let k in params) {
                                 if (params[k].hasOwnProperty('nnc')) {
-                                    if (params[k].nnc == tools.CoinTool.id_SGAS) {
-                                        return Main.resHost + "res/img/sgas.png";
+                                    // CURR-NEP5
+                                    for (let i = 0; i < nep5Type.length; i++) {
+                                        if (params[k].nnc == tools.CoinTool["id_" + nep5Type[i].toUpperCase()]) {
+                                            return Main.resHost + "res/img/" + nep5Type[i] + ".png"
+                                        }
+                                    }
+                                    // CGAS_OLD
+                                    for (let m = 0; m < tools.CoinTool.id_CGAS_OLD.length; m++) {
+                                        if (params[k].nnc == tools.CoinTool.id_CGAS_OLD[m]) {
+                                            return Main.resHost + "res/img/oldcgas.png"
+                                        }
+                                    }
+                                    // CNEO_OLD
+                                    for (let m = 0; m < tools.CoinTool.id_CNEO_OLD.length; m++) {
+                                        if (params[k].nnc == tools.CoinTool.id_CNEO_OLD[m]) {
+                                            return Main.resHost + "res/img/oldcneo.png"
+                                        }
                                     }
                                 }
-                            }
-                            if (Number(v.cnts) > 0) {
-                                return Main.resHost + "res/img/oldsgas.png";
                             }
                         }
                     }
                     catch (e) {
                         console.log("[BlaCat]", '[PayView]', 'getListImg, v.type=5, error => ', e)
                     }
-                    return v.icon;
-                case "6": // gas转账
-                    // 显示gas图标
-                    return Main.resHost + "res/img/gas.png";
-                default:
-                    // 默认
-                    return Main.resHost + "res/img/game0.png";
+                    return this.getListGameIcon(v);
+                case "6": // 转账
+                    if (v.type_detail == "0") {
+                        return Main.resHost + "res/img/gas.png"
+                    }
+                case "13": // 购买兑换
+                case "16": // 购买会员vip
+                    for (let k in PayTransferView.log_type_detail) {
+                        if (PayTransferView.log_type_detail[k] == v.type_detail) {
+                            // return Main.resHost + "res/img/" + k + ".png"
+                            return this.getCoinIcon(v, k)
+                        }
+                    }
+                    break;
+                case "9": // 储值
+                    switch (v.type_detail) {
+                        case "1": // btc
+                            return Main.resHost + "res/img/btc.png";
+                        case "2": // eth
+                            return Main.resHost + "res/img/eth.png";
+                    }
+                    break;
+                case "10": // 交易钱包余额扣款
+                case "12": // 交易钱包余额退款
+                    var res = this.parseTypeDetailType10(v.type_detail)
+                    switch (res.type_src) {
+                        case "1": // btc
+                            return Main.resHost + "res/img/btc.png";
+                        case "2": // eth
+                            return Main.resHost + "res/img/eth.png";
+                        case "4": // bct
+                            return Main.resHost + "res/img/bct.png";
+                        case "5": // cneo
+                            return Main.resHost + "res/img/cneo.png";
+                    }
+                    break;
+                case "11": // 交易钱包余额购买结果
+                    var res = this.parseTypeDetailType10(v.type_detail)
+                    switch (res.type) {
+                        case "1": // cgas
+                            return Main.resHost + "res/img/cgas.png";
+                        case "2": // bcp
+                            return Main.resHost + "res/img/bcp.png";
+                    }
+                    break;
+                case "14": // bancor合约交易转账
+                    try {
+                        var paramJson_tmp = JSON.parse(v.params)
+                        if (paramJson_tmp['type'] == "1") {
+                            // 消耗BCP购买代币，转BCP，显示BCP图标
+                            return Main.resHost + "res/img/bcp.png"
+                        }
+                        else if (paramJson_tmp['type'] == "2") {
+                            // 消耗代币购买BCP，转代币，显示代币图标
+                            if (v.hasOwnProperty('asset_icon')) {
+                                return v['asset_icon']
+                            }
+                        }
+                    }
+                    catch (e) {
+
+                    }
+                    break;
+                case "15": // bancor合约交易发币
+                    try {
+                        var paramJson_tmp = JSON.parse(v.params)
+                        if (paramJson_tmp['sbPushString'] == "sale") {
+                            // 卖出代币获得BCP，获得BCP，显示BCP图标
+                            return Main.resHost + "res/img/bcp.png"
+                        }
+                        else if (paramJson_tmp['sbPushString'] == "purchase") {
+                            // 卖出BCP获得代币，获得代币，显示代币图标
+                            if (v.hasOwnProperty('asset_icon')) {
+                                return v['asset_icon']
+                            }
+                        }
+                    }
+                    catch (e) {
+
+                    }
+                    break;
             }
+            return Main.resHost + "res/img/game0.png";
+        }
+
+        getListGameIcon(v) {
+            try {
+                var iconObj = JSON.parse(v.icon)
+                if (iconObj.hasOwnProperty(Main.langMgr.type)) {
+                    return iconObj[Main.langMgr.type]
+                }
+                else if (iconObj.hasOwnProperty(Main.applang)) {
+                    return iconObj[Main.applang];
+                }
+            }
+            catch (e) {
+                // return v.name;
+                console.log("[BlaCat]", '[PayView]', 'getListGameIcon, v', v, 'error => ', e.toString())
+            }
+            return v.icon
+        }
+
+        private getAppName(v) {
+            var name = v.name;
+            try {
+                var nameObj = JSON.parse(name)
+                if (nameObj.hasOwnProperty(Main.langMgr.type)) {
+                    return nameObj[Main.langMgr.type]
+                }
+                else if (nameObj.hasOwnProperty(v.lang)) {
+                    return nameObj[v.lang];
+                }
+            }
+            catch (e) {
+                // return v.name;
+                console.log("[BlaCat]", '[PayView]', 'getName, name =>', name, 'error => ', e.toString())
+            }
+            return name
         }
 
         getListName(v) {
             if (v.g_id == "0") {
                 return Main.platName;
             }
-            else {
-                // console.log("[BlaCat]", '[PayView]', 'v.name => ', v.name)
-                try {
-                    var nameObj = JSON.parse(v.name)
-                    if (nameObj.hasOwnProperty(Main.langMgr.type)) {
-                        return nameObj[Main.langMgr.type]
-                    }
-                    else if (nameObj.hasOwnProperty("cn")) {
-                        return nameObj.cn;
-                    }
-                }
-                catch (e) {
-                    // return v.name;
-                    console.log("[BlaCat]", '[PayView]', 'getListName, v', v, 'error => ', e.toString())
-                }
-            }
-            return v.name;
+            return this.getAppName(v);
         }
 
         getListCtm(v) {
@@ -1104,6 +1162,68 @@ namespace BlackCat {
             }
         }
 
+        // 扩展方法信息显示
+        getListParamsMethods_extInfo(v): string {
+            switch (v.type) {
+                // bancor合约交易
+                case "5":
+                    try {
+                        var paramJson_tmp = JSON.parse(v.params)
+                        if (paramJson_tmp.hasOwnProperty('action') && Main.in_array(paramJson_tmp.action, ["buy", "upgrade"])) {
+                            if (paramJson_tmp.action == "buy") {
+                                if (paramJson_tmp.hasOwnProperty('inviter') && paramJson_tmp.inviter && paramJson_tmp.inviter != v.wallet) {
+                                    // 购买合伙人证书
+                                    return ": buyPartner"
+                                }
+                            }
+                            else if (paramJson_tmp.action == "upgrade") {
+                                if (paramJson_tmp.hasOwnProperty('lv') && paramJson_tmp.lv && Main.in_array(paramJson_tmp.lv, ["2", "3", "4"])) {
+                                    // 购买合伙人证书
+                                    return ": upgradePartner"
+                                }
+                            }
+                        }
+                    }
+                    catch (e) {}
+                    break;
+                case "14":
+                    try {
+                        var paramJson_tmp = JSON.parse(v.params)
+                        if (paramJson_tmp['type'] == "1") {
+                            // 消耗BCP购买代币，转BCP
+                            return ": purchase"
+                        }
+                        else if (paramJson_tmp['type'] == "2") {
+                            // 消耗代币购买BCP，转代币
+                            return ": sale"
+                        }
+                    }
+                    catch (e) { }
+                    break;
+                // 购买会员
+                case "16":
+                    try {
+                        var params = JSON.parse(v.params)
+                        var month = params['month']
+                        return ": buyVip_" + month
+                    }
+                    catch (e) { }
+                    break;
+                // 合伙人
+                case "17":
+                    switch (v.type_detail) {
+                        case "1":
+                            return ": buyPartner"
+                        case "2":
+                            return ": upgradePartner"
+                        case "3":
+                            return ": exchangePartner"
+                    }
+                    break;
+            }
+            return ""
+        }
+
         getListParamMethods(v) {
             try {
                 var params = JSON.parse(v.params)
@@ -1114,7 +1234,7 @@ namespace BlackCat {
                     var method = new Array();
                     for (let k in params) {
                         if (params[k].hasOwnProperty("sbPushString")) {
-                            method.push(params[k].sbPushString)
+                            method.push(params[k].sbPushString + this.getListParamsMethods_extInfo(v))
                         }
                     }
                     if (method.length > 1) {
@@ -1140,7 +1260,14 @@ namespace BlackCat {
         }
 
         getListCntsClass(v) {
-            if (v.type == "1" || (v.type == "5" && v.type_detail == "2")) {
+            if (v.type == "1"
+                || (v.type == "5" && v.type_detail == "2")
+                || v.type == "9"
+                || v.type == "11"
+                || v.type == "12"
+                || v.type == "13"
+                || v.type == "15"
+            ) {
                 return 'pc_income';
             }
             else if (Number(v.cnts) > 0) {
@@ -1154,27 +1281,42 @@ namespace BlackCat {
             var pct = "50%"; // 只有state=0才生效
             var i = 1; // 只有state=0生效，=1转圈；=2感叹号
 
-            if (v.type == "2") {
-                pct = "25%"
-                // 退款请求，特殊处理
-                if (v.state == "1") {
-                    state = '0';
-                    pct = '50%'
-
-                    if (v.ext != "") {
+            switch (v.type) {
+                case "2":   // 平台退款
+                    pct = "25%"
+                    // 退款请求，特殊处理
+                    if (v.state == "1") {
                         state = '0';
-                        pct = "75%"
-                        if (v.client_notify == "1") {
-                            state = '1';
+                        pct = '50%'
+
+                        if (v.ext != "") {
+                            state = '0';
+                            pct = "75%"
+                            if (v.client_notify == "1") {
+                                state = '1';
+                            }
+                        }
+                        else {
+                            // 判断是否开启钱包，钱包未开启，需要感叹号表示
+                            if (!Main.isWalletOpen()) {
+                                i = 2;
+                            }
                         }
                     }
-                    else {
-                        // 判断是否开启钱包，钱包未开启，需要感叹号表示
-                        if (!Main.isWalletOpen()) {
-                            i = 2;
+                    break;
+                case "9": // 交易钱包余额储值
+                    if (v.state == "0") {
+                        try {
+                            var ext = JSON.parse(v.ext)
+                            if (ext.hasOwnProperty("process")) {
+                                pct = ext.process + "%";
+                            }
+                        }
+                        catch (e) {
+
                         }
                     }
-                }
+                    break;
             }
 
             switch (state) {
@@ -1190,7 +1332,7 @@ namespace BlackCat {
                         obja.classList.add("iconfont", "icon-bc-jinhangzhong")
                         obja.innerHTML = '<label>' + pct + '</label>';
                         obja.onclick = () => {
-                            Main.continueRefund()
+                            Main.continueWithOpenWallet();
                             event.stopPropagation();
                         }
                         this.ObjAppend(state_button0, obja);
@@ -1235,13 +1377,13 @@ namespace BlackCat {
             }
         }
 
-        // gas -> sgas
-        private async makeMintTokenTransaction() {
+        // gas -> cgas   neo -> cneo
+        private async makeMintTokenTransaction(coinType: string = "CGAS") {
             Main.viewMgr.change("ViewLoading")
 
-            var mintCount = Main.viewMgr.viewTransCount.inputCount.value;
-            var net_fee = Main.viewMgr.viewTransCount.net_fee;// 手续费
-            console.log("[BlaCat]", '[PayView]', '充值sgas，数量 => ', mintCount, '手续费netfee =>', net_fee)
+            var mintCount = Main.viewMgr.viewTransferCount.inputCount.value;
+            var net_fee = Main.viewMgr.viewTransferCount.net_fee;// 手续费
+            console.log("[BlaCat]", '[PayView]', '充值' + coinType + '，数量 => ', mintCount, '手续费netfee =>', net_fee)
 
 
             var login = tools.LoginInfo.getCurrentLogin();
@@ -1250,17 +1392,77 @@ namespace BlackCat {
                 var utxos_assets = await tools.CoinTool.getassets();
                 console.log("[BlaCat]", '[PayView]', 'utxos_assets => ', utxos_assets)
 
-                var scriptaddress = tools.CoinTool.id_SGAS.hexToBytes().reverse();
-                var nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(scriptaddress);
-                var makeTranRes: Result = tools.CoinTool.makeTran(
-                    utxos_assets,
-                    nepAddress,
-                    tools.CoinTool.id_GAS,
-                    Neo.Fixed8.fromNumber(Number(mintCount)),
-                    Neo.Fixed8.fromNumber(Number(net_fee)),
-                    0,
-                    true, // 拆分gas的utxo，以便后续手续费
-                );
+                if (coinType == "CGAS") {
+                    var scriptaddress = tools.CoinTool.id_CGAS.hexToBytes().reverse();
+                    var nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(scriptaddress);
+                    var makeTranRes: Result = tools.CoinTool.makeTran(
+                        utxos_assets,
+                        nepAddress,
+                        tools.CoinTool.id_GAS,
+                        Neo.Fixed8.fromNumber(Number(mintCount)),
+                        Neo.Fixed8.fromNumber(Number(net_fee)),
+                        0,
+                        true, // 拆分gas的utxo，以便后续手续费
+                    );
+                }
+                else {
+                    // CNEO
+                    var scriptaddress = tools.CoinTool.id_CNEO.hexToBytes().reverse();
+                    var nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(scriptaddress);
+                    var makeTranRes: Result = tools.CoinTool.makeTran(
+                        utxos_assets,
+                        nepAddress,
+                        tools.CoinTool.id_NEO,
+                        Neo.Fixed8.fromNumber(Number(mintCount)),
+                        //Neo.Fixed8.fromNumber(Number(net_fee)),
+                        Neo.Fixed8.Zero,
+                        0,
+                        false, // 拆分gas的utxo，以便后续手续费
+                    );
+
+                    // 获取手续费
+                    // 有网络手续费
+                    if (Number(net_fee) > 0) {
+
+                        // makeTranRes.info.tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
+                        try {
+                            // 获取用户utxo : utos_assets
+                            var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                                utxos_assets,
+                                Main.user.info.wallet,
+                                tools.CoinTool.id_GAS,
+                                Neo.Fixed8.Zero,
+                                Neo.Fixed8.fromNumber(Number(net_fee)),
+                            );
+
+                            // inputs、outputs、oldarr塞入
+                            var user_tran = user_makeTranRes.info.tran
+                            for (let i = 0; i < user_tran.inputs.length; i++) {
+                                makeTranRes.info.tran.inputs.push(user_tran.inputs[i])
+                            }
+                            for (let i = 0; i < user_tran.outputs.length; i++) {
+                                makeTranRes.info.tran.outputs.push(user_tran.outputs[i])
+                            }
+                            var user_oldarr = user_makeTranRes.info.oldarr
+                            for (let i = 0; i < user_oldarr.length; i++) {
+                                makeTranRes.info.oldarr.push(user_oldarr[i])
+                            }
+                            console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_makeTranRes => ', user_makeTranRes)
+                        }
+                        catch (e) {
+                            Main.viewMgr.viewLoading.remove()
+                            let errmsg = Main.langMgr.get(e.message);
+                            if (errmsg) {
+                                Main.showErrMsg((e.message)); // "GAS余额不足"
+                            }
+                            else {
+                                Main.showErrMsg(("pay_makeMintGasNotEnough"))
+                            }
+
+                            return;
+                        }
+                    }
+                }
             }
             catch (e) {
                 Main.viewMgr.viewLoading.remove()
@@ -1269,7 +1471,12 @@ namespace BlackCat {
                     Main.showErrMsg((e.message)); // "GAS余额不足"
                 }
                 else {
-                    Main.showErrMsg(("pay_makeMintGasNotEnough"))
+                    if (coinType == "CGAS") {
+                        Main.showErrMsg("pay_makeMintGasNotEnough")
+                    }
+                    else {
+                        Main.showErrMsg("pay_makeMintNeoNotEnough")
+                    }
                 }
 
                 return;
@@ -1281,12 +1488,25 @@ namespace BlackCat {
             var utxo_counts = inputs_counts + outputs_counts
             if (utxo_counts >= 50) {
                 Main.viewMgr.viewLoading.remove()
-                Main.showErrMsg("pay_makeMintGasUtxoCountsLimit", () => {
-                    PayTransferView.callback = null
-                    PayTransferView.address = Main.user.info.wallet
-                    Main.viewMgr.change("PayTransferView")
-                    Main.viewMgr.payTransferView.inputGasCount.value = mintCount
-                }, {gas: mintCount})
+                if (coinType == "CGAS") {
+                    Main.showErrMsg("pay_makeMintGasUtxoCountsLimit", () => {
+                        PayTransferView.transferType_default = "GAS"
+                        PayTransferView.callback = null
+                        PayTransferView.address = Main.user.info.wallet
+                        Main.viewMgr.change("PayTransferView")
+                        Main.viewMgr.payTransferView.inputTransferCount.value = mintCount
+                    }, { gas: mintCount })
+                }
+                else {
+                    // CNEO
+                    Main.showErrMsg("pay_makeMintNeoUtxoCountsLimit", () => {
+                        PayTransferView.transferType_default = "NEO"
+                        PayTransferView.callback = null
+                        PayTransferView.address = Main.user.info.wallet
+                        Main.viewMgr.change("PayTransferView")
+                        Main.viewMgr.payTransferView.inputTransferCount.value = mintCount
+                    }, { neo: mintCount })
+                }
                 return
             }
 
@@ -1322,6 +1542,9 @@ namespace BlackCat {
                     if (!r["txid"] || r["txid"] == "") {
                         r["txid"] = txid
                     }
+
+                    var log_type = "1"
+                    var log_nnc = tools.CoinTool["id_" + coinType]
                     // 成功，上报
                     var logRes = await ApiTool.addUserWalletLogs(
                         Main.user.info.uid,
@@ -1329,11 +1552,12 @@ namespace BlackCat {
                         r["txid"],
                         "0",
                         mintCount,
-                        "1",
-                        '{"sbParamJson":"[]", "sbPushString": "mintTokens", "nnc": "' + tools.CoinTool.id_SGAS + '"}',
+                        log_type,
+                        '{"sbParamJson":"[]", "sbPushString": "mintTokens", "nnc": "' + log_nnc + '"}',
                         Main.netMgr.type,
                         "0",
-                        net_fee
+                        net_fee,
+                        PayTransferView.log_type_detail[coinType.toLowerCase()]
                     );
                     // if (logRes.r)
                     // {
@@ -1354,53 +1578,58 @@ namespace BlackCat {
                 } else {
                     // 失败
                     Main.viewMgr.viewLoading.remove()
-                    // Main.showErrMsg(
-                    //     "充值[" +
-                    //     mintCount +
-                    //     "]sgas失败！" +
-                    //     "\r\n充值合约执行失败！\r\n" +
-                    //     "请等待上次充值确认后再操作！"
-                    // );
                     Main.showErrMsg("pay_makeMintDoFail")
                 }
             } else {
                 // 失败
                 Main.viewMgr.viewLoading.remove()
-                // Main.showErrMsg(
-                //     "充值[" +
-                //     mintCount +
-                //     "]sgas失败！" +
-                //     "\r\n发送充值请求失败！请检查网络，稍候重试！"
-                // );
                 Main.showErrMsg("pay_makeMintDoFail2")
             }
         }
 
-        // sgas -> gas
-        private async makeRefundTransaction(id_SGAS: string = tools.CoinTool.id_SGAS) {
+        // cgas -> gas cneo -> neo
+        private async makeRefundTransaction(id_ASSET: string = tools.CoinTool.id_CGAS, coinType: string = "CGAS") {
             Main.viewMgr.change("ViewLoading")
 
-            var refundCount = Main.viewMgr.viewTransCount.inputCount.value;
+            var refundCount = Main.viewMgr.viewTransferCount.inputCount.value;
             var sendCount = Neo.Fixed8.fromNumber(Number(refundCount))
 
-            var net_fee = Main.viewMgr.viewTransCount.net_fee;// 手续费
+            var net_fee = Main.viewMgr.viewTransferCount.net_fee;// 手续费
             // var net_fee = "0.00000001"
-            console.log("[BlaCat]", '[PayView]', '退到gas，数量 => ', refundCount, '手续费netfee =>', net_fee)
+            console.log("[BlaCat]", '[PayView]', '退到gas/neo，数量 => ', refundCount, '手续费netfee =>', net_fee)
 
-            // 查询SGAS余额
-            var scriptaddress = id_SGAS.hexToBytes().reverse();
+            // 查询余额
+            var scriptaddress = id_ASSET.hexToBytes().reverse();
 
             var login = tools.LoginInfo.getCurrentLogin();
 
-            //获取sgas合约地址的资产列表
-            // var utxos_assets = await tools.CoinTool.getsgasAssets(id_SGAS);
-            var utxos_assets = await tools.CoinTool.getCgasAssets(id_SGAS, Number(refundCount));
+            //获取cgas/cneo合约地址的资产列表
+            if (id_ASSET == '0x74f2dc36a68fdc4682034178eb2220729231db76') {
+                // 注意，如果合约升级了，需要改动
+                // 协调退款
+                var utxos_assets = await tools.CoinTool.getCgasAssets(id_ASSET, Number(refundCount));
+            }
+            else {
+                // cneo也可以用这个
+                var utxos_assets = await tools.CoinTool.getNep5Assets(id_ASSET);
+            }
 
-            var us = utxos_assets[tools.CoinTool.id_GAS];
+
+            var log_type = "2"
+
+            var coinType_asset = tools.CoinTool.id_GAS
+            var not_enough_utxo_err = "pay_makeRefundCgasNotEnoughUtxo"
+            var not_enough_err = "pay_makeRefundCgasNotEnough"
+            if (coinType == "CNEO" || coinType == "CNEO_OLD") {
+                coinType_asset = tools.CoinTool.id_NEO
+                not_enough_utxo_err = "pay_makeRefundCneoNotEnoughUtxo"
+                not_enough_err = "pay_makeRefundCneoNotEnough"
+            }
+
+            var us = utxos_assets[coinType_asset];
             if (us == undefined) {
                 Main.viewMgr.viewLoading.remove()
-                // Main.showErrMsg("Sgas余额不足");
-                Main.showErrMsg("pay_makeRefundSgasNotEnoughUtxo")
+                Main.showErrMsg(not_enough_utxo_err)
                 return;
             }
 
@@ -1412,7 +1641,7 @@ namespace BlackCat {
 
             console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us.before => ', us);
 
-            //检查sgas地址拥有的gas的utxo是否有被标记过
+            //检查cgas地址拥有的gas的utxo是否有被标记过
             var us_parse = [] // us处理后结果
             var count: Neo.Fixed8 = Neo.Fixed8.Zero;
             for (var i = us.length - 1; i >= 0; i--) {
@@ -1454,22 +1683,23 @@ namespace BlackCat {
 
             console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, us.after => ', us);
 
-            utxos_assets[tools.CoinTool.id_GAS] = us;
+            utxos_assets[coinType_asset] = us;
 
             console.log("[BlaCat]", '[payView]', 'makeRefundTransaction, utxos_assets.after => ', utxos_assets);
 
             // 生成交易请求
 
-            //sgas 自己给自己转账   用来生成一个utxo  合约会把这个utxo标记给发起的地址使用
+            //cgas 自己给自己转账   用来生成一个utxo  合约会把这个utxo标记给发起的地址使用
             try {
                 var nepAddress = ThinNeo.Helper.GetAddressFromScriptHash(scriptaddress);
                 var makeTranRes: Result = tools.CoinTool.makeTran(
                     utxos_assets,
                     nepAddress,
-                    tools.CoinTool.id_GAS,
+                    coinType_asset,
                     Neo.Fixed8.fromNumber(Number(refundCount))
                 );
                 // 有网络手续费
+                // ***************** CNEO退款暂时不支持支付GAS手续费 ****************************
                 if (Number(net_fee) > 0) {
 
                     // makeTranRes.info.tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
@@ -1516,8 +1746,7 @@ namespace BlackCat {
             }
             catch (e) {
                 Main.viewMgr.viewLoading.remove()
-                // Main.showErrMsg("SGAS余额不足");
-                Main.showErrMsg("pay_makeRefundSgasNotEnough")
+                Main.showErrMsg(not_enough_err)
                 return;
             }
 
@@ -1526,9 +1755,9 @@ namespace BlackCat {
                 makeTranRes
             );
 
-            var r = await tools.WWW.api_getcontractstate(id_SGAS);
+            var r = await tools.WWW.api_getcontractstate(id_ASSET);
             if (r && r["script"]) {
-                var sgasScript = r["script"].hexToBytes();
+                var Script = r["script"].hexToBytes();
 
                 var scriptHash = ThinNeo.Helper.GetPublicKeyScriptHash_FromAddress(
                     login.address
@@ -1557,7 +1786,7 @@ namespace BlackCat {
                 var wsb = new ThinNeo.ScriptBuilder();
                 wsb.EmitPushString("whatever");
                 wsb.EmitPushNumber(new Neo.BigInteger(250));
-                tran.AddWitnessScript(sgasScript, wsb.ToArray());
+                tran.AddWitnessScript(Script, wsb.ToArray());
 
                 //做提款人的签名
                 var signdata = ThinNeo.Helper.Sign(tran.GetMessage(), login.prikey);
@@ -1586,10 +1815,13 @@ namespace BlackCat {
                             r.txid,
                             "0",
                             refundCount,
-                            "2",
+                            log_type,
                             // 塞入net_fee，以便退款第二步参考手续费
-                            '{"sbParamJson":"' + paramJson_tmp + '", "sbPushString": "refund", "nnc": "' + id_SGAS + '", "net_fee": "'+net_fee+'"}',
-                            Main.netMgr.type
+                            '{"sbParamJson":"' + paramJson_tmp + '", "sbPushString": "refund", "nnc": "' + id_ASSET + '", "net_fee": "' + net_fee + '"}',
+                            Main.netMgr.type,
+                            "0",
+                            "",
+                            PayTransferView.log_type_detail[coinType.toLowerCase()]
                         );
                         if (logRes.r) {
                             Main.platWalletLogId = parseInt(logRes.data);
@@ -1658,6 +1890,15 @@ namespace BlackCat {
                 // this.hidden()
             }
         }
+        private changeToken(type: string) {
+            let types = ['blacat', 'neo', 'other']
+            for (let i = 0; i < types.length; i++) {
+                this["token_list_" + types[i]].style.display = "none"
+                this["token_" + types[i]].classList.remove("active")
+            }
+            this["token_list_" + type].style.display = "block"
+            this["token_" + type].classList.add("active")
+        }
 
         flushListCtm() {
             var ctms = document.getElementsByClassName("listCtm")
@@ -1714,6 +1955,133 @@ namespace BlackCat {
         updateHeight(type, height) {
             this["divHeight_" + type].textContent = height.toString()
             this["height_" + type] = height
+        }
+
+        parseTypeDetailType10(type_detail: string) {
+            var res = { type: "0", type_src: "0" }
+            var detail = parseInt(type_detail)
+            res.type_src = Math.floor(detail / 1000).toString()
+            res.type = (detail % 1000).toString()
+
+            return res
+        }
+
+        // 虚拟资产
+        private async my_asset() {
+            var curr = Date.parse(new Date().toString())
+            if (!this.game_assets_ts || curr - this.game_assets_ts > this.game_assets_update) {
+                // 重新获取game_assets
+                // Main.viewMgr.change("ViewLoading") // for MINI
+                try {
+
+                    // 筛选游戏资产
+                    var game_assetids = []
+
+                    var allNep5AssetsBalance = await tools.WWW.api_getAllNep5AssetBalanceOfAddress(Main.user.info.wallet)
+                    if (allNep5AssetsBalance) {
+                        for (let k in allNep5AssetsBalance) {
+                            game_assetids.push(allNep5AssetsBalance[k]['assetid'])
+                            this.allnep5_balance[allNep5AssetsBalance[k]['assetid']] = allNep5AssetsBalance[k]
+                        }
+                    }
+
+                    // 数据筛选
+                    // if (game_assetids.length > 0) { // for MINI
+                        var res = await ApiTool.getGameAssets(Main.user.info.uid, Main.user.info.token, [], Main.appid)
+                        console.log("[BlaCat]", '[PayView]', 'my_asset, getGameAssets res => ', res)
+                        if (res.r) {
+                            if (res.data) {
+                                this.game_assets = res.data
+                                this.game_assets_ts = curr
+                                this.showGameAssets()
+                            }
+                        }
+                        else {
+                            // Main.viewMgr.viewLoading.remove() // for MINI
+                            Main.showErrCode(res.errCode)
+                            return
+                        }
+                    // } // for MINI
+                }
+                catch (e) { }
+                // Main.viewMgr.viewLoading.remove() // for MINI
+            }
+            else {
+                console.log("[BlaCat]", '[PayView]', 'my_asset, tm not reach, last ', curr - this.game_assets_ts, ', this.game_assets_update: ', this.game_assets_update)
+            }
+        }
+        // 简化版显示虚拟资产
+        private async showGameAssets() {
+            if (this.game_assets) {
+                // 清理
+                this.game_assets_element.innerHTML = ""
+                this.game_assets_element.classList.add("game_assets")
+                for (let k in this.game_assets) {
+                    // res.data.appid.coins/nfts/name/icon/lang/
+                    // 虚拟资产div
+
+
+                    // 应用名称
+                    // var assets_title = this.objCreate("div")
+                    // assets_title.textContent = this.getAppName(this.game_assets[k]['name'])
+                    // assets_title.classList.add("pc_assets_title")
+                    // this.ObjAppend(assets_li, assets_title)
+
+                    // 应用代币
+                    if (this.game_assets[k].hasOwnProperty('coins')) {
+                        for (let m in this.game_assets[k]['coins']) {
+                            var assets_balance = this.objCreate("div")
+                            assets_balance.classList.add("mini_asset")
+                            assets_balance.textContent = this.game_assets[k]['coins'][m]['symbol'] ? this.game_assets[k]['coins'][m]['symbol'] : this.allnep5_balance[this.game_assets[k]['coins'][m]['contract']]['symbol']
+                            this.ObjAppend(this.game_assets_element, assets_balance)
+
+                            // 代币图标
+                            var img = this.objCreate("img") as HTMLImageElement
+                            img.src = this.game_assets[k]['coins'][m]['icon']
+                            this.ObjAppend(assets_balance, img)
+                            // 字体图标">"
+                            var asseticon = this.objCreate("i")
+                            asseticon.classList.add("iconfont", "icon-bc-gengduo")
+                            this.ObjAppend(assets_balance, asseticon)
+                            // 代币余额
+                            var balance = this.objCreate("span")
+                            balance.textContent = "0"
+                            this.ObjAppend(assets_balance, balance)
+                            
+                            if (this.allnep5_balance.hasOwnProperty(this.game_assets[k]['coins'][m]['contract'])) {
+                                balance.textContent = Main.getStringNumber(this.allnep5_balance[this.game_assets[k]['coins'][m]['contract']]['balance'])
+                            }
+                        }
+                    }
+
+                    // 资产信息
+                    if (this.game_assets[k].hasOwnProperty('nfts')) {
+                        var assets_prop = this.objCreate("div")
+                        assets_prop.classList.add("pc_assetsprop")
+                        this.ObjAppend(this.game_assets_element, assets_prop)
+
+                        for (var i = 0; i < 5; i++) {
+                            var prop = this.objCreate("a")
+                            prop.classList.add("pc_prop")
+                            this.ObjAppend(assets_prop, prop)
+                            var propimg = this.objCreate("img") as HTMLImageElement
+                            propimg.src = Main.resHost + "res/img/game0.png"
+                            this.ObjAppend(prop, propimg)
+                            var propname = this.objCreate("span")
+                            this.ObjAppend(prop, propname)
+                            propname.textContent = "撒旦之力什么鬼"
+                        }
+
+                        // 更多
+                        var assets_more = this.objCreate("div")
+                        assets_more.classList.add("pc_assetsmore")
+                        this.ObjAppend(this.game_assets_element, assets_more)
+                        var more_btn = this.objCreate("button")
+                        more_btn.classList.add("pc_assetsmorebtn", "iconfont", "icon-bc-gengduo1")
+                        this.ObjAppend(assets_more, more_btn)
+                    }
+                }
+            }
         }
     }
 }

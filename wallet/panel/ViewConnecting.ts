@@ -23,6 +23,10 @@ namespace BlackCat {
             }
         }
 
+        key_esc() {
+            
+        }
+
         showConnecting() {
             this.showType = "connecting"
 

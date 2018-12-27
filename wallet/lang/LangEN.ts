@@ -10,10 +10,14 @@
             info: "Information",
             content: "Content",
             retry: "Retry",
-            sgas: "CGAS",
+            cgas: "CGAS",
             gas: "GAS",
             bct: "BCT",
             bcp: "BCP",
+            neo: "NEO",
+            cneo: "CNEO",
+            btc: "BTC",
+            eth: "ETH",
 
             // 地区代码
             area_code_CN: 'China',
@@ -258,6 +262,8 @@
             register_inputVpass: "Password again",
             register_inputVpass_err: "Please input password again",
             register_inputVpass_inputPass_err: "Inconsistent password!",
+            register_inputinvite: "请输入邀请码",
+            register_inputinvite_err : "邀请码已使用或不存在",            
 
             register_getCodeSucc: "Verification code was successfully sent",
             register_getCode: "Get Code",
@@ -267,6 +273,7 @@
 
             register_doLogin: "<<back",
             register_doRegister: "sign up",
+            register_invitation: "Invitation code",
 
             // LoginView
             login_inputuser: "Username",
@@ -331,6 +338,14 @@
 
             forgetpass_do_ok: "Modified successfully, please login again",
 
+            // PersonalCenterView
+            personalcenter: "My Info",
+            myinfo_leve: "Level",   
+            myinfo_modify: "Modify",    
+            myinfo_member: "Membership",  
+            myinfo_openmember: "Upgrade to Membership",
+            myinfo_permanentmember: "永久会员",
+
             // MyInfoView
             myInfo: "my information",
             myinfo_headImg: "Avatar",
@@ -340,7 +355,7 @@
             myinfo_sex_1: "Male",
             myinfo_sex_2: "Female",
 
-            myinfo_uid: "Account",
+            myinfo_uid: "Username",
             myinfo_area: "Area",
             myinfo_fee: "Transaction Fee",
             myinfo_fee_empty: "Please choose",
@@ -371,6 +386,24 @@
             modifyNet: "Network line",
             modifyNet_succ: "Network line modified successfully!",
             modifyNet_node_err: "This network line is not available, please choose another line!",
+
+            // ModifyVipView
+            modifyVip_succ: "Succeeded！",
+            modifyVip_fail: "Failed！",
+            modifyVip_balance_error: "Insufficient %coin_type%！",
+            modifyVip_gas_less: "Insufficient GAS！",
+            modifyVip_invite_err: "The account does not exist！",
+            modifyVip_12months: "12 months",
+            modifyVip_3months: "3 months",
+            modifyVip_1months: "A month",
+            modifyVip_payway: "Way",
+            modifyVip_inviteplaceholder: "Please input the account of your introducer.",
+            modifyVip_paymenttxt: "Amount:",
+            modifyVip_payment: "Payment",
+            modifyVip_recharge: "Recharge",
+            modifyvip_payAmonth:"%total%%pay_way% per membership month. ",
+            modifyvip_payconfirm: "%total%%pay_way% per membership %goods_item%months.",
+            
 
             //SecurityCenterView
             security_title: "Security Center",
@@ -424,6 +457,11 @@
             pay_transferDoSucc: "SEND success",
             pay_transferDoFail: "SEND failed!",
             pay_transferGasNotEnough: "GAS balance is insufficient!",
+            pay_transferBCPNotEnough: "BCP balance is insufficient!",
+            pay_transferBCTNotEnough: "BCT balance is insufficient!",
+            pay_transferNEONotEnough: "NEO balance is insufficient!",
+            pay_transferCNEONotEnough: "CNEO balance is insufficient!",
+            pay_transferCGASNotEnough: "CGAS balance is insufficient!",
 
             // PayView
             pay_wallet: "My Wallet",
@@ -431,36 +469,51 @@
             pay_wallet_detail: "Details",
             pay_coin_name: "Token",
             pay_coin_old: "CGAS(old)Exchange",
+            pay_coin_blacat: "BlaCat",
+            pay_coin_neo: "NEO",
+            pay_coin_other: "Others",
             pay_gas: "GAS",
             pay_gas_desc: "GAS is a digital currency on NEO chain that can be obtained through exchanges",
-            pay_sgas: "CGAS",
-            pay_sgas_desc: "CGAS is a universal chip that BlaCat offers to players.",
+            pay_cgas: "CGAS",
+            pay_cgas_desc: "CGAS is a universal chip that BlaCat offers to players.",
+            pay_neo: "NEO",
+            pay_neo_desc: "NEO is the digital currency in NEO blockchain and can be bought in Exchange",
+            pay_cneo: "CNEO",
+            pay_cneo_desc: "CNEO is the universal token provided by BlaCat to player",
+            pay_btc: "BTC",
+            pay_eth: "ETH",
             pay_send: "SEND",
             pay_purchase: "Purchase",
             pay_purchase_testnet_cant_buy: "Please switch Mainnet to buy GAS!",
             pay_makeMint: "Exchange",
-            pay_recentLists: "Recent records",
+            pay_recentLists: "Pending",
+            pay_more: "Records",
             pay_makeMintGasNotEnough: "GAS balance is insufficient",
+            pay_makeMintNeoNotEnough: "NEO balance is insufficient",
             pay_makeMintDoFail: "Recharge CGAS failed!\r\n Recharge contract execution failed!\r\nPlease wait for the last recharge confirmation before proceeding!",
             pay_makeMintDoFail2: "Recharge CGAS failed! \r\nFailed to send recharge request! Please check network and try again later!",
-            pay_makeRefundSgasNotEnoughUtxo: "CGAS exchange is busy, please try it again later！",
-            pay_makeRefundSgasNotEnough: "CGAS balance is insufficient",
+            pay_makeRefundCgasNotEnoughUtxo: "CGAS exchange is busy, please try it again later!",
+            pay_makeRefundCneoNotEnoughUtxo: "CNEO exchange is busy, please try it again later!",
+            pay_makeRefundCgasNotEnough: "CGAS balance is insufficient",
+            pay_makeRefundCneoNotEnough: "CNEO balance is insufficient",
             pay_makeRefundGasFeeNotEnough: "GAS balance is insufficient.",
             pay_makeRefundGasLessThanFee: "The amount of GAS cannot be less than the handling fee.",
             pay_makeRefundDoFail: "The extraction contract execution failed! Please wait for the last withdrawal or redemption transaction to complete!",
             pay_makeRefundDoFail2: "Sending an extraction transaction failed! Please check network and try again later!",
             pay_makeRefundGetScriptFail: "Getting extraction contract failed!",
-            pay_makeRefundSgasOldNotEnough: "CGAS(old) balance is insufficient",
+            pay_makeRefundCgasOldNotEnough: "CGAS(old) balance is insufficient",
+            pay_makeRefundCneoOldNotEnough: "CNEO(old) balance is insufficient",
             pay_makeMintGasUtxoCountsLimit: "Assets exceed the maximum, please input your wallet address then transfer %gas% GAS to your own wallet first.",
+            pay_makeMintNeoUtxoCountsLimit: "Assets exceed the maximum, please input your wallet address then transfer %neo% NEO to your own wallet first.",
             pay_walletbtn: "Wallet",
             pay_assets: "Virtual assets",
+            pay_get: "Get",
 
             pay_not_enough_money: "Insufficient balance",
             pay_not_enough_utxo: "Please wait for the last transaction to complete before executing!",
 
             pay_nettype_1: "Mainnet",
             pay_nettype_2: "Testnet",
-            pay_get: "Get",
 
             // PayWalletDetailView
             pay_walletDetail: "Wallet details",
@@ -478,7 +531,7 @@
             addressbook_title: "Mail list",
             addressbook_search: "Search",
 
-            //AddressbookDetailsView
+            // AddressbookDetailsView
             addressbook_det_title: "Mail list",
             addressbook_det_transfer: "Transfer",
             addressbook_det_address: "Wallet address",
@@ -505,11 +558,36 @@
             addressbook_op_addSucc: "Contact added success",
             addressbook_op_updateSucc: "Contact modify success",
 
+            // PayExchangeView
+            pay_exchange_bct: "Get BCT",
+
             //PayExchangeView
-            pay_exchange_gas: "Exchange GAS",
+            pay_exchange_cgas: "Get CGAS",
             pay_exchange_purchase: "Purchase",
             pay_exchange_price: "Latest price",
+            pay_exchange_balance: "Balance",
+            pay_exchange_balance_not_enough: "balance is insufficient!",
             pay_exchange_range: "24H Range",
+            pay_exchange_buy_ok: "Succeeded!",
+            pay_exchange_consumption: " consumption：",       
+            pay_exchange_placeholderconfirm: "Please confirm your purchase",
+            pay_exchange_confirmbuy: "Confirm",     
+            pay_exchange_purchase_process: "Purchase process",
+            pay_exchange_processp1: "1.%type% address provided by platform can be found below. Please transfer the corresponding %type1% to the account in Exchange then the system will show your %type2% balance.",
+          
+            
+
+            // PayExchangeBcpDetail
+            pay_exchange_bcp: "Get BCP",
+            pay_exchange_create_wallet_fail: "Failed to create a trading wallet, please try it later!",
+
+            // PayExchangeDetailView
+            pay_exchange_detail_buy_CGAS_fail: "Fail to buy CGAS!",
+            pay_exchange_detail_buy_BCP_fail: "Fail to buy BCP!",
+            pay_exchange_buyNEO: "Please input the purchase amount",
+
+            pay_exchange_spent_not_enough: "Incorrect amount!",
+            pay_exchange_getmore: "Get %type%>>",
 
             // ViewAlert
 
@@ -517,25 +595,33 @@
 
             // ViewToast
 
-            // ViewTransConfirm
+            // ViewTransactionConfirm
             pay_makeRecharge: "Recharge",
             pay_trust_tips: "Trust contracts",
             pay_trust_Vice_tips: "Window will not pop up in this trade, please change handling fee in page My information.",
 
-            // ViewTransConfirmGas
-            pay_transferGas_toaddr: "transfer address",
-            pay_transferGas_count: "Transfer amounts",
+            // ViewTransferConfirm
+            pay_transfer_toaddr: "transfer address",
+            pay_transfer_count: "Transfer amounts",
 
-            // ViewTransCount
+            // ViewTransferCount
             pay_transCount_count: "Exchange",
             pay_transCount_inputCount: "Please input amount",
             pay_transCount_err: "Please input correct sums of amounts",
             pay_transCountGAS: "GAS:",
-            pay_transCountSGAS: "CGAS:",
-            pay_transCountSGASOLD: "CGAS(old):",
-            pay_transCountSGAS2GAS: "GAS",
-            pay_transCountGAS2SGAS: "CGAS",
-            pay_transCountSGASOLD2OLD: "CGAS(old)",
+            pay_transCountCGAS: "CGAS:",
+            pay_transCountCGASOLD: "CGAS(old):",
+            pay_transCountCGAS2GAS: "GAS",
+            pay_transCountGAS2CGAS: "CGAS",
+            pay_transCountCGASOLD2OLD: "CGAS(old)",
+
+            pay_transCountNEO: "NEO：",
+            pay_transCountCNEO: "CNEO：",
+            pay_transCountCNEOOLD: "CNEO(old)：",
+            pay_transCountCNEO2NEO: "NEO",
+            pay_transCountNEO2CNEO: "CNEO",
+            pay_transCountCNEOOLD2OLD: "CNEO(old)",
+            
             pay_transCountTips_free: "Free",
             pay_transCountTips_slow: "Slow",
             pay_transCountTips_fast: "Fast",
@@ -579,7 +665,8 @@
             main_wait_for_last_tran: "Please confirm or cancel the previous transaction request and then execute",
             main_no_app_wallet: "The app does not have a billing wallet address configured and cannot be recharged.",
             main_need_open_wallet_confirm: "The withdrawal operation needs to open the wallet, is it open immediately? ",
-            main_refund_second_fail: "Generate conversion request (utxo->gas) failed",
+            main_refund_CGAS_second_fail: "Generate conversion request (utxo->gas) failed",
+            main_refund_CNEO_second_fail: "Generate conversion request (utxo->neo) failed",
             main_refund_getScript_err: "Failed to get conversion contract!",
             main_refund_sendRequest_err: "Sending a conversion request failed!",
             main_refund_doFail: "Conversion contract execution failed!",
@@ -617,6 +704,10 @@
             errcode_8100006: "Image size must be less than 100Kb.",
             errCode_8100007: "The contact already exists!",
 
+            errCode_8200003: " Non-supported transactions",
+            errCode_8200004: "Price error! Please refresh and try!",
+            errCode_8200006: "Out of stock! Please try it later!",
+            
             errCode_default: "Unknown error! Error code: %errCode%",
 
             // wallet
@@ -630,10 +721,6 @@
             netmgr_select_cli_slow: "Communication with the nodes on the chain is abnormal, please check the network and try it later!",
             netmgr_connecting: "Connecting ...",
             netmgr_connecting_fail: "Connection failed. Please check the network and try it again!",
-
-            //bct,bcp
-            pay_exchange_bcp: "BCP购买",
-            pay_exchange_bct: "",
         }
     }
 }

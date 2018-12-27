@@ -11,6 +11,7 @@ namespace BlackCat {
         private inputCode: HTMLInputElement;
         private inputPass: HTMLInputElement;
         private inputVpass: HTMLInputElement;
+        private inputinvite: HTMLInputElement;
         private divArea: HTMLDivElement;
 
         private getCodeCount: HTMLElement;
@@ -240,6 +241,18 @@ namespace BlackCat {
             this.inputVpass.type = "password"
             this.inputVpass.placeholder = Main.langMgr.get("register_inputVpass") // 再次输入密码
             this.ObjAppend(divVPass, this.inputVpass)
+            // 邀请码
+            var divinvite = this.objCreate("div")
+            divinvite.classList.add("pc_login_inputbox")
+            this.ObjAppend(divInput, divinvite)
+            this.inputinvite = this.objCreate("input") as HTMLInputElement
+            this.inputinvite.type = "text"
+            this.inputinvite.placeholder = Main.langMgr.get("register_invitation") // 邀请码
+            this.ObjAppend(divinvite, this.inputinvite)
+             // 邀请码 图标
+             var iinvite = this.objCreate("i")
+             iinvite.classList.add("iconfont", "icon-yaoqingma")
+             this.ObjAppend(divinvite, iinvite)
 
 
 
@@ -295,6 +308,10 @@ namespace BlackCat {
         reset() {
             if (this.s_getCodeCountRetry) clearInterval(this.s_getCodeCountRetry);
             this.accountType = "phone"
+        }
+
+        key_esc() {
+            
         }
 
         private empty(value) {
@@ -391,6 +408,15 @@ namespace BlackCat {
             return true;
         }
 
+        // private async validateinvite() {
+        //     if (this.empty(this.inputinvite.value)) {
+        //         Main.showErrMsg(("register_inputinvite"))
+        //         return false
+        //     }
+        //     return true;
+        // }
+        
+
         private async doRegister() {
             if (!(await this.validateUid(false))) return
 
@@ -402,6 +428,7 @@ namespace BlackCat {
 
             if (!(await this.validateVpass())) return
 
+
             if (this.inputPass.value.length > 32) {
                 // 设置密码不能超过32个字符
                 Main.showErrMsg(("register_exceed"), () => {
@@ -409,13 +436,19 @@ namespace BlackCat {
                 })
                 return;
             }
+
+            var refer = Main.appid
+            if (Main.apprefer && Main.apprefer != "") {
+                refer += "_" + Main.apprefer
+            }
+
             var res: any;
             switch (this.accountType) {
                 case 'email':
-                    res = await ApiTool.registerByEmail(this.inputAccount.value, this.inputCode.value, this.inputVpass.value, this.selectArea.value, this.inputUid.value);
+                    res = await ApiTool.registerByEmail(this.inputAccount.value, this.inputCode.value, this.inputVpass.value, this.selectArea.value, this.inputUid.value,this.inputinvite.value, refer);
                     break;
                 case 'phone':
-                    res = await ApiTool.registerByPhone(this.getPhone(), this.inputCode.value, this.inputVpass.value, this.selectArea.value, this.inputUid.value);
+                    res = await ApiTool.registerByPhone(this.getPhone(), this.inputCode.value, this.inputVpass.value, this.selectArea.value, this.inputUid.value,this.inputinvite.value, refer);
                     break;
                 default:
                     return;
@@ -448,7 +481,14 @@ namespace BlackCat {
                 }
             } else {
                 // 失败
-                Main.showErrCode(res.errCode);
+                switch(res.errCode){
+                    case 100809:
+                    Main.showErrMsg(("register_inputinvite_err"));
+                    break;
+                    default:
+                    Main.showErrCode(res.errCode);
+                }
+                
             }
         }
 

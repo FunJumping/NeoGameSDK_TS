@@ -234,6 +234,14 @@ namespace BlackCat {
             this.inputAccount.focus()
         }
 
+        key_esc() {
+
+        }
+        
+        key_enter() {
+            this.doLogin()
+        }
+
         private getPhone() {
             // 多地区支持，转换手机号码
             return Main.getPhone(this.selectArea.value, this.inputAccount.value)

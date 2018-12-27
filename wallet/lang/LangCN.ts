@@ -10,10 +10,14 @@ namespace BlackCat {
             info: "提示",
             content: "内容",
             retry: "重试",
-            sgas: "CGAS",
+            cgas: "CGAS",
             gas: "GAS",
             bct: "BCT",
             bcp: "BCP",
+            neo: "NEO",
+            cneo: "CNEO",
+            btc: "BTC",
+            eth: "ETH",
 
             // 地区代码
             area_code_CN: "中国",
@@ -258,6 +262,8 @@ namespace BlackCat {
             register_inputVpass: "再次输入密码",
             register_inputVpass_err: "请再次输入密码",
             register_inputVpass_inputPass_err: "密码输入不一致！",
+            register_inputinvite: "请输入邀请码",
+            register_inputinvite_err : "邀请码已使用或不存在",
 
             register_getCodeSucc: "验证码已成功发送",
             register_getCode: "获取验证码",
@@ -267,6 +273,7 @@ namespace BlackCat {
 
             register_doLogin: "<<返回登录",
             register_doRegister: "立即注册",
+            register_invitation: "邀请码",
 
             // LoginView
             login_inputuser: "请输入用户名",
@@ -331,6 +338,15 @@ namespace BlackCat {
 
             forgetpass_do_ok: "重置成功，请重新登录！",
 
+            // PersonalCenterView
+            personalcenter: "个人中心",
+            myinfo_leve: "等级",
+            myinfo_modify: "修改",
+            myinfo_member: "会员",
+            myinfo_openmember: "开通会员",
+            myinfo_permanentmember: "永久会员",
+
+
             // MyInfoView
             myInfo: "我的信息",
             myinfo_headImg: "头像",
@@ -340,7 +356,7 @@ namespace BlackCat {
             myinfo_sex_1: "男",
             myinfo_sex_2: "女",
 
-            myinfo_uid: "账号",
+            myinfo_uid: "用户名",
             myinfo_area: "地区",
             myinfo_fee: "交易手续费",
             myinfo_fee_empty: "请选择",
@@ -371,6 +387,24 @@ namespace BlackCat {
             modifyNet: "网络线路",
             modifyNet_succ: "网络线路修改成功",
             modifyNet_node_err: "该网络线路不可用，请选择其他线路！",
+
+            // ModifyVipView
+            modifyVip_succ: "购买会员请求提交成功！",
+            modifyVip_fail: "购买会员请求提交失败！",
+            modifyVip_balance_error: "%coin_type%余额不足，无法购买！",
+            modifyVip_gas_less: "GAS余额不足，无法支付手续费！",
+            modifyVip_invite_err: "推荐者账号不存在！",
+            modifyVip_12months: "12个月",
+            modifyVip_3months: "3个月",
+            modifyVip_1months: "1个月",
+            modifyVip_payway: "支付方式",
+            modifyVip_inviteplaceholder: "请输入推荐人账号",
+            modifyVip_paymenttxt: "支付金额:",
+            modifyVip_payment: "支付",
+            modifyVip_recharge: "续费",
+            modifyvip_payAmonth:"确定花费%total%%pay_way%购买%goods_item%个月的会员？ ",            
+            modifyvip_payconfirm: "确定花费%total%%pay_way%购买%goods_item%个月的会员？",
+            
 
             //SecurityCenterView
             security_title: "安全中心",
@@ -424,6 +458,11 @@ namespace BlackCat {
             pay_transferDoSucc: "转账操作成功",
             pay_transferDoFail: "转账失败",
             pay_transferGasNotEnough: "GAS余额不足！",
+            pay_transferBCPNotEnough: "BCP余额不足！",
+            pay_transferBCTNotEnough: "BCT余额不足！",
+            pay_transferNEONotEnough: "NEO余额不足！",
+            pay_transferCNEONotEnough: "CNEO余额不足！",
+            pay_transferCGASNotEnough: "CGAS余额不足！",
 
             // PayView
             pay_wallet: "我的钱包",
@@ -431,31 +470,45 @@ namespace BlackCat {
             pay_wallet_detail: "详情",
             pay_coin_name: "代币",
             pay_coin_old: "CGAS(old)兑换",
+            pay_coin_blacat: "BlaCat",
+            pay_coin_neo: "NEO",
+            pay_coin_other: "其他",
             pay_gas: "GAS",
             pay_gas_desc: "GAS是NEO链上的数字货币，可以通过交易所获取",
-            pay_sgas: "CGAS",
-            pay_sgas_desc: "CGAS是BlaCat提供给玩家消费用的通用筹码",
+            pay_cgas: "CGAS",
+            pay_cgas_desc: "CGAS是BlaCat提供给玩家消费用的通用筹码",
+            pay_neo: "NEO",
+            pay_neo_desc: "NEO是NEO链上的数字货币，可以通过交易所获取",
+            pay_cneo: "CNEO",
+            pay_cneo_desc: "CNEO是BlaCat提供给玩家消费用的通用筹码",
+            pay_btc: "BTC",
+            pay_eth: "ETH",
             pay_send: "转账",
             pay_purchase: "购买",
             pay_purchase_testnet_cant_buy: "请切换到主网购买GAS！",
             pay_makeMint: "兑换",
-            pay_recentLists: "近期记录",
+            pay_recentLists: "交易中",
+            pay_more: "记录",
             pay_makeMintGasNotEnough: "GAS余额不足",
+            pay_makeMintNeoNotEnough: "NEO余额不足",
             pay_makeMintDoFail: "充值CGAS失败！\r\n充值合约执行失败！\r\n请等待上次充值确认后再操作！",
             pay_makeMintDoFail2: "充值CGAS失败！\r\n发送充值请求失败！请检查网络，稍候重试！",
-            pay_makeRefundSgasNotEnoughUtxo: "CGAS兑换繁忙，请稍后重试！",
-            pay_makeRefundSgasNotEnough: "CGAS余额不足",
+            pay_makeRefundCgasNotEnoughUtxo: "CGAS兑换繁忙，请稍后重试！",
+            pay_makeRefundCneoNotEnoughUtxo: "CNEO兑换繁忙，请稍后重试！",
+            pay_makeRefundCgasNotEnough: "CGAS余额不足",
+            pay_makeRefundCneoNotEnough: "CNEO余额不足",
             pay_makeRefundGasFeeNotEnough: "GAS余额不足，无法支付手续费！",
             pay_makeRefundGasLessThanFee: "兑换GAS的金额不能小于手续费！",
             pay_makeRefundDoFail: "提取合约执行失败！请等待上个提现或兑换交易完成再操作！",
             pay_makeRefundDoFail2: "发送提取交易失败！请检查网络，稍候重试！",
             pay_makeRefundGetScriptFail: "获取提取合约失败！",
-            pay_makeRefundSgasOldNotEnough: "CGAS(old)余额不足",
+            pay_makeRefundCgasOldNotEnough: "CGAS(old)余额不足",
+            pay_makeRefundCneoOldNotEnough: "CNEO(old)余额不足",
             pay_makeMintGasUtxoCountsLimit: "资产块超出规定数量，需要自己给自己钱包转入%gas%数量的GAS才能继续操作。",
+            pay_makeMintNeoUtxoCountsLimit: "资产块超出规定数量，需要自己给自己钱包转入%neo%数量的NEO才能继续操作。",
             pay_walletbtn : "钱包",
             pay_assets: "虚拟资产",
             pay_get: "获取",
-
 
             pay_not_enough_money: "余额不足",
             pay_not_enough_utxo: "请等待上次交易完成再执行！",
@@ -506,11 +559,36 @@ namespace BlackCat {
             addressbook_op_addSucc: "联系人添加成功",
             addressbook_op_updateSucc: "联系人修改成功",
 
+            // PayExchangeView
+            pay_exchange_bct: "获取BCT",
+
             //PayExchangeView
-            pay_exchange_gas: "购买GAS",
+            pay_exchange_cgas: "购买CGAS",
             pay_exchange_purchase: "购买",
             pay_exchange_price: "最新价",
+            pay_exchange_balance: "余额",
+            pay_exchange_balance_not_enough: "余额不足！",
             pay_exchange_range: "24H涨跌",
+            pay_exchange_buy_ok: "提交成功！",
+            pay_exchange_consumption: "消耗：",
+            pay_exchange_placeholderconfirm: "输入购买数量",
+            pay_exchange_confirmbuy: "确认购买",     
+            pay_exchange_purchase_process: "购买流程",
+            pay_exchange_processp1: "1.以下是平台提供%type%钱包地址，请去各大交易所转入所需要的%type1%数量，转账成功后上方会显示您的%type2%余额",
+          
+            
+
+            // PayExchangeBcpDetail
+            pay_exchange_bcp: "获取BCP",
+            pay_exchange_create_wallet_fail: "创建交易钱包失败，请稍候重试！",
+
+            // PayExchangeDetailView
+            pay_exchange_detail_buy_CGAS_fail: "购买CGAS失败！",
+            pay_exchange_detail_buy_BCP_fail: "购买BCP失败！",
+            pay_exchange_buyNEO: "输入支付数量",
+
+            pay_exchange_spent_not_enough: "数量太小，请调整数量！",
+            pay_exchange_getmore: "获取%type%>>",
 
             // ViewAlert
 
@@ -518,31 +596,39 @@ namespace BlackCat {
 
             // ViewToast
 
-            // ViewTransConfirm
+            // ViewTransactionConfirm
             pay_makeRecharge: "充值",
             pay_trust_tips: "信任合约",
             pay_trust_Vice_tips: "本合约交易不再弹出此窗口,如需更改手续费请前往设置界面",
 
-            // ViewTransConfirmGas
-            pay_transferGas_toaddr: "转账地址",
-            pay_transferGas_count: "转账金额",
+            // ViewTransferConfirm
+            pay_transfer_toaddr: "转账地址",
+            pay_transfer_count: "转账金额",
 
-            // ViewTransCount
+            // ViewTransferCount
             pay_transCount_count: "兑换",
             pay_transCount_inputCount: "请输入需要兑换的金额",
             pay_transCount_err: "请输入正确的金额",
             pay_transCountGAS: "GAS：",
-            pay_transCountSGAS: "CGAS：",
-            pay_transCountSGASOLD: "CGAS(old)：",
-            pay_transCountSGAS2GAS: "GAS",
-            pay_transCountGAS2SGAS: "CGAS",
-            pay_transCountSGASOLD2OLD: "CGAS(old)",
+            pay_transCountCGAS: "CGAS：",
+            pay_transCountCGASOLD: "CGAS(old)：",
+            pay_transCountCGAS2GAS: "GAS",
+            pay_transCountGAS2CGAS: "CGAS",
+            pay_transCountCGASOLD2OLD: "CGAS(old)",
+
+            pay_transCountNEO: "NEO：",
+            pay_transCountCNEO: "CNEO：",
+            pay_transCountCNEOOLD: "CNEO(old)：",
+            pay_transCountCNEO2NEO: "NEO",
+            pay_transCountNEO2CNEO: "CNEO",
+            pay_transCountCNEOOLD2OLD: "CNEO(old)",
+
             pay_transCountTips_free: "免费",
             pay_transCountTips_slow: "慢",
             pay_transCountTips_fast: "快",
             pay_transCount_speed: "交易速度",
             pay_transCount_cost: "手续费：",
-            pay_transCount_tips: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选择您要兑换的代币",
+            pay_transCount_tips: "选择您要兑换的代币",
             pay_transCount_tips_err: "选择您要兑换的代币",
 
             // ViewWalletOpen
@@ -580,7 +666,8 @@ namespace BlackCat {
             main_wait_for_last_tran: "请先确认或者取消上个交易请求再执行",
             main_no_app_wallet: "应用没有配置收款钱包地址，无法充值",
             main_need_open_wallet_confirm: "提现操作需要打开钱包，是否立即打开？",
-            main_refund_second_fail: "生成转换请求（utxo->gas）失败",
+            main_refund_CGAS_second_fail: "生成转换请求（utxo->gas）失败",
+            main_refund_CNEO_second_fail: "生成转换请求（utxo->neo）失败",
             main_refund_getScript_err: "获取转换合约失败！",
             main_refund_sendRequest_err: "发送转换请求失败！",
             main_refund_doFail: "转换合约执行失败！",
@@ -618,6 +705,10 @@ namespace BlackCat {
             errcode_8100006: "头像文件大小不能超过100kb！",
             errCode_8100007: "联系人已存在！",
 
+            errCode_8200003: "不支持的交易类型",
+            errCode_8200004: "购买价格异常，请刷新重试！",
+            errCode_8200006: "库存不足，我们会尽快补充，请稍后再试。",
+
             errCode_default: "未知错误！错误码： %errCode%",
 
             // wallet
@@ -631,10 +722,6 @@ namespace BlackCat {
             netmgr_select_cli_slow: "与链上节点通讯异常，请检查网络后重试！",
             netmgr_connecting: "连接中，请稍候...",
             netmgr_connecting_fail: "连接失败，请检查网络后重试。",
-
-            //bct,bcp
-            pay_exchange_bcp: "BCP购买",
-            pay_exchange_bct: "",
         }
     }
 }

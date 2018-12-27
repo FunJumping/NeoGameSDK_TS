@@ -5,12 +5,27 @@ namespace BlackCat {
     // 交易所购买详情
     export class PayExchangeDetailView extends ViewBase {
 
-        private ulExchange: HTMLUListElement;
-        private divAddress: HTMLDivElement;
         private inputGas: HTMLInputElement;
+        private inputNEO: HTMLInputElement;
+
+
+        private balanceHtmlElement: HTMLElement
+        private balance: number = 0
+
+        private netFeeCom: NetFeeComponent; // 手续费组件
+
+        private net_fee: string;
+
+        private nnc: string;
+        private destoryAddr: string;
+        private buyFail: string;
+
+        private s_getWalletLists = {};
+
+
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
-            this.div.classList.add("pc_bj", "pc_exchangedetail")
+            this.div.classList.add("pc_bj", "pc_exchangedetail", "buygas")
 
             var header = this.objCreate("div")
             header.classList.add("pc_header")
@@ -21,13 +36,13 @@ namespace BlackCat {
             returnA.classList.add("iconfont", "icon-bc-fanhui")
             returnA.textContent = Main.langMgr.get("return") // 返回
             returnA.onclick = () => {
-                this.return()
+                this.doCancel()
             }
             this.ObjAppend(header, returnA)
 
             //标题
             var headerH1 = this.objCreate("h1")
-            headerH1.textContent = Main.langMgr.get("pay_exchange_gas") // "购买GAS"
+            headerH1.textContent = Main.langMgr.get("pay_exchange_" + PayExchangeDetailView.callback_params.type.toLowerCase()) // "购买XX"
             this.ObjAppend(header, headerH1)
 
             //交易所类型
@@ -43,14 +58,10 @@ namespace BlackCat {
             var divExchangeName = this.objCreate("div")
             divExchangeName.classList.add("pc_exchangename")
 
-            //名称内容
-            var labelExchangeName = this.objCreate("label")
-            labelExchangeName.textContent = "Bla Cat"
-            this.ObjAppend(divExchangeName, labelExchangeName)
 
             //名称类型
             var pExchangeName = this.objCreate("p")
-            pExchangeName.textContent = "GAS/NEO"
+            pExchangeName.textContent = PayExchangeDetailView.callback_params.type + "/" + PayExchangeDetailView.callback_params.type_src
             this.ObjAppend(divExchangeName, pExchangeName)
 
             this.ObjAppend(divEcvhangeObj, divExchangeName)
@@ -67,7 +78,7 @@ namespace BlackCat {
 
             //最新价格
             var pNewPrice = this.objCreate("p")
-            pNewPrice.textContent = "1111111111111"
+            pNewPrice.textContent = PayExchangeDetailView.callback_params.price;
             this.ObjAppend(divNewPrice, pNewPrice)
 
             this.ObjAppend(divEcvhangeObj, divNewPrice)
@@ -76,17 +87,20 @@ namespace BlackCat {
             var divBalance = this.objCreate("div")
             divBalance.classList.add("pc_exchangeprice")
 
-            //余额名称
             var labelBalanceName = this.objCreate("label")
-            labelBalanceName.textContent = Main.langMgr.get("pay_exchange_price") // "余额"
+            labelBalanceName.textContent = PayExchangeDetailView.callback_params.type_src + Main.langMgr.get("pay_exchange_balance") // "余额"
             this.ObjAppend(divBalance, labelBalanceName)
 
-            //余额价格
-            var pBalance = this.objCreate("p")
-            pBalance.textContent = "1111111111111"
-            this.ObjAppend(divBalance, pBalance)
+            // 余额
+            this.balanceHtmlElement = this.objCreate("p")
+            this.balanceHtmlElement.textContent = "0"
+            this.ObjAppend(divBalance, this.balanceHtmlElement)
 
-            this.ObjAppend(divEcvhangeObj, divBalance)
+            var divBalanceObj = this.objCreate("div")
+            divBalanceObj.classList.add("pc_exchangelist", "balance")
+            this.ObjAppend(this.div, divBalanceObj)
+
+            this.ObjAppend(divBalanceObj, divBalance)
 
             // 购买GAS
             var divGas = this.objCreate("div")
@@ -94,27 +108,102 @@ namespace BlackCat {
             // 消耗
             var divConsume = this.objCreate("div")
             divConsume.classList.add("pc_exc_consume")
-            divConsume.textContent = "NEO消耗"
             this.ObjAppend(divGas, divConsume)
 
-            var aConsume = this.objCreate("a")
-            aConsume.textContent = "NEO不足?"
-            this.ObjAppend(divConsume, aConsume)
+            if (PayExchangeDetailView.callback_params.type_src != "CNEO") {
+                // CNEO的暂时先隐藏
+                var labelconsume = this.objCreate("a")
+                labelconsume.textContent = Main.langMgr.get("pay_exchange_getmore", {type: PayExchangeDetailView.callback_params.type_src})
+                this.ObjAppend(divConsume, labelconsume)
+    
+                labelconsume.onclick = async () => {
+                    if(PayExchangeDetailView.callback_params.type_src == 'BCT')
+                    {
+                        this.hidden()
+                        PayExchangeBCTView.refer = "PayExchangeDetailView"
+                        Main.viewMgr.change("PayExchangeBCTView")
+                    }else{
+                        this.showGetMore()
+                    }  
+                }
+            }
 
-            // GAS 数量框
+            //数量框
             var divGasObj = this.objCreate("div")
             divGasObj.classList.add("pc_exc_inputpurchases")
-            divGasObj.textContent = "GAS"
+            var spanGas = this.objCreate("span")
+            spanGas.classList.add("buygasspan")
+
+            spanGas.textContent = PayExchangeDetailView.callback_params.type
+
+            this.ObjAppend(divGasObj, spanGas)
             this.ObjAppend(divGas, divGasObj)
 
-            // GAS 购买输入框
+
+            // 购买输入框
             this.inputGas = this.objCreate("input") as HTMLInputElement
-            this.inputGas.placeholder = "输入购买数量"
+            this.inputGas.classList.add("buygasinput")
+            this.inputGas.placeholder = Main.langMgr.get("pay_exchange_placeholderconfirm")
+
             this.ObjAppend(divGasObj, this.inputGas)
+
+
+            // 数量框
+            var divGasObj = this.objCreate("div")
+            divGasObj.classList.add("pc_exc_inputpurchases")
+            var spanGas = this.objCreate("span")
+            spanGas.classList.add("buygasspan")
+
+            spanGas.textContent = PayExchangeDetailView.callback_params.type_src
+
+            this.ObjAppend(divGasObj, spanGas)
+            this.ObjAppend(divGas, divGasObj)
+
+            // 购买输入框
+            this.inputNEO = this.objCreate("input") as HTMLInputElement
+            this.inputNEO.classList.add("buygasinput")
+            this.inputNEO.placeholder = Main.langMgr.get("pay_exchange_buyNEO")
+
+            this.ObjAppend(divGasObj, this.inputNEO)
+
+            this.inputGas.onkeyup = () => {
+                var price = PayExchangeDetailView.callback_params.price
+                var count = this.inputGas.value
+                var spent = this.getSpent(price, count)           
+                this.inputNEO.value = Main.getStringNumber(spent)
+            }
+            this.inputNEO.onkeyup = () => {
+                var price = PayExchangeDetailView.callback_params.price
+                var count = this.inputNEO.value
+                var payment = this.getpayment(count, price)           
+                this.inputGas.value = Main.getStringNumber(payment)
+            }
+ 
+            // 是否可以输入
+            if (PayExchangeDetailView.callback_params.type_src == "NEO") {
+                this.inputGas.disabled = true
+                this.inputGas.value = "0"
+            }
+            else {
+                this.inputNEO.disabled = true
+                this.inputNEO.value = "0"
+            }
+
+
+            // 手续费
+            this.netFeeCom = new NetFeeComponent(divGasObj, (net_fee) => {
+                this.net_fee = net_fee
+            })
+            this.netFeeCom.setFeeDefault()
+            this.netFeeCom.createDiv()
+
 
             // 购买按钮
             var btnGas = this.objCreate("button")
-            btnGas.textContent = "确认购买"
+            btnGas.textContent = Main.langMgr.get("pay_exchange_confirmbuy")
+            btnGas.onclick = () => {
+                this.buy()
+            }
             this.ObjAppend(divGasObj, btnGas)
 
 
@@ -123,90 +212,14 @@ namespace BlackCat {
 
 
 
+            // 获取nep5映射合约、销毁地址
+            this.nnc = tools.CoinTool["id_" + PayExchangeDetailView.callback_params.type_src ]
 
-            // 通讯录详情内容容器
-            var divObj = this.objCreate("div")
-            divObj.classList.add("pc_addressbookdet")
-            this.ObjAppend(this.div, divObj)
+            this.destoryAddr = tools.CoinTool["id_" + PayExchangeDetailView.callback_params.type_src + "_DESTROY"]
+            this.buyFail = "pay_exchange_detail_buy_" + PayExchangeDetailView.callback_params.type + "_fail"
 
-            // 钱包地址标题 容器
-            var divAddressTitle = this.objCreate("div")
-            divAddressTitle.classList.add("pc_addresstitle")
-            this.ObjAppend(divObj, divAddressTitle)
-
-            // 钱包地址标题
-            var labelAddressTitle = this.objCreate("label")
-            labelAddressTitle.textContent = Main.langMgr.get("addressbook_det_address") // "钱包地址"
-            this.ObjAppend(divAddressTitle, labelAddressTitle)
-
-
-
-            // 钱包地址 复制按钮
-            var butCopy = this.objCreate("button")
-            butCopy.textContent = Main.langMgr.get("copy") // "复制"
-            butCopy.onclick = () => {
-                var inputCooy = this.objCreate("input") as HTMLInputElement
-                inputCooy.value = this.divAddress.innerText
-                this.ObjAppend(divObj, inputCooy)
-
-                inputCooy.select();
-                document.execCommand("Copy");
-                inputCooy.remove()
-                Main.showToast("pc_receivables_copy", 1500)
-
-            }
-            this.ObjAppend(divAddressTitle, butCopy)
-
-            // 转账
-            var butMakeTransfer = this.objCreate("button")
-            butMakeTransfer.textContent = Main.langMgr.get("addressbook_det_transfer") // "转账"
-            butMakeTransfer.onclick = () => {
-                this.doMakeTransfer()
-            }
-            this.ObjAppend(divAddressTitle, butMakeTransfer)
-
-
-            this.divAddress = this.objCreate("div") as HTMLDivElement
-            this.divAddress.classList.add("pc_receivables")
-            // this.divAddress.textContent = AddressbookDetailsView.contact.address_wallet
-            this.ObjAppend(divObj, this.divAddress)
-
-            //二维码容器
-            var divQRCode = this.objCreate("div")
-            divQRCode.classList.add("pc_qrcode")
-            this.ObjAppend(divObj, divQRCode)
-
-            // QrCodeWithLogo
-            // 二维码显示
-            var qrObj = this.objCreate("img") as HTMLImageElement
-            QrCodeWithLogo.toImage({
-                image: qrObj,
-                content: 55 //AddressbookDetailsView.contact.address_wallet
-            }).then(() => {
-                var url = URL.createObjectURL(this.base64ToBlob(qrObj.src));
-                qr_download.setAttribute('href', url)
-                qr_download.setAttribute("download", /*AddressbookDetailsView.contact.address_wallet*/555 + ".png")
-            })
-            this.ObjAppend(divQRCode, qrObj)
-
-            //下载二维码"
-            var qr_download = this.objCreate("a")
-            qr_download.classList.add("iconfont", "icon-bc-xiazai")
-            qr_download.textContent = Main.langMgr.get("addressbook_det_download") // "下载二维码"
-            this.ObjAppend(divQRCode, qr_download)
-
-            // 描述标题
-            var divDescribeTitle = this.objCreate("div")
-            divDescribeTitle.classList.add("pc_addresstitle")
-            divDescribeTitle.textContent = Main.langMgr.get("addressbook_det_describe") // "描述"
-            this.ObjAppend(divObj, divDescribeTitle)
-
-            var divDescribeText = this.objCreate("div")
-            divDescribeText.classList.add("pc_describetext")
-            // divDescribeText.textContent = AddressbookDetailsView.contact.address_desc ? AddressbookDetailsView.contact.address_desc : Main.langMgr.get("addressbook_det_empty") // "空"
-            this.ObjAppend(divObj, divDescribeText)
-
-
+            // 获取余额
+            this.getBalance()
 
         }
 
@@ -215,6 +228,15 @@ namespace BlackCat {
                 Main.viewMgr.change(PayExchangeDetailView.refer)
                 PayExchangeDetailView.refer = null;
             }
+        }
+
+        key_esc() {
+            this.doCancel()
+        }
+
+        private doCancel() {
+            this.addGetWalletLists()
+            this.return()
         }
 
         //转账
@@ -243,19 +265,174 @@ namespace BlackCat {
             }
         }
 
-        private base64ToBlob(code) {
-            let parts = code.split(';base64,');
-            let contentType = parts[0].split(':')[1];
-            let raw = window.atob(parts[1]);
-            let rawLength = raw.length;
-
-            let uInt8Array = new Uint8Array(rawLength);
-
-            for (let i = 0; i < rawLength; ++i) {
-                uInt8Array[i] = raw.charCodeAt(i);
+        private checkTransCount(count: string): boolean {
+            var regex = /(?!^0*(\.0{1,2})?$)^\d{1,14}(\.\d{1,8})?$/
+            if (!regex.test(count)) {
+                return false
             }
-            return new Blob([uInt8Array], { type: contentType });
+            if (Number(count) <= 0) {
+                return false
+            }
+            return true
         }
 
+        private async getBalance() {
+            if (this.nnc && this.nnc != "") {
+                this.balance = Main.viewMgr.payView[PayExchangeDetailView.callback_params.data.type_src]
+                this.balanceHtmlElement.textContent = Main.getStringNumber(this.balance)
+            }
+        }
+
+        private async buy() {
+            var price = PayExchangeDetailView.callback_params.price
+            var count = this.inputGas.value
+            var spent = this.getSpent(price, count)
+            var src_count = Main.getStringNumber(spent)
+
+            // 交易数量格式判定
+            if (this.checkTransCount(count) === false) {
+                this.inputGas.focus()
+                return
+            }
+
+            // 余额判断
+            if (floatNum.times(Number(price), Number(count)) > this.balance) {
+                Main.showErrMsg('pay_exchange_balance_not_enough', () => {
+                    this.inputGas.focus()
+                })
+                return
+            }
+
+            // 花费最小金额
+            var min_count = 0.00000001
+            if (PayExchangeDetailView.callback_params.type_src.toLowerCase() == "bct") {
+                min_count = 0.0001
+            }
+            if (floatNum.times(Number(price), Number(count)) < min_count) {
+                Main.showErrMsg('pay_exchange_spent_not_enough', () => {
+                    this.inputGas.focus()
+                })
+                return
+            }
+
+            var cHash = this.getBuyContractHash()
+            if (cHash == "") {
+                return
+            }
+
+            Main.viewMgr.change("ViewLoading")
+            // 购买
+            // 1、获取交易txid
+            var net_fee = this.net_fee
+            var res: any = null
+
+
+            res = await tools.CoinTool.nep5Transaction(Main.user.info.wallet, this.destoryAddr, this.nnc, src_count, net_fee, true);
+            if (res) {
+                console.log("[BlaCat]", '[PayExchangeDetailView]', '购买结果 => ', res)
+                if (res.err == false) {
+                    // 购买
+                    var buy_res = await ApiTool.transferByOther(
+                        Main.user.info.uid,
+                        Main.user.info.token,
+                        PayExchangeDetailView.callback_params.type_src.toLowerCase(),
+                        PayExchangeDetailView.callback_params.type.toLowerCase(),
+                        price,
+                        count,
+                        Main.netMgr.type,
+                        res.info,
+                        cHash
+                    )
+                    if (buy_res) {
+                        if (buy_res.r) {
+                            if (buy_res.data) {
+                                // 发起交易 & 记录oldarr
+                                var result = await tools.WWW.api_postRawTransaction(res['data']);
+                                if (result["sendrawtransactionresult"]) {
+                                    // 记录使用的utxo，后面不再使用，需要记录高度
+                                    if (res['oldarr']) {
+                                        tools.OldUTXO.oldutxosPush(res['oldarr']);
+                                    }
+                                }
+                                Main.viewMgr.viewLoading.remove()
+                                Main.showInfo('pay_exchange_buy_ok', () => {
+                                    Main.viewMgr.payView.doGetWalletLists(1)
+
+                                    // 退回到主界面
+                                    Main.viewMgr.payExchangeDetailView.return()
+                                    Main.viewMgr.payExchangeView.return()
+                                })
+                                return
+                            }
+                        }
+                        else {
+                            Main.viewMgr.viewLoading.remove()
+                            Main.showErrCode(buy_res.errCode)
+                            return
+                        }
+                    }
+                }
+            }
+
+            Main.viewMgr.viewLoading.remove()
+            Main.showErrMsg(this.buyFail)
+        }
+        private getSpent(price: string, count: string, float: number = 100000000): number {
+            var tmp = floatNum.times(Number(price), Number(count))
+            if (PayExchangeDetailView.callback_params.type_src.toLowerCase() == "bct") {
+                float = 10000; // bct 4位精度
+            }
+            return Math.round(tmp * float) / float
+        }
+        private getpayment(count: string, price: string, float: number = 100000000 ): number {
+            var tmp = floatNum.divide(Number(count), Number(price))
+            return Math.round(tmp * float) / float
+        }
+
+        private getBuyContractHash() {
+            var cHash = ""
+            if (tools.CoinTool.hasOwnProperty("id_" + PayExchangeDetailView.callback_params.type)) {
+                cHash = tools.CoinTool["id_" + PayExchangeDetailView.callback_params.type]
+            }
+            return cHash
+        }
+
+        // 延时一段时间刷新交易记录
+        private addGetWalletLists() {
+            var type = PayExchangeDetailView.callback_params.type_src
+            var timeout = 1000;
+            switch (type) {
+                case "BTC":
+                    timeout = 15 * 60 * 1000; // 15分钟
+                    break;
+                case "ETH":
+                    timeout = 3 * 60 * 1000; // 3分钟
+                    break;
+                default:
+                    timeout = 2 * 60 * 1000; // 2分钟
+                    break;
+            }
+
+            if (this.s_getWalletLists.hasOwnProperty(type)) {
+                if (this.s_getWalletLists[type]) {
+                    clearTimeout(this.s_getWalletLists[type])
+                }
+            }
+            this.s_getWalletLists[type] = setTimeout(() => {
+                Main.viewMgr.payView.doGetWalletLists()
+            }, timeout);
+        }
+
+        private async showGetMore() {
+            this.hidden()
+            PayExchangeShowWalletView.refer = "PayExchangeDetailView"
+            PayExchangeShowWalletView.callback_params = PayExchangeDetailView.callback_params
+            PayExchangeShowWalletView.balance = this.balance
+            Main.viewMgr.change("PayExchangeShowWalletView")
+        }
+
+        updateBalance() {
+            this.getBalance()
+        }
     }
 }

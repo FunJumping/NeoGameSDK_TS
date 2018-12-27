@@ -53,20 +53,7 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                this.remove(300)
-
-                if (ViewWalletOpen.callback_cancel) {
-                    if (ViewWalletOpen.callback_callback) {
-                        ViewWalletOpen.callback_cancel(ViewWalletOpen.callback_params, ViewWalletOpen.callback_callback);
-                    }
-                    else {
-                        ViewWalletOpen.callback_cancel(ViewWalletOpen.callback_params)
-                    }
-                }
-
-                ViewWalletOpen.callback_cancel = null;
-                ViewWalletOpen.callback_params = null;
-                ViewWalletOpen.callback_callback = null;
+                this.doCancel()
             }
             this.ObjAppend(popupbutbox, popupClose)
 
@@ -86,6 +73,14 @@ namespace BlackCat {
             }
         }
 
+        key_enter() {
+            this.doConfirm()
+        }
+
+        key_esc() {
+            this.doCancel()
+        }
+
 
         private doConfirm() {
             if (!this.inputPassword.value) {
@@ -95,6 +90,22 @@ namespace BlackCat {
                 return
             }
             this.doOpenWallet()
+        }
+
+        private doCancel() {
+            this.remove(300)
+            if (ViewWalletOpen.callback_cancel) {
+                if (ViewWalletOpen.callback_callback) {
+                    ViewWalletOpen.callback_cancel(ViewWalletOpen.callback_params, ViewWalletOpen.callback_callback);
+                }
+                else {
+                    ViewWalletOpen.callback_cancel(ViewWalletOpen.callback_params)
+                }
+            }
+
+            ViewWalletOpen.callback_cancel = null;
+            ViewWalletOpen.callback_params = null;
+            ViewWalletOpen.callback_callback = null;
         }
 
         async doReadWalletFile() {

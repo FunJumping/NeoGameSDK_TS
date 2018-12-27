@@ -3,7 +3,7 @@
 
 namespace BlackCat {
     // 交易确认视图
-    export class ViewTransConfirmGas extends ViewBase {
+    export class ViewTransferConfirm extends ViewBase {
 
         static list: walletLists;
 
@@ -16,8 +16,8 @@ namespace BlackCat {
         constructor() {
             super()
 
-            if (!ViewTransConfirmGas.list) {
-                ViewTransConfirmGas.list = new walletLists();
+            if (!ViewTransferConfirm.list) {
+                ViewTransferConfirm.list = new walletLists();
             }
         }
 
@@ -39,7 +39,7 @@ namespace BlackCat {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_bj", "pc_listdetail", "pc_tradeconfirm")
 
-            if (ViewTransConfirmGas.list && ViewTransConfirmGas.list.hasOwnProperty("wallet")) {
+            if (ViewTransferConfirm.list && ViewTransferConfirm.list.hasOwnProperty("wallet")) {
                 // header // header标签创建比较麻烦
                 var headerTitle = this.objCreate("div")
                 headerTitle.classList.add("pc_header")
@@ -49,10 +49,14 @@ namespace BlackCat {
                 returnBtn.textContent = Main.langMgr.get("return") // "返回"
                 returnBtn.onclick = () => {
                     this.return()
-                    if (ViewTransConfirmGas.callback_cancel) {
-                        ViewTransConfirmGas.callback_cancel()
-                        ViewTransConfirmGas.callback_cancel = null;
+                    if (ViewTransferConfirm.callback_cancel) {
+                        ViewTransferConfirm.callback_cancel()
+                        ViewTransferConfirm.callback_cancel = null;
                     }
+
+                    // 隐藏
+                    Main.viewMgr.mainView.hidden()
+                    Main.viewMgr.change("IconView")
                 }
                 this.ObjAppend(headerTitle, returnBtn)
                 // h1标题
@@ -69,13 +73,13 @@ namespace BlackCat {
                     = '<ul>'
                     + '<li>'
                     + '<div class="pc_listimg">'
-                    + '<img src="' + Main.viewMgr.payView.getListImg(ViewTransConfirmGas.list) + '">'
+                    + '<img src="' + Main.viewMgr.payView.getListImg(ViewTransferConfirm.list) + '">'
                     + '</div>'
                     + '<div class="pc_liftinfo">'
-                    + '<div class="pc_listname">' + Main.viewMgr.payView.getListName(ViewTransConfirmGas.list) + '</div>'
-                    + '<span class="pc_listdate">' + Main.viewMgr.payView.getListCtm(ViewTransConfirmGas.list) + '</span>'
+                    + '<div class="pc_listname">' + Main.viewMgr.payView.getListName(ViewTransferConfirm.list) + '</div>'
+                    + '<span class="pc_listdate">' + Main.viewMgr.payView.getListCtm(ViewTransferConfirm.list) + '</span>'
                     + '</div>'
-                    + '<div class="pc_cnts ' + Main.viewMgr.payView.getListCntsClass(ViewTransConfirmGas.list) + ' ">'
+                    + '<div class="pc_cnts ' + Main.viewMgr.payView.getListCntsClass(ViewTransferConfirm.list) + ' ">'
                     + this.getCnts()
                     // +          this.getStats()
                     + '</div>'
@@ -106,29 +110,37 @@ namespace BlackCat {
                 cancelObj.classList.add("pc_cancel")
                 cancelObj.textContent = Main.langMgr.get("cancel") // "取消"
                 cancelObj.onclick = () => {
-                    console.log("[BlaCat]", '[ViewTransConfirmGas]', 'PayTransfer交易取消..')
-                    if (ViewTransConfirmGas.callback_cancel) {
-                        ViewTransConfirmGas.callback_cancel(ViewTransConfirmGas.callback_params)
-                        ViewTransConfirmGas.callback_cancel = null;
+                    console.log("[BlaCat]", '[ViewTransferConfirm]', 'PayTransfer交易取消..')
+                    if (ViewTransferConfirm.callback_cancel) {
+                        ViewTransferConfirm.callback_cancel(ViewTransferConfirm.callback_params)
+                        ViewTransferConfirm.callback_cancel = null;
                     }
                     this.remove()
+
+                    // 隐藏
+                    Main.viewMgr.mainView.hidden()
+                    Main.viewMgr.change("IconView")
                 }
                 this.ObjAppend(this.divConfirmSelect, cancelObj)
 
 
 
                 var confirmObj = this.objCreate("button")
-                if (ViewTransConfirmGas.list.type == "3") {
+                if (ViewTransferConfirm.list.type == "3") {
                     confirmObj.textContent = Main.langMgr.get("pay_makeRecharge") // "充值"
                 }
                 else {
                     confirmObj.textContent = Main.langMgr.get("ok") // "确认"
                 }
                 confirmObj.onclick = () => {
-                    console.log("[BlaCat]", '[ViewTransConfirmGas]', 'PayTransfer交易确认..')
-                    ViewTransConfirmGas.callback(ViewTransConfirmGas.callback_params, this.net_fee)
-                    ViewTransConfirmGas.callback = null;
+                    console.log("[BlaCat]", '[ViewTransferConfirm]', 'PayTransfer交易确认..')
+                    ViewTransferConfirm.callback(ViewTransferConfirm.callback_params, this.net_fee)
+                    ViewTransferConfirm.callback = null;
                     this.remove(300)
+
+                    // 隐藏
+                    Main.viewMgr.mainView.hidden()
+                    Main.viewMgr.change("IconView")
                 }
                 this.ObjAppend(this.divConfirmSelect, confirmObj)
 
@@ -136,24 +148,28 @@ namespace BlackCat {
         }
 
         toRefer() {
-            if (ViewTransConfirmGas.refer) {
-                Main.viewMgr.change(ViewTransConfirmGas.refer);
-                ViewTransConfirmGas.refer = null;
+            if (ViewTransferConfirm.refer) {
+                Main.viewMgr.change(ViewTransferConfirm.refer);
+                ViewTransferConfirm.refer = null;
             }
         }
 
+        key_esc() {
+            
+        }
+
         private getCnts() {
-            return ViewTransConfirmGas.list.cnts != '0' ? ViewTransConfirmGas.list.cnts : ""
+            return ViewTransferConfirm.list.cnts != '0' ? ViewTransferConfirm.list.cnts : ""
         }
 
         private getWallet() {
-            return ViewTransConfirmGas.list.wallet
+            return ViewTransferConfirm.list.wallet
         }
 
         private getParams() {
             var html = ""
-            var params: any = ViewTransConfirmGas.list.params;
-            console.log("[BlaCat]", '[ViewTransConfirmGas]', 'getParams, params => ', params)
+            var params: any = ViewTransferConfirm.list.params;
+            console.log("[BlaCat]", '[ViewTransferConfirm]', 'getParams, params => ', params)
             if (params) {
                 try {
                     params = JSON.parse(params)
@@ -163,14 +179,14 @@ namespace BlackCat {
                     if (params instanceof Array) {
                         for (let k in params) {
                             html += '<li class="pc_contractAddress">'
-                                + '<div><label>' + Main.langMgr.get("pay_transferGas_toaddr") + '</label><p>' + params[k].toaddr + '</p></div>'
-                                + '<div><label>' + Main.langMgr.get("pay_transferGas_count") + '</label><p>' + params[k].count + '</p></div>'
+                                + '<div><label>' + Main.langMgr.get("pay_transfer_toaddr") + '</label><p>' + params[k].toaddr + '</p></div>'
+                                + '<div><label>' + Main.langMgr.get("pay_transfer_count") + '</label><p>' + params[k].count + '</p></div>'
                                 + '</li>';
                         }
                     }
                 }
                 catch (e) {
-                    console.log("[BlaCat]", '[ViewTransConfirmGas]', 'getParams error => ', e.toString())
+                    console.log("[BlaCat]", '[ViewTransferConfirm]', 'getParams error => ', e.toString())
                 }
             }
 

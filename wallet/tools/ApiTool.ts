@@ -1,7 +1,7 @@
 namespace BlackCat {
     export class ApiTool {
 
-        static api_version: string = "1";
+        static api_version: string = "2";
 
         static base_url: string = ''
 
@@ -51,12 +51,12 @@ namespace BlackCat {
             return this.common('user.get_entergame_param', { uid: uid, token: token, g_id: g_id });
         }
 
-        static async addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust: string = "0", net_fee: string = "") {
-            return this.common('user_wallet.logss', { uid: uid, token: token, txid: txid, g_id: g_id, cnts: cnts, type: type, params: params, net_type: net_type, trust: trust, net_fee: net_fee });
+        static async addUserWalletLogs(uid: string, token: string, txid: string, g_id: string, cnts: string, type: string, params: string, net_type: number, trust: string = "0", net_fee: string = "", type_detail: string = "0") {
+            return this.common('user_wallet.logss', { uid: uid, token: token, txid: txid, g_id: g_id, cnts: cnts, type: type, params: params, net_type: net_type, trust: trust, net_fee: net_fee, type_detail: type_detail });
         }
 
-        static async getWalletListss(uid: string, token: string, page: number, num: number, net_type: number) {
-            return this.common('user_wallet.listss', { uid: uid, token: token, page: page, num: num, net_type: net_type })
+        static async getWalletListss(uid: string, token: string, page: number, num: number, net_type: number, pedding: number) {
+            return this.common('user_wallet.listss', { uid: uid, token: token, page: page, num: num, net_type: net_type, pedding: pedding })
         }
 
         static async walletNotify(uid: string, token: string, txid: string, net_type: number) {
@@ -79,8 +79,8 @@ namespace BlackCat {
             return this.common('user.get_enter_params', { uid: uid, token: token, g_id: g_id });
         }
 
-        static async registerByPhone(phone: string, code: string, pwd: string, region: string, uid: string) {
-            return this.common('user_phone.register_pass', { phone: phone, code: code, pwd: pwd, region: region, uid: uid })
+        static async registerByPhone(phone: string, code: string, pwd: string, region: string, uid: string, invite_code: string, refer: string = "0") {
+            return this.common('user_phone.register_pass', { phone: phone, code: code, pwd: pwd, region: region, uid: uid, invite_code:invite_code, refer: refer })
         }
 
         static async validPhone(phone: string) {
@@ -90,9 +90,12 @@ namespace BlackCat {
         static async validUid(uid: string) {
             return this.common('user.valid_register', { uid: uid })
         }
+        static async validInvite(invite_code: string) {
+            return this.common('user.valid_register', { invite_code: invite_code })
+        }
 
-        static async registerByEmail(email: string, code: string, pwd: string, region: string, uid: string) {
-            return this.common('user_email.register_pass', { email: email, code: code, pwd: pwd, region: region, uid: uid })
+        static async registerByEmail(email: string, code: string, pwd: string, region: string, uid: string, invite_code: string, refer: string = "0") {
+            return this.common('user_email.register_pass', { email: email, code: code, pwd: pwd, region: region, uid: uid, invite_code:invite_code, refer: refer })
         }
 
         static async validEmail(email: string) {
@@ -171,13 +174,29 @@ namespace BlackCat {
             return this.common('user_addressbook.update_addr', { uid: uid, token: token, address_name: address_name, address_wallet: address_wallet, address_desc: address_desc, id: id })
         }
 
-        static async getExchangeInfo(uid: string, token: string, src_coin: number) {
-            return this.common('user_gas.get_info', { uid: uid, token: token, src_coin: src_coin })
+        // 获取交易价格信息
+        static async getExchangeInfo(uid: string, token: string, src_coin: number, net_type: number, exchange:string) {
+            return this.common('wallet_transfer.get_info', { uid: uid, token: token, src_coin: src_coin, net_type: net_type, exchange: exchange })
         }
 
-        //获取bcp信息
-        static async getExchangeBCPInfo(uid: string, token: string, src_coin: number) {
-            return this.common('user_bcp.get_info', { uid: uid, token: token, src_coin: src_coin })
+        // 获取不同类型的交易钱包地址
+        static async getOtherAddress(uid: string, token: string, type_src:string, net_type: number) {
+            return this.common('wallet_transfer.get_other_address', { uid: uid, token: token, type_src: type_src, net_type: net_type })
+        }
+
+        // 购买
+        static async transferByOther(uid: string, token: string, type_src:string, type:string, price: string, count:string, net_type: number, txid: string, c_hash: string) {
+            return this.common('wallet_transfer.buy', { uid: uid, token: token, type_src: type_src, type: type, price: price, count: count, net_type: net_type, txid: txid, c_hash: c_hash })
+        }
+
+        // 获取购买BCT的地址
+        static async getBctIframe(uid: string, token: string) {
+            return this.common('wallet_transfer.get_pay_add', { uid: uid, token: token})
+        }
+
+        // 过滤非游戏assets
+        static async getGameAssets(uid: string, token: string, assets: Array<string>, appid: string = "") {
+            return this.common('user_wallet.get_game_assets', {uid: uid, token: token, assets: assets, appid: appid})
         }
     }
 }

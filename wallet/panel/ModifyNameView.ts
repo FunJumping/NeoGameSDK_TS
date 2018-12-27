@@ -45,7 +45,7 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                this.remove(300)
+                this.doCancel()
             }
             this.ObjAppend(popupbutbox, popupClose)
 
@@ -66,6 +66,23 @@ namespace BlackCat {
             }
         }
 
+        key_esc() {
+            this.doCancel()
+        }
+
+        key_enter() {
+            this.doConfirm()
+        }
+
+        private doCancel() {
+            this.remove(300)
+
+            if (ModifyNameView.callback_cancel) {
+                ModifyNameView.callback_cancel()
+                ModifyNameView.callback = null
+                ModifyNameView.callback_cancel = null
+            }
+        }
 
         private async doConfirm() {
             if (!this.inputName.value) {
@@ -85,6 +102,7 @@ namespace BlackCat {
                 if (ModifyNameView.callback) {
                     ModifyNameView.callback();
                     ModifyNameView.callback = null;
+                    ModifyNameView.callback_cancel = null
                 }
             }
             else {

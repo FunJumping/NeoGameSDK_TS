@@ -28,6 +28,11 @@ namespace BlackCat {
                     this.type = "cn"
                     break;
             }
+            if(type=='jp'){
+                Main.viewMgr.mainView.div.classList.add("pc_jptype")
+            }else{
+                Main.viewMgr.mainView.div.classList.remove("pc_jptype")
+            }
             return true;
         }
 

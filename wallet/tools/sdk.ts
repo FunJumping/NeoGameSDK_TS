@@ -16,6 +16,16 @@ namespace BlackCat {
             }
             SDK.is_init = true;
         }
+        // SDK初始化
+        static initex(params, callback = null): void {
+            console.log("[BlaCat]", '[SDK]', 'initex ...')
+
+            if (SDK.is_init === false) {
+                SDK.main = new Main();
+                SDK.main.initex(params, callback);
+            }
+            SDK.is_init = true;
+        }
         // 设置界面语言
         static setLang(type: string) {
             console.log("[BlaCat]", '[SDK]', 'setLang ...')
@@ -116,6 +126,15 @@ namespace BlackCat {
             var res = await SDK.main.getBalance();
             if (callback) callback(res)
         }
+        // 获取高度
+        static async getHeight(callback = null) {
+            if (SDK.is_init === false) {
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
+                return;
+            }
+            var res = await SDK.main.getHeight();
+            if (callback) callback(res)
+        }
         // 获取登录用户信息
         static async getUserInfo(callback = null) {
             if (SDK.is_init === false) {
@@ -139,6 +158,32 @@ namespace BlackCat {
                 return;
             }
             var res = await SDK.main.makeGasTransfer(params, callback);
+        }
+        // 通用转账
+        static async makeTransfer(params, callback = null) {
+            if (SDK.is_init === false) {
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
+                return;
+            }
+            if (!SDK.main.isLogined()) {
+                console.log("[BlaCat]", '[SDK]', '请先登录')
+                this.showMain()
+                return;
+            }
+            var res = await SDK.main.makeTransfer(params, callback);
+        }
+        // Neo转账
+        static async makeNeoTransfer(params, callback = null) {
+            if (SDK.is_init === false) {
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
+                return;
+            }
+            if (!SDK.main.isLogined()) {
+                console.log("[BlaCat]", '[SDK]', '请先登录')
+                this.showMain()
+                return;
+            }
+            var res = await SDK.main.makeNeoTransfer(params, callback);
         }
         // gas转账（批量）
         static async makeGasTransferMulti(params, callback = null) {
@@ -169,6 +214,32 @@ namespace BlackCat {
                 return;
             }
             SDK.main.setDefaultNetType(type)
+        }
+        // bancor交易
+        static async bancor(params, callback = null) {
+            if (SDK.is_init === false) {
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
+                return;
+            }
+            if (!SDK.main.isLogined()) {
+                console.log("[BlaCat]", '[SDK]', '请先登录')
+                this.showMain()
+                return;
+            }
+            SDK.main.bancor(params, callback)
+        }
+        // 购买会员
+        static async buyVip(params, callback = null) {
+            if (SDK.is_init === false) {
+                console.log("[BlaCat]", '[SDK]', '请先初始化init')
+                return;
+            }
+            if (!SDK.main.isLogined()) {
+                console.log("[BlaCat]", '[SDK]', '请先登录')
+                this.showMain()
+                return;
+            }
+            SDK.main.buyVip(params, callback)
         }
     }
 

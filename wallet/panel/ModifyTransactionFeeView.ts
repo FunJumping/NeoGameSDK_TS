@@ -51,12 +51,13 @@ namespace BlackCat {
                 ModifyTransactionFeeView.refer = null;
             }
         }
+
         private async setSpeed() {
             var res = await ApiTool.modUserFee(Main.user.info.uid, Main.user.info.token, this.net_fee)
             if (res.r) {
                 // 修改用户信息
                 Main.user.setInfo('service_charge', this.net_fee)
-                Main.viewMgr.myInfoView.modifyFee()
+                Main.viewMgr.personalCenterView.modifyFee()
             }
             else {
                 Main.showErrCode(res.errCode)

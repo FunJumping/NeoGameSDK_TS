@@ -116,6 +116,10 @@ namespace BlackCat {
             this.ObjAppend(popupbutbox, bindobj)
         }
 
+        key_esc() {
+            
+        }
+
         private async doBindWallet() {
             if (!this.filename) {
                 // Main.showErrMsg("请选择钱包文件")

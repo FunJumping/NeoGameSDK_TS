@@ -43,6 +43,7 @@ namespace BlackCat {
             liTrust.textContent = Main.langMgr.get("security_trust") // "信任合约"
             liTrust.onclick = () => {
                 this.hidden()
+                TrustContractView.refer = "SecurityCenterView"
                 Main.viewMgr.change("TrustContractView")
             }
             this.ObjAppend(ulSecurity, liTrust)
@@ -63,6 +64,7 @@ namespace BlackCat {
             liSignOut.textContent = Main.langMgr.get("security_walletOut") // "自动登出钱包"
             liSignOut.onclick = () => {
                 this.hidden()
+                AutoLogoutWalletView.refer = "SecurityCenterView"
                 Main.viewMgr.change("AutoLogoutWalletView")
             }
             this.ObjAppend(ulSecurity, liSignOut)
@@ -86,7 +88,10 @@ namespace BlackCat {
         }
 
         toRefer() {
-            Main.viewMgr.myInfoView.show()
+            if (SecurityCenterView.refer) {
+                Main.viewMgr.change(SecurityCenterView.refer)
+                SecurityCenterView.refer = null;
+            }
         }
 
         getWalletOutTimeMaxMsg(liveTimeMax: number) {

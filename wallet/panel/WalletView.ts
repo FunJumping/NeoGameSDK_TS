@@ -55,5 +55,8 @@ namespace BlackCat {
             this.ObjAppend(importWallet, iImportWallet)
         }
 
+        key_esc() {
+            
+        }
     }
 }

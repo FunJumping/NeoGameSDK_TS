@@ -32,5 +32,9 @@ namespace BlackCat {
             super.show()
             this.remove(ViewToast.showTime, null)
         }
+
+        key_esc() {
+            
+        }
     }
 }

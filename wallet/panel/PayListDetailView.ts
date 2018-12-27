@@ -73,7 +73,6 @@ namespace BlackCat {
             }
         }
 
-
         private getCnts() {
             return PayListDetailView.list.cnts
         }
@@ -83,7 +82,23 @@ namespace BlackCat {
         }
 
         private getWallet() {
-            return PayListDetailView.list.wallet
+            switch (PayListDetailView.list.type) {
+                case "9":   // 储值
+                case "10":  // 钱包扣款
+                    try {
+                        var ext = JSON.parse(PayListDetailView.list.ext)
+                        if (ext.hasOwnProperty("wallet")) {
+                            return ext.wallet
+                        }
+                    }
+                    catch (e) {
+
+                    }
+                    //break; // 此处不需要break
+                default:
+                    return PayListDetailView.list.wallet
+            }
+            
         }
 
         private getParams() {
@@ -96,12 +111,16 @@ namespace BlackCat {
                         params = [params]
                     }
                     if (params instanceof Array) {
-                        if (PayListDetailView.list.type == "6") {
-                            // gas转账
+                        if (PayListDetailView.list.type == "6"  // gas转账
+                         || PayListDetailView.list.type == "7"  // bcp转账
+                         || PayListDetailView.list.type == "8"  // bct转账
+                         || PayListDetailView.list.type == "13" // neo转账
+                        ) {
+                            // 转账
                             for (let k in params) {
                                 html += '<li class="pc_contractAddress">'
-                                    + '<div><label>' + Main.langMgr.get("pay_transferGas_toaddr") + '</label><p>' + params[k].toaddr + '</p></div>'
-                                    + '<div><label>' + Main.langMgr.get("pay_transferGas_count") + '</label><p>' + params[k].count + '</p></div>'
+                                    + '<div><label>' + Main.langMgr.get("pay_transfer_toaddr") + '</label><p>' + params[k].toaddr + '</p></div>'
+                                    + '<div><label>' + Main.langMgr.get("pay_transfer_count") + '</label><p>' + params[k].count + '</p></div>'
                                     + '</li>';
                             }
                         }
@@ -110,7 +129,7 @@ namespace BlackCat {
                                 html += '<li class="pc_contractAddress">'
                                     + '<div><label>' + Main.langMgr.get("paylist_nnc") + '</label><p>' + params[k].nnc + '</p></div>'
                                     + '<div><label>' + Main.langMgr.get("paylist_sbParamJson") + '</label><p>' + params[k].sbParamJson + '</p></div>'
-                                    + '<div><label>' + Main.langMgr.get("paylist_sbPushString") + '</label><p>' + params[k].sbPushString + '</p></div>'
+                                    + '<div><label>' + Main.langMgr.get("paylist_sbPushString") + '</label><p>' + params[k].sbPushString + Main.viewMgr.payView.getListParamsMethods_extInfo(PayListDetailView.list) + '</p></div>'
                                     + '</li>';
                             }
                         }

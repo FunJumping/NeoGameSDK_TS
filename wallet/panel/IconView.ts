@@ -19,6 +19,10 @@ namespace BlackCat {
             this.show()
         }
 
+        show() {
+            this.div.style.display = "";
+        }
+
         reset() {
             this.doDragMove = false;
             if (this.div) this.flushProcess(0)
@@ -50,6 +54,10 @@ namespace BlackCat {
                     if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
                         Main.viewMgr.payView.getHeight("clis")
                     }
+                }
+
+                if (Main.isStart == false) {
+                    BlackCat.SDK.login()
                 }
             }
 

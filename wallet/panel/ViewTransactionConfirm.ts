@@ -3,7 +3,7 @@
 
 namespace BlackCat {
     // 交易确认视图
-    export class ViewTransConfirm extends ViewBase {
+    export class ViewTransactionConfirm extends ViewBase {
 
         static list: walletLists;
         static isTrustFeeLess: boolean; // 信任状态下，缺少手续费
@@ -21,8 +21,8 @@ namespace BlackCat {
         constructor() {
             super()
 
-            if (!ViewTransConfirm.list) {
-                ViewTransConfirm.list = new walletLists();
+            if (!ViewTransactionConfirm.list) {
+                ViewTransactionConfirm.list = new walletLists();
             }
         }
 
@@ -40,7 +40,7 @@ namespace BlackCat {
 
             this.trust = "0";
 
-            if (ViewTransConfirm.isTrustFeeLess) {
+            if (ViewTransactionConfirm.isTrustFeeLess) {
                 // 手续费不足，提示
                 Main.showErrMsg('pay_makerawtrans_fee_less')
                 this.divConfirmSelect.classList.add("pc_tradeconfirmbut_fee")
@@ -52,7 +52,7 @@ namespace BlackCat {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_bj", "pc_listdetail", "pc_tradeconfirm", "pc_trust")
 
-            if (ViewTransConfirm.list && ViewTransConfirm.list.hasOwnProperty("wallet")) {
+            if (ViewTransactionConfirm.list && ViewTransactionConfirm.list.hasOwnProperty("wallet")) {
                 // header标签创建比较麻烦
                 var headerTitle = this.objCreate("div")
                 headerTitle.classList.add("pc_header")
@@ -62,10 +62,14 @@ namespace BlackCat {
                 returnBtn.textContent = Main.langMgr.get("return") // "返回"
                 returnBtn.onclick = () => {
                     this.return()
-                    if (ViewTransConfirm.callback_cancel) {
-                        ViewTransConfirm.callback_cancel()
-                        ViewTransConfirm.callback_cancel = null;
+                    if (ViewTransactionConfirm.callback_cancel) {
+                        ViewTransactionConfirm.callback_cancel()
+                        ViewTransactionConfirm.callback_cancel = null;
                     }
+
+                    // 隐藏
+                    Main.viewMgr.mainView.hidden()
+                    Main.viewMgr.change("IconView")
                 }
                 this.ObjAppend(headerTitle, returnBtn)
                 // h1标题
@@ -78,20 +82,21 @@ namespace BlackCat {
                 var contentObj = this.objCreate("div")
                 contentObj.classList.add("pc_detail")
                 contentObj.style.paddingBottom = "210px"
-                if(ViewTransConfirm.isTrustFeeLess){
+                // 信任合约，手续费不足，不显示信任合约开关，或者如果是充值到游戏确认，也不显示信任合约开关
+                if(ViewTransactionConfirm.isTrustFeeLess || ViewTransactionConfirm.list.type == "3"){
                     contentObj.style.paddingBottom = "160px"
                 }
                 contentObj.innerHTML
                     = '<ul>'
                     + '<li>'
                     + '<div class="pc_listimg">'
-                    + '<img src="' + Main.viewMgr.payView.getListImg(ViewTransConfirm.list) + '">'
+                    + '<img src="' + Main.viewMgr.payView.getListImg(ViewTransactionConfirm.list) + '">'
                     + '</div>'
                     + '<div class="pc_liftinfo">'
-                    + '<div class="pc_listname">' + Main.viewMgr.payView.getListName(ViewTransConfirm.list) + '</div>'
-                    + '<span class="pc_listdate">' + Main.viewMgr.payView.getListCtm(ViewTransConfirm.list) + '</span>'
+                    + '<div class="pc_listname">' + Main.viewMgr.payView.getListName(ViewTransactionConfirm.list) + '</div>'
+                    + '<span class="pc_listdate">' + Main.viewMgr.payView.getListCtm(ViewTransactionConfirm.list) + '</span>'
                     + '</div>'
-                    + '<div class="pc_cnts ' + Main.viewMgr.payView.getListCntsClass(ViewTransConfirm.list) + ' ">'
+                    + '<div class="pc_cnts ' + Main.viewMgr.payView.getListCntsClass(ViewTransactionConfirm.list) + ' ">'
                     + this.getCnts()
                     // +          this.getStats()
                     + '</div>'
@@ -115,8 +120,8 @@ namespace BlackCat {
                 this.netFeeCom.setFeeDefault()
                 this.netFeeCom.createDiv()
 
-                // 信任合约
-                if (ViewTransConfirm.isTrustFeeLess !== true) {
+                // 信任合约， 如果是充值到游戏类型，不显示添加信任
+                if (ViewTransactionConfirm.isTrustFeeLess !== true && ViewTransactionConfirm.list.type != "3") {
                     this.divTrust = this.objCreate("div")
                     this.divTrust.classList.add("pc_switchbox")
                     this.divTrust.textContent = Main.langMgr.get("pay_trust_tips") //信任合约
@@ -150,17 +155,21 @@ namespace BlackCat {
                 cancelObj.classList.add("pc_cancel")
                 cancelObj.textContent = Main.langMgr.get("cancel") // "取消"
                 cancelObj.onclick = () => {
-                    console.log("[BlaCat]", '[ViewTransConfirm]', '交易取消..')
-                    if (ViewTransConfirm.callback_cancel) {
-                        ViewTransConfirm.callback_cancel(ViewTransConfirm.callback_params)
-                        ViewTransConfirm.callback_cancel = null;
+                    console.log("[BlaCat]", '[ViewTransactionConfirm]', '交易取消..')
+                    if (ViewTransactionConfirm.callback_cancel) {
+                        ViewTransactionConfirm.callback_cancel(ViewTransactionConfirm.callback_params)
+                        ViewTransactionConfirm.callback_cancel = null;
                     }
                     this.remove()
+
+                    // 隐藏
+                    Main.viewMgr.mainView.hidden()
+                    Main.viewMgr.change("IconView")
                 }
                 this.ObjAppend(this.divConfirmSelect, cancelObj)
 
                 var confirmObj = this.objCreate("button")
-                if (ViewTransConfirm.list.type == "3") {
+                if (ViewTransactionConfirm.list.type == "3") {
                     confirmObj.textContent = Main.langMgr.get("pay_makeRecharge") // "充值"
                 }
                 else {
@@ -174,10 +183,14 @@ namespace BlackCat {
                         return
                     }
 
-                    console.log("[BlaCat]", '[ViewTransConfirm]', '交易确认..')
-                    ViewTransConfirm.callback(ViewTransConfirm.callback_params, this.trust, this.net_fee)
-                    ViewTransConfirm.callback = null;
+                    console.log("[BlaCat]", '[ViewTransactionConfirm]', '交易确认..')
+                    ViewTransactionConfirm.callback(ViewTransactionConfirm.callback_params, this.trust, this.net_fee)
+                    ViewTransactionConfirm.callback = null;
                     this.remove(300)
+
+                    // 隐藏
+                    Main.viewMgr.mainView.hidden()
+                    Main.viewMgr.change("IconView")
                 }
                 this.ObjAppend(this.divConfirmSelect, confirmObj)
 
@@ -185,25 +198,28 @@ namespace BlackCat {
         }
 
         toRefer() {
-            if (ViewTransConfirm.refer) {
-                Main.viewMgr.change(ViewTransConfirm.refer);
-                ViewTransConfirm.refer = null;
+            if (ViewTransactionConfirm.refer) {
+                Main.viewMgr.change(ViewTransactionConfirm.refer);
+                ViewTransactionConfirm.refer = null;
             }
         }
 
+        key_esc() {
+            
+        }
 
         private getCnts() {
-            return ViewTransConfirm.list.cnts != '0' ? ViewTransConfirm.list.cnts : ""
+            return ViewTransactionConfirm.list.cnts != '0' ? ViewTransactionConfirm.list.cnts : ""
         }
 
         private getWallet() {
-            return ViewTransConfirm.list.wallet
+            return ViewTransactionConfirm.list.wallet
         }
 
         private getParams() {
             var html = ""
-            var params: any = ViewTransConfirm.list.params;
-            console.log("[BlaCat]", '[ViewTransConfirm]', 'getParams, params => ', params)
+            var params: any = ViewTransactionConfirm.list.params;
+            console.log("[BlaCat]", '[ViewTransactionConfirm]', 'getParams, params => ', params)
             if (params) {
                 try {
                     params = JSON.parse(params)
@@ -221,7 +237,7 @@ namespace BlackCat {
                     }
                 }
                 catch (e) {
-                    console.log("[BlaCat]", '[ViewTransConfirm]', 'getParams error => ', e.toString())
+                    console.log("[BlaCat]", '[ViewTransactionConfirm]', 'getParams error => ', e.toString())
                 }
             }
 

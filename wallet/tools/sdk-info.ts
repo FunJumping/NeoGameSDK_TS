@@ -13,7 +13,10 @@ namespace BlackCat {
         icon: string = '';
         sex: string = "";
         service_charge: string = "";
-
+        lv: string = "";
+        is_vip: string = "";
+        vip_end_time: string ="";
+        is_forever_vip: string = "";
     }
 
     export class TransInfo {

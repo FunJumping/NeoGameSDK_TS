@@ -22,11 +22,17 @@ namespace BlackCat {
         // 跳转(子类实现)
         toRefer() { }
         // 重置(子类实现)
-        reset() { { } }
+        reset() { }
         // 回调(子类实现)
         // callback() {}
         // 取消或移除回调（子类实现）
         // callback_cancel() {}
+        // ESC事件
+        key_esc() { 
+            this.return()
+        }
+        // 回车事件
+        key_enter() { }
 
         // 开始执行
         start() {
@@ -71,6 +77,21 @@ namespace BlackCat {
         // 显示
         show() {
             this.div.style.display = "";
+
+            // 键盘事件
+            this.div.onkeyup = (e) => {
+                var code = e.charCode || e.keyCode;
+                if (code == 13) {
+                    this.key_enter()
+                }
+                else if (code == 27) {
+                    this.key_esc()
+                }
+            }
+
+            // 捕获回车、ESC事件
+            this.div.tabIndex = 0
+            this.div.focus()
         }
         // 是否隐藏
         isHidden() {

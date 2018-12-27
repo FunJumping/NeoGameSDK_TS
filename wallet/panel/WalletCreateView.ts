@@ -79,6 +79,10 @@ namespace BlackCat {
             this.inputPwd.focus()
         }
 
+        key_esc() {
+            
+        }
+
         private createVerifyPwd() {
             var pwd = this.inputPwd.value;
             if (!pwd || pwd.toString().length == 0) {

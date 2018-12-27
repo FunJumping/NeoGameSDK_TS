@@ -152,8 +152,29 @@ namespace BlackCat.tools {
             return res;
         }
 
+        // bancor交易（第二步）
+        async bancorTransaction(params: any, net_fee: string) {
+            var res: Result = await this.makeRawTransaction(params, "0", net_fee, false)
+            if (res.err === false) {
+                var logRes = await ApiTool.addUserWalletLogs(
+                    Main.user.info.uid,
+                    Main.user.info.token,
+                    res.info.txid,
+                    "0",
+                    "",
+                    "15",
+                    JSON.stringify(params),
+                    Main.netMgr.type,
+                    "0",
+                    net_fee,
+                );
+                Main.appWalletLogId = logRes.data;
+            }
+            return res
+        }
+
         // 合约交易
-        async makeRawTransaction(params: any, trust: string = "0", net_fee: string) {
+        async makeRawTransaction(params: any, trust: string = "0", net_fee: string, upload_log: boolean = true) {
             var res: Result = new Result();
 
             var login = LoginInfo.getCurrentLogin();
@@ -299,18 +320,22 @@ namespace BlackCat.tools {
                     res.info = { txid: r["txid"] };
 
                     // 上报数据
-                    var logRes = await ApiTool.addUserWalletLogs(
-                        Main.user.info.uid,
-                        Main.user.info.token,
-                        r["txid"],
-                        Main.appid,
-                        "",
-                        "5",
-                        JSON.stringify(params),
-                        Main.netMgr.type,
-                        trust,
-                        net_fee,
-                    );
+                    if (upload_log) {
+                        var logRes = await ApiTool.addUserWalletLogs(
+                            Main.user.info.uid,
+                            Main.user.info.token,
+                            r["txid"],
+                            Main.appid,
+                            "",
+                            "5",
+                            JSON.stringify(params),
+                            Main.netMgr.type,
+                            trust,
+                            net_fee,
+                        );
+                        Main.appWalletLogId = logRes.data;
+                    }
+                    
 
                     // 记录使用的utxo，后面不再使用，需要记录高度
                     if (Number(net_fee) > 0) {
@@ -318,8 +343,7 @@ namespace BlackCat.tools {
                         oldarr.map(old => old.height = height);
                         tools.OldUTXO.oldutxosPush(oldarr);
                     }
-
-                    Main.appWalletLogId = logRes.data;
+                    
                     if (trust == "1") {
                         Main.updateTrustNnc()
                     }
@@ -339,13 +363,16 @@ namespace BlackCat.tools {
         }
 
         // 充值到游戏
-        async makeRecharge(params) {
+        async makeRecharge(params, trust, net_fee) {
+
+            trust = "0" // 充值到游戏，必须确认一次
+
             var res: Result = new Result();
 
             try {
                 var t_addr = LoginInfo.getCurrentAddress();
                 var t_taaddr = Main.app_recharge_addr;
-                var t_asset = tools.CoinTool.id_SGAS;
+                var t_asset = params.nnc; // tools.CoinTool.id_CGAS;
                 var t_amount = params.count.toString();
 
                 // console.log("[main_gameplay][makeRecharge] t_addr => ", t_addr);
@@ -357,7 +384,8 @@ namespace BlackCat.tools {
                     t_addr,
                     t_taaddr,
                     t_asset,
-                    t_amount
+                    t_amount,
+                    net_fee,
                 );
             } catch (e) {
                 console.log("[BlaCat]", "[wallet]", "makeRecharge error => ", e.toString());
@@ -382,7 +410,10 @@ namespace BlackCat.tools {
                         params.count.toString(),
                         "3",
                         JSON.stringify(params),
-                        Main.netMgr.type
+                        Main.netMgr.type,
+                        trust,
+                        net_fee,
+                        PayTransferView.log_type_detail[params.type.toLowerCase()]
                     );
                     Main.appWalletLogId = logRes.data;
 

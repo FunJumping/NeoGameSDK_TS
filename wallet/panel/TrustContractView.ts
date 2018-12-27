@@ -38,7 +38,6 @@ namespace BlackCat {
             returnA.textContent = Main.langMgr.get("return")//"返回"
             returnA.onclick = () => {
                 this.return()
-                Main.viewMgr.securityCenterView.show()
             }
             this.ObjAppend(header, returnA)
 
@@ -61,14 +60,12 @@ namespace BlackCat {
             this.doGetTrustLists()
         }
 
-        remove() {
-            super.remove()
-            this.reset();
+        toRefer() {
+            if (TrustContractView.refer) {
+                Main.viewMgr.change(TrustContractView.refer)
+                TrustContractView.refer = null;
+            }
         }
-
-        // toRefer() {
-        //     Main.viewMgr.change("PayView")
-        // }
 
         reset() {
             // this.page = 1;

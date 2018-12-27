@@ -6,6 +6,14 @@ namespace BlackCat {
         info: UserInfo = new UserInfo();
         cacheKey: string = 'BC_userinfo';
 
+        // 更新用户数据
+        private async _updateUserInfo(userinfo) {
+            for (let k in userinfo) {
+                this.info[k] = userinfo[k]
+            }
+            localStorage.setItem(this.cacheKey, JSON.stringify(this.info));
+        }
+
         getInfo() {
             var userinfo = localStorage.getItem(this.cacheKey);
             if (userinfo) {
@@ -42,6 +50,7 @@ namespace BlackCat {
                         localStorage.setItem(this.info.wallet, new_wallet_file);
                     }
                 }
+                this._updateUserInfo(api_userinfo.data)
                 return true;
             }
             else {

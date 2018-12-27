@@ -5,44 +5,68 @@ namespace BlackCat {
     // 转账视图
     export class PayTransferView extends ViewBase {
 
-        inputGasCount: HTMLInputElement;
+        inputTransferCount: HTMLInputElement;
         private inputTransferAddr: HTMLInputElement;
         private divTransferAddr: HTMLDivElement;
         private labelName: HTMLLabelElement;
 
         private divHaveAmounts: HTMLDivElement; // 余额信息
-        private divHaveGasAmounts: HTMLDivElement;  // GAS余额
-        private spanHaveGasAmounts: HTMLSpanElement;    // GAS变化
+        private divHaveBalanceAmounts: HTMLDivElement;  // 余额
 
         private spanBalance: HTMLSpanElement;   //余额
         private selectType: HTMLSelectElement;  //选择类型
 
         private netFeeCom: NetFeeComponent; // 手续费组件
 
-        private gasBalance: string;
-        private bcpBalance: string;
-        private bctBalance: string;
+        private Balances = {
+            gas: "0",
+            neo: "0",
+            cgas: "0",
+            cneo: "0",
+            bcp: "0",
+            bct: "0",
+        }; // 可转账的类型
+
+        static log_type_detail = {
+            gas:  "1",
+            neo:  "2",
+            cgas: "3",
+            cneo: "4",
+            bcp:  "5",
+            bct:  "6",
+            btc:  "7",
+            eth:  "8",
+        }
+
         private toaddress: string;
 
         private transferType: string;   //转账类型
 
         static address: string = "";
         static contact: contact;
+        static transferType_default: string;
 
         inputCount: HTMLInputElement // 提款金额
         net_fee: string // 网络交易费
 
         reset() {
-            this.gasBalance = '0';
+            for (let k in this.Balances) {
+                this.Balances[k] = "0"
+            }
             this.toaddress = "";
         }
 
         start() {
-            this.gasBalance = Main.getStringNumber(Main.viewMgr.payView.gas);
-            this.bcpBalance = Main.getStringNumber(Main.viewMgr.payView.bcp);
-            this.bctBalance = Main.getStringNumber(Main.viewMgr.payView.bct);
+            for (let k in this.Balances) {
+                this.Balances[k] = Main.getStringNumber(Main.viewMgr.payView[k])
+            }
 
-            this.transferType = "GAS";
+            if (PayTransferView.transferType_default) {
+                this.transferType = PayTransferView.transferType_default
+            }
+            else {
+                this.transferType = "GAS";
+            }
 
             super.start()
 
@@ -50,7 +74,7 @@ namespace BlackCat {
                 this.inputTransferAddr.focus()
             }
             else {
-                this.inputGasCount.focus()
+                this.inputTransferCount.focus()
             }
         }
 
@@ -92,56 +116,31 @@ namespace BlackCat {
             this.selectType.classList.add("pc_transfertypes")
             this.ObjAppend(divtransferdiv, this.selectType)
 
-            this.selectType.onchange = () =>{
+            this.selectType.onchange = () => {
                 this.transferType = this.selectType.value;
-
-                switch(this.transferType){
-                    case 'BCP':
-                        this.spanBalance.innerText = this.transferType + ": "+this.bcpBalance;
-                    break;
-                    case 'BCT':
-                        this.spanBalance.innerText = this.transferType + ": "+this.bctBalance;
-                    break;
-                    case 'GAS':
-                        this.spanBalance.innerText = this.transferType + ": "+this.gasBalance;
-                    break;
-                }
+                var trans_type = this.transferType.toLowerCase()
+                this.spanBalance.innerText = this.transferType + ": " + this.Balances[trans_type]
+                this.inputTransferCount.value = ""
             }
 
-            // 选择GAS类型
-            var optionGas = this.objCreate("option") as HTMLOptionElement
-            optionGas.value = Main.langMgr.get("gas") // "GAS"
-            optionGas.innerHTML =Main.langMgr.get("gas")
-            this.ObjAppend(this.selectType, optionGas)
-
-            // 选择BCP类型
-            var optionBcp = this.objCreate("option") as HTMLOptionElement
-            optionBcp.value = Main.langMgr.get("bcp") // "BCP"
-            optionBcp.innerHTML =Main.langMgr.get("bcp")
-            this.ObjAppend(this.selectType, optionBcp)
-
-            // 选择BCT类型
-            var optionBct = this.objCreate("option") as HTMLOptionElement
-            optionBct.value = Main.langMgr.get("bct") // "BCP"
-            optionBct.innerHTML =Main.langMgr.get("bct")
-            this.ObjAppend(this.selectType, optionBct)
-
-            this.spanBalance = this.objCreate('span');
-            this.spanBalance.classList.add('pc_gasbalancespan');  //添加类样式
-            this.spanBalance.innerText = "GAS: "+this.gasBalance;
-            this.ObjAppend(divtransferdiv,this.spanBalance);
+            for (let k in this.Balances) {
+                var option = this.objCreate("option") as HTMLOptionElement
+                option.value = Main.langMgr.get(k)
+                option.innerHTML = Main.langMgr.get(k)
+                this.ObjAppend(this.selectType, option)
+            }
 
             // 余额
-            // var gasBalanceObj = this.objCreate("span");
-            // gasBalanceObj.classList.add("pc_fr")
-            // gasBalanceObj.textContent = Main.langMgr.get("pay_transferBalance") + this.gasBalance;
-            // this.ObjAppend(divtransfertype, gasBalanceObj)
+            this.spanBalance = this.objCreate('span');
+            this.spanBalance.classList.add('pc_gasbalancespan');  //添加类样式
+            var type_lowcase = this.transferType.toLowerCase()
+            this.spanBalance.innerText = Main.langMgr.get(type_lowcase) + ": " + this.Balances[type_lowcase];
 
+            this.ObjAppend(divtransferdiv, this.spanBalance);
 
             //输入钱包地址
             this.divTransferAddr = this.objCreate("div") as HTMLDivElement
             this.divTransferAddr.classList.add("pc_transfertype")
-            // divTransferAddr.innerText= Main.langMgr.get("pay_transferToAddr") //"转账地址："
             this.ObjAppend(divtransfer, this.divTransferAddr)
 
             //对方用户名
@@ -159,7 +158,7 @@ namespace BlackCat {
             this.inputTransferAddr.onchange = () => {
                 this.divTransferAddr.classList.remove("pc_transfer_active")
                 this.inputTransferAddr.style.padding = "0 35px 0 5px"
-                this.inputTransferAddr.style.width = "230px"
+                this.inputTransferAddr.style.width = "85%"
             }
             this.ObjAppend(this.divTransferAddr, this.inputTransferAddr)
 
@@ -176,31 +175,26 @@ namespace BlackCat {
 
 
             // 转账数量
-            var divGasCount = this.objCreate("div")
-            divGasCount.classList.add("pc_transfertype")
-            // divGasCount.innerText= Main.langMgr.get("pay_transferCount") // "转账金额："
-            this.ObjAppend(divtransfer, divGasCount)
+            var divTransferCount = this.objCreate("div")
+            divTransferCount.classList.add("pc_transfertype")
+            this.ObjAppend(divtransfer, divTransferCount)
 
-            this.inputGasCount = this.objCreate("input") as HTMLInputElement
-            this.inputGasCount.placeholder = Main.langMgr.get("pay_transferCount") // "转账金额："
-            this.ObjAppend(divGasCount, this.inputGasCount)
-            this.inputGasCount.onkeyup = () => {
+            this.inputTransferCount = this.objCreate("input") as HTMLInputElement
+            this.inputTransferCount.placeholder = Main.langMgr.get("pay_transferCount")
+            this.ObjAppend(divTransferCount, this.inputTransferCount)
+            this.inputTransferCount.onkeyup = () => {
                 this.doinputchange()
             }
 
-            // 拥有GAS和SGAS数量
+            // 拥有数量
             this.divHaveAmounts = this.objCreate("div") as HTMLDivElement
             this.divHaveAmounts.classList.add("pc_haveamounts")
             this.ObjAppend(popupbox, this.divHaveAmounts)
 
-            // 拥有GAS
-            this.divHaveGasAmounts = this.objCreate("div") as HTMLDivElement
-            this.divHaveGasAmounts.textContent = "";//Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
-            this.ObjAppend(this.divHaveAmounts, this.divHaveGasAmounts)
-
-            // GAS交易数量
-            this.spanHaveGasAmounts = this.objCreate("span")
-            this.ObjAppend(this.divHaveGasAmounts, this.spanHaveGasAmounts)
+            // 拥有数量
+            this.divHaveBalanceAmounts = this.objCreate("div") as HTMLDivElement
+            this.divHaveBalanceAmounts.textContent = "";
+            this.ObjAppend(this.divHaveAmounts, this.divHaveBalanceAmounts)
 
             // 手续费
             this.netFeeCom = new NetFeeComponent(popupbox, (net_fee) => {
@@ -242,6 +236,10 @@ namespace BlackCat {
             }
         }
 
+        key_esc() {
+            
+        }
+
         private getAddress() {
             if (PayTransferView.address) {
                 this.toaddress = PayTransferView.address
@@ -252,12 +250,19 @@ namespace BlackCat {
 
 
         private doinputchange() {
-            if (!Main.viewMgr.payView.checkTransCount(this.inputGasCount.value)) {
-                this.spanHaveGasAmounts.textContent = ""
+            if (this.transferType == "NEO") {
+                // NEO只能整数
+                var neo_int = parseInt(this.inputTransferCount.value)
+                if (neo_int > 0) {
+                    this.inputTransferCount.value = parseInt(this.inputTransferCount.value).toString()
+                }
+                else {
+                    this.inputTransferCount.value = ""
+                }
+            }
+            if (!Main.viewMgr.payView.checkTransCount(this.inputTransferCount.value)) {
                 return
             }
-            //this.divHaveGasAmounts.classList.add("pc_expenditure")
-            //this.spanHaveGasAmounts.textContent = "";// Main.getStringNumber(floatNum.plus(Number(this.inputGasCount.value), Number(this.net_fee)));
         }
 
         gatSelect() {
@@ -266,12 +271,12 @@ namespace BlackCat {
             this.inputTransferAddr.value = PayTransferView.contact.address_wallet
 
             var labelNameW = this.labelName.clientWidth + 10;
-            var inputTransferAddrw = 270 - labelNameW - 35;
+            var inputTransferAddrw = labelNameW + 35;
 
-            this.inputTransferAddr.style.width = inputTransferAddrw + "px"
+            this.inputTransferAddr.style.width = "calc( 100% - " + inputTransferAddrw + "px"
             this.inputTransferAddr.style.padding = "0 35px 0 " + labelNameW + "px"
             if (this.labelName) {
-                this.inputGasCount.focus()
+                this.inputTransferCount.focus()
             }
         }
 
@@ -287,9 +292,9 @@ namespace BlackCat {
                 this.toaddress = this.inputTransferAddr.value;
             }
 
-            if (!Main.viewMgr.payView.checkTransCount(this.inputGasCount.value)) {
+            if (!Main.viewMgr.payView.checkTransCount(this.inputTransferCount.value)) {
                 Main.showErrMsg("pay_transferCountError", () => {
-                    this.inputGasCount.focus()
+                    this.inputTransferCount.focus()
                 })
                 return;
             }
@@ -298,27 +303,53 @@ namespace BlackCat {
             var net_fee = this.net_fee
 
             // 余额判断
-            if (Number(this.inputGasCount.value) + Number(net_fee) > Number(this.gasBalance)) {
-                Main.showErrMsg("pay_transferGasNotEnough", () => {
-                    this.inputGasCount.focus()
-                })
-                return
+            switch (this.transferType) {
+                case 'GAS':
+                    //gas转账
+                    if (Number(this.inputTransferCount.value) + Number(net_fee) > Number(this.Balances.gas)) {
+                        Main.showErrMsg("pay_transferGasNotEnough", () => {
+                            this.inputTransferCount.focus()
+                        })
+                        return
+                    }
+                    break;
+                case "NEO": // NEO转账
+                case "BCP": // BCP转账
+                case 'BCT': // BCT转账
+                case "CNEO": // CNEO转账
+                case "CGAS": // CGAS转账
+                    if (Number(net_fee) > Number(this.Balances.gas)) {
+                        Main.showErrMsg("pay_transferGasNotEnough", () => {
+                            this.inputTransferCount.focus()
+                        })
+                        return
+                    }
+                    if (Number(this.inputTransferCount.value) > Number(this.Balances[this.transferType.toLowerCase()])) {
+                        Main.showErrMsg("pay_transfer" + this.transferType + "NotEnough", () => {
+                            this.inputTransferCount.focus()
+                        })
+                        return
+                    }
+                    break;
             }
 
+
+
             Main.viewMgr.change("ViewLoading")
+            var api_type: string = "6";
 
             try {
-                switch(this.transferType){
-                    case 'GAS':
-                        //gas转账
-                        var res: Result = await tools.CoinTool.rawTransaction(this.toaddress, tools.CoinTool.id_GAS, this.inputGasCount.value, Neo.Fixed8.fromNumber(Number(net_fee)) );
-                    break;
-                    case 'BCP': //BCP转账
-                       var res: Result = await tools.CoinTool.nep5Transaction(Main.user.info.wallet,this.toaddress,tools.CoinTool.id_BCP,this.inputGasCount.value);
-                    break;
-                    case 'BCT': //BCT转账
-                       var res: Result = await tools.CoinTool.nep5Transaction(Main.user.info.wallet,this.toaddress,tools.CoinTool.id_BCT,this.inputGasCount.value);
-                    break;
+                switch (this.transferType) {
+                    case 'GAS': // gas转账 1
+                    case "NEO": // neo转账 2
+                        var res: Result = await tools.CoinTool.rawTransaction(this.toaddress, tools.CoinTool["id_" + this.transferType], this.inputTransferCount.value, Neo.Fixed8.fromNumber(Number(net_fee)));
+                        break;
+                    case 'CGAS': // CGAS 3
+                    case "CNEO": // CNEO 4
+                    case 'BCP': // BCP 5
+                    case "BCT": // BCT 6
+                        var res: Result = await tools.CoinTool.nep5Transaction(Main.user.info.wallet, this.toaddress, tools.CoinTool["id_" + this.transferType], this.inputTransferCount.value, net_fee);
+                        break;
                 }
             }
             catch (e) {
@@ -333,7 +364,7 @@ namespace BlackCat {
             Main.viewMgr.viewLoading.remove()
 
             if (res) {
-                console.log("[BlaCat]", '[PayTransferView]', 'gas转账结果 => ', res)
+                console.log("[BlaCat]", '[PayTransferView]', '转账结果 => ', res)
                 if (res.err == false) {
                     // 成功，上报
                     await ApiTool.addUserWalletLogs(
@@ -341,12 +372,13 @@ namespace BlackCat {
                         Main.user.info.token,
                         res.info,
                         "0",
-                        this.inputGasCount.value,
+                        this.inputTransferCount.value,
                         "6",
-                        '{"sbPushString":"transfer", "toaddr":"' + this.toaddress + '", "count": "' + this.inputGasCount.value + '"}',
+                        '{"sbPushString":"transfer", "toaddr":"' + this.toaddress + '", "count": "' + this.inputTransferCount.value + '", "nnc": "' + tools.CoinTool["id_" + this.transferType] + '"}',
                         Main.netMgr.type,
                         "0",
                         net_fee,
+                        PayTransferView.log_type_detail[this.transferType.toLowerCase()]
                     );
 
                     // "转账操作成功"
@@ -369,18 +401,19 @@ namespace BlackCat {
         private netFeeChange(net_fee) {
             this.net_fee = net_fee
 
-            var v = this.inputGasCount.value;
+            var v = this.inputTransferCount.value;
             // 没有输入值，返回
             if (v.length == 0 || v.replace(/(^s*)|(s*$)/g, "").length == 0) {
                 return
             }
-            // 修改GAS值
-            this.spanHaveGasAmounts.textContent = Main.getStringNumber(floatNum.plus(Number(v), Number(this.net_fee)));
         }
 
         updateBalance() {
-            // gas
-            this.divHaveGasAmounts.textContent = "";//Main.langMgr.get("pay_transCountGAS") + Main.getStringNumber(Main.viewMgr.payView.gas)
+            for (let k in this.Balances) {
+                this.Balances[k] = Main.getStringNumber(Main.viewMgr.payView[k])
+            }
+            let type_lowcase = this.transferType.toLowerCase()
+            this.spanBalance.innerText = Main.langMgr.get(type_lowcase) + ": " + this.Balances[type_lowcase];
         }
 
     }

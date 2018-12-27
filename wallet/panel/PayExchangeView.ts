@@ -2,9 +2,10 @@
 /// <reference path="./ViewBase.ts" />
 
 namespace BlackCat {
-    // 交易所
+    // 购买
     export class PayExchangeView extends ViewBase {
 
+        static type_src: string;
 
         private exchange_type_buy: HTMLElement
         private exchange_typeObj: HTMLElement
@@ -16,6 +17,7 @@ namespace BlackCat {
         private exchange_info: any // 兑换信息
         private exchange_coin_type: number // 当前兑换币种ID
         private exchange_coin_name: string // 当前兑换币种名称
+        private exchange_size: number; // 当前兑换币种精度
 
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
@@ -36,7 +38,7 @@ namespace BlackCat {
 
             //标题
             var headerH1 = this.objCreate("h1")
-            headerH1.textContent = Main.langMgr.get("pay_exchange_gas") // "购买GAS"
+            headerH1.textContent = Main.langMgr.get("pay_exchange_" + PayExchangeView.type_src) // "购买GAS"
             this.ObjAppend(header, headerH1)
 
 
@@ -68,6 +70,8 @@ namespace BlackCat {
             this.exchange_info = null
             this.exchange_coin_type = null
             this.exchange_coin_name = null
+
+            this.exchange_size = 8
         }
 
         toRefer() {
@@ -78,22 +82,25 @@ namespace BlackCat {
         }
 
         private async getExchangeInfo(src_coin: number) {
+            Main.viewMgr.change("ViewLoading")
             try {
-                var res = await ApiTool.getExchangeInfo(Main.user.info.uid, Main.user.info.token, src_coin)
-                if (res.r) {
-                    let data = res.data;
-                    console.log("[BlaCat]", '[PayExchangeView]', 'getExchangeInfo, data =>', data)
-                    if (data && data.hasOwnProperty("info") && data.hasOwnProperty("coin") && data.hasOwnProperty("jys")) {
-                        this.exchange_info = data;
-                        this.showExchangeInfo()
-                    }
-                }
-                else {
-                    Main.showErrCode(res.errCode)
-                }
+                var res = await ApiTool.getExchangeInfo(Main.user.info.uid, Main.user.info.token, src_coin, Main.netMgr.type, PayExchangeView.type_src)
             }
             catch (e) {
                 // 获取数据失败
+            }
+            Main.viewMgr.viewLoading.remove()
+
+            if (res.r) {
+                let data = res.data;
+                console.log("[BlaCat]", '[PayExchangeView]', 'getExchangeInfo, data =>', data)
+                if (data && data.hasOwnProperty("info") && data.hasOwnProperty("coin") && data.hasOwnProperty("jys")) {
+                    this.exchange_info = data;
+                    this.showExchangeInfo()
+                }
+            }
+            else {
+                Main.showErrCode(res.errCode)
             }
         }
 
@@ -121,6 +128,13 @@ namespace BlackCat {
                     if (Number(list[0]) == this.exchange_coin_type) {
                         coinType_li.classList.add("pc_active")
                         this.exchange_coin_name = list[1]
+                        if (this.exchange_coin_name.toLowerCase() == "bct") {
+                            // bct是4位精度
+                            this.exchange_size = 4;
+                        }
+                        else {
+                            this.exchange_size = 8;
+                        }
                     }
                     coinType_li.onclick = () => {
                         this.exchange_typeObj.getElementsByClassName("pc_active")[0].classList.remove("pc_active")
@@ -159,7 +173,7 @@ namespace BlackCat {
             this.ObjAppend(buyObj_name, buyObj_name_content)
             //名称类型
             var buyObj_name_type = this.objCreate("p")
-            buyObj_name_type.textContent = "GAS/" + this.exchange_coin_name
+            buyObj_name_type.textContent = PayExchangeView.type_src.toUpperCase() + "/" + this.exchange_coin_name
             this.ObjAppend(buyObj_name, buyObj_name_type)
             this.ObjAppend(this.exchange_buyObj, buyObj_name)
 
@@ -172,7 +186,11 @@ namespace BlackCat {
             this.ObjAppend(buyObj_price, buyObj_price_name)
             //最新价价格
             var buyObj_price_price = this.objCreate("p")
-            buyObj_price_price.textContent = floatNum.addZero(this.getCurr(), 8)
+
+            
+            buyObj_price_price.textContent = floatNum.addZero(this.getCurr(this.exchange_size), this.exchange_size)
+            
+            
             this.ObjAppend(buyObj_price, buyObj_price_price)
             this.ObjAppend(this.exchange_buyObj, buyObj_price)
 
@@ -182,8 +200,48 @@ namespace BlackCat {
             // 按钮
             var buyObj_buy_btn = this.objCreate("button")
             buyObj_buy_btn.textContent = Main.langMgr.get("pay_exchange_purchase") // "购买"
-            buyObj_buy_btn.onclick = () => {
+            buyObj_buy_btn.onclick = async () => {
+                var coin = this.exchange_coin_name.toLowerCase()
+                switch (coin) {
+                    case "cneo":
+                    case "bct":
+                        var res: any = {}
+                        res['data'] = {
+                            address: Main.user.info.wallet,
+                            balance: Main.viewMgr.payView[coin],
+                            type: "",
+                            type_src: coin,
+                            uid: Main.user.info.uid,
+                        }
+                        break;
+                    default:
+                        Main.viewMgr.change("ViewLoading")
+                        // 获取交易钱包地址
+                        try {
+                            var res = await ApiTool.getOtherAddress(Main.user.info.uid, Main.user.info.token, this.exchange_coin_name.toLowerCase(), Main.netMgr.type)
+                        }
+                        catch(e) {
+        
+                        }
+                        Main.viewMgr.viewLoading.remove()
+        
+                        if (!res || !res.r) {
+                            // 获取失败
+                            Main.showErrMsg("pay_exchange_create_wallet_fail")
+                            return
+                        }
+                        break;
+                }
+                
+
                 this.hidden()
+                PayExchangeDetailView.callback_params = {
+                    type: PayExchangeView.type_src.toUpperCase(),
+                    type_id: this.exchange_coin_type,
+                    type_src: this.exchange_coin_name,
+                    price: buyObj_price_price.textContent,
+                    data: res.data,
+                }
                 PayExchangeDetailView.refer = "PayExchangeView"
                 Main.viewMgr.change("PayExchangeDetailView")
             }
@@ -198,7 +256,6 @@ namespace BlackCat {
 
             this.exchange_detail_ul = this.objCreate("ul")
             this.ObjAppend(this.exchange_detail, this.exchange_detail_ul)
-
 
             this.exchange_info.info.forEach(
                 list => {
@@ -220,7 +277,7 @@ namespace BlackCat {
                         this.ObjAppend(li_name, li_name_content)
                         // 名称类型
                         var li_name_coin = this.objCreate("p")
-                        li_name_coin.textContent = "GAS/" + this.exchange_coin_name
+                        li_name_coin.textContent = PayExchangeView.type_src.toUpperCase() + "/" + this.exchange_coin_name
                         this.ObjAppend(li_name, li_name_coin)
                         this.ObjAppend(detail_li, li_name)
 
@@ -234,7 +291,9 @@ namespace BlackCat {
                         this.ObjAppend(li_price, li_price_name)
                         // 最新价价格
                         var li_price_price = this.objCreate("p")
-                        li_price_price.textContent = floatNum.addZero(floatNum.round(Number(list["curr"]), 8), 8)
+
+
+                        li_price_price.textContent = floatNum.addZero(floatNum.round(Number(list["curr"]), this.exchange_size), this.exchange_size)
                         this.ObjAppend(li_price, li_price_price)
                         this.ObjAppend(detail_li, li_price)
 
@@ -262,6 +321,13 @@ namespace BlackCat {
             for (let i = 0; i < this.exchange_info.coin.length; i++) {
                 if (Number(this.exchange_info.coin[i][0]) == type) {
                     this.exchange_coin_name = this.exchange_info.coin[i][1]
+                    if (this.exchange_coin_name.toLowerCase() == "bct") {
+                        // bct是4位精度
+                        this.exchange_size = 4;
+                    }
+                    else {
+                        this.exchange_size = 8;
+                    }
                     break;
                 }
             }
@@ -276,7 +342,7 @@ namespace BlackCat {
             return Main.resHost + "res/img/jys_" + list.jys + ".png"
         }
 
-        private getCurr() {
+        private getCurr(size: number = 8) {
             let count = 0
             let curr = 0
             for (let i = 0; i < this.exchange_info.info.length; i++) {
@@ -286,8 +352,7 @@ namespace BlackCat {
                     curr += Number(data.curr)
                 }
             }
-            return count == 0 ? 0 : floatNum.round(curr / count, 8);
+            return count == 0 ? 0 : floatNum.round(curr / count, size);
         }
-
     }
 }

@@ -172,10 +172,12 @@ namespace BlackCat.tools
         height: number;
         txid: string;
         n: number;
-        constructor(txid: string, n: number)
+        asset: string;
+        constructor(txid: string, n: number, asset = "")
         {
             this.n = n;
             this.txid = txid;
+            this.asset = asset
         }
 
         static oldutxosPush(olds: OldUTXO[])
@@ -201,7 +203,7 @@ namespace BlackCat.tools
 
         compareUtxo(utxo: UTXO)
         {
-            return this.txid == utxo.txid && this.n == utxo.n;
+            return this.txid == utxo.txid && this.n == utxo.n && this.asset == utxo.asset;
         }
     }
 

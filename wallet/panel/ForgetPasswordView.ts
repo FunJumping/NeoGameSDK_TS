@@ -250,6 +250,10 @@ namespace BlackCat {
             this.ObjAppend(divInput, doLogin)
         }
 
+        key_esc() {
+            
+        }
+
         start() {
             super.start()
             this.inputAccount.focus()

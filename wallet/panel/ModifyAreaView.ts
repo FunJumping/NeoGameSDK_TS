@@ -61,7 +61,10 @@ namespace BlackCat {
         }
 
         toRefer() {
-            Main.viewMgr.myInfoView.show()
+            if (ModifyAreaView.refer) {
+                Main.viewMgr.change(ModifyAreaView.refer);
+                ModifyAreaView.refer = null;
+            }
         }
 
         private async doArea(area) {
@@ -71,7 +74,7 @@ namespace BlackCat {
 
                 // 修改用户信息
                 Main.user.setInfo('region', area.codename)
-                Main.viewMgr.myInfoView.modifyFee()
+                Main.viewMgr.myInfoView.modifyArea()
                 this.return()
             }
             else {

@@ -27,7 +27,7 @@ namespace BlackCat {
                 this.net_fees = net_fees
             }
             else {
-                this.net_fees = ["0.0001", "0.0002", "0.0004", "0.0006", "0.0008", "0.001"]
+                this.net_fees = ["0.001", "0.002", "0.004", "0.006", "0.008", "0.01"]
             }
 
             this.net_fee = "0"
@@ -71,12 +71,14 @@ namespace BlackCat {
 
             // 交易速度选择
             var divSpeedSelect = this.objCreate("div")
-            divSpeedSelect.textContent = Main.langMgr.get("pay_transCount_speed") //交易速度
+            var spanspeed = this.objCreate("span")
+            this.ObjAppend(divSpeedSelect, spanspeed)
+            spanspeed.textContent = Main.langMgr.get("pay_transCount_speed") //交易速度
             this.ObjAppend(this.mainDiv, divSpeedSelect)
 
             // 免费选择
             this.inputFree = this.objCreate("input") as HTMLInputElement
-            this.inputFree.classList.add("iconfont", "icon-bc-shandian")
+            // this.inputFree.classList.add("iconfont", "icon-bc-shandian")
             this.inputFree.type = "radio"
             this.inputFree.onclick = () => {
                 this.dofree()

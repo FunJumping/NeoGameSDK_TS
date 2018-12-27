@@ -66,6 +66,10 @@ namespace BlackCat {
             }
         }
 
+        key_esc() {
+            this.doCancel()
+        }
+
         private doConfirm() {
             this.remove(300);
             ViewConfirm.callback(ViewConfirm.callback_params)

@@ -11,6 +11,7 @@ namespace BlackCat {
         create() {
             this.div = this.objCreate("div") as HTMLDivElement
             this.div.classList.add("pc_alter")
+
             //提示的框
             var alter = this.objCreate('div')
             alter.classList.add("pc_alterbox")
@@ -46,6 +47,14 @@ namespace BlackCat {
                 this.doConfirm()
             }
             this.ObjAppend(popupbutbox, butConfirm)
+        }
+
+        key_esc() {
+            this.doConfirm()
+        }
+
+        key_enter() {
+            this.doConfirm()
         }
 
         toRefer() {

@@ -20,10 +20,7 @@ namespace BlackCat {
 
             this.apis = [
                 // 调试服
-                // ["CN", "https://api00.9191wyx.com/apic_v2/"],
-                // ["CN", "http://192.168.23.128/apic_v2/"],
                 // ["CN", "https://blacat.9191wyx.com/apic/"],
-                // ["CN", "http://10.1.8.132/new/nel/api_c/"],
 
                 // 正式服
                 ["CN", "//apip01.9191wyx.com/apic/"], // gateway
@@ -33,17 +30,21 @@ namespace BlackCat {
             this.nodes = {}
             this.nodes[1] = [
                 // 主网nelnode
-                ["CN", "https://api.nel.group/api/mainnet", "_1"],
-                ["CN", "https://nelnode01.9191wyx.com/api/mainnet", "_2"],
+                ["CN", "https://api.nel.group/api/mainnet", "_NEL"],
 
-                ["HK", "https://nelnode01.blacat.org/api/mainnet"],
+                ["CN", "https://mainnet-node-sz-01.9191wyx.com/api/mainnet", "_1"],
+
+                ["HK", "https://mainnet_node_hk_01.blacat.org/api/mainnet", "_1"],
+                ["HK", "https://mainnet_node_hk_02.blacat.org/api/mainnet", "_2"],
             ]
             this.nodes[2] = [
                 // 测试网nelnode
-                ["CN", "https://api.nel.group/api/testnet", "_1"],
-                ["CN", "https://nelnode00.9191wyx.com/api/testnet", "_2"],
+                ["CN", "https://api.nel.group/api/testnet", "_NEL"],
 
-                ["HK", "https://nelnode00.blacat.org/api/testnet"],
+                ["CN", "https://testnet-node-sz-01.9191wyx.com/api/testnet", "_1"],
+
+                ["HK", "https://testnet_node_hk_01.blacat.org/api/testnet", "_1"],
+                ["HK", "https://testnet_node_hk_02.blacat.org/api/testnet", "_2"],
             ]
 
             this.clis = {}
@@ -274,16 +275,41 @@ namespace BlackCat {
             this.selectNode(() => {
                 // 测试网
                 this.type = 2;
-                // sgas合约地址、SGAS旧合约地址
-                tools.CoinTool.id_SGAS = "0x74f2dc36a68fdc4682034178eb2220729231db76";
-                tools.CoinTool.id_SGAS_OLD = ["0x961e628cc93d61bf636dc0443cf0548947a50dbe"]
-
-                // BCT/BCP
-                tools.CoinTool.id_BCT = "0x40a80749ef62da6fc3d74dbf6fc7745148922372"
-                tools.CoinTool.id_BCP = "0x04e31cee0443bb916534dad2adf508458920e66d"
-
+                // cgas合约地址、cgas旧合约地址
+                tools.CoinTool.id_CGAS = "0x74f2dc36a68fdc4682034178eb2220729231db76";
+                tools.CoinTool.id_CGAS_OLD = []
                 // cgas协调退款地址
                 tools.WWW.api_cgas = 'https://apiwallet.nel.group/api/testnet';
+
+                // cneo合约地址、ceno旧合约地址
+                tools.CoinTool.id_CNEO = "0xc074a05e9dcf0141cbe6b4b3475dd67baf4dcb60"
+                tools.CoinTool.id_CNEO_OLD = []
+                // cneo协调退款地址
+                tools.WWW.api_cneo = '';
+
+                // BCT
+                tools.CoinTool.id_BCT = "0x40a80749ef62da6fc3d74dbf6fc7745148922372"
+                tools.CoinTool.id_BCT_DESTROY = "AdsNmzKPPG7HfmQpacZ4ixbv9XJHJs2ACz"
+
+                // BCP
+                tools.CoinTool.id_BCP = "0x04e31cee0443bb916534dad2adf508458920e66d"
+
+                // BTC-NEP5
+                tools.CoinTool.id_BTC = "0x07bc2c1398e1a472f3841a00e7e7e02029b8b38b"
+                tools.CoinTool.id_BTC_DESTROY = "AUWYsHRi1xv584DswcQKkz1UXJf8G3se4Y"
+
+                // ETH-NEP5
+                tools.CoinTool.id_ETH = "0x7c652b368ddc0fb035bb9c63eca91b2e3c55385e"
+                tools.CoinTool.id_ETH_DESTROY = "AQN4ecUAEcX8Sce11e7eyWNRYPPbDv7rcZ"
+
+                // CNEO
+                tools.CoinTool.id_CNEO_DESTROY = "AcQLYjGbQU2bEQ8RKFXUcf8XvromfUQodq"
+
+                // bancor合约地址
+                tools.CoinTool.id_bancor = "0x0ca406aea638e0fed8580f00eb8b6e1dcb3d95da"
+
+                // 购买VIP转账地址
+                tools.CoinTool.BUY_VIP_ADDR = "AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"
 
                 // 回调
                 callback()
@@ -295,12 +321,41 @@ namespace BlackCat {
             this.selectNode(() => {
                 // 主网
                 this.type = 1;
-                // sgas合约地址、SGAS旧合约地址
-                tools.CoinTool.id_SGAS = "0x74f2dc36a68fdc4682034178eb2220729231db76";
-                tools.CoinTool.id_SGAS_OLD = ["0x961e628cc93d61bf636dc0443cf0548947a50dbe"]
-
+                // cgas合约地址、cgas旧合约地址
+                tools.CoinTool.id_CGAS = "0x74f2dc36a68fdc4682034178eb2220729231db76";
+                tools.CoinTool.id_CGAS_OLD = []
                 // cgas协调退款地址
                 tools.WWW.api_cgas = 'https://apiwallet.nel.group/api/mainnet';
+
+                // cneo合约地址、ceno旧合约地址
+                tools.CoinTool.id_CNEO = "0xc074a05e9dcf0141cbe6b4b3475dd67baf4dcb60"
+                tools.CoinTool.id_CNEO_OLD = []
+                // cneo协调退款地址
+                tools.WWW.api_cneo = '';
+
+                // BCT
+                tools.CoinTool.id_BCT = "0x40a80749ef62da6fc3d74dbf6fc7745148922372"
+                tools.CoinTool.id_BCT_DESTROY = ""
+
+                // BCP
+                tools.CoinTool.id_BCP = "0x04e31cee0443bb916534dad2adf508458920e66d"
+
+                // BTC-NEP5
+                tools.CoinTool.id_BTC = ""
+                tools.CoinTool.id_BTC_DESTROY = ""
+
+                // ETH-NEP5
+                tools.CoinTool.id_ETH = ""
+                tools.CoinTool.id_ETH_DESTROY = ""
+
+                // CNEO
+                tools.CoinTool.id_CNEO_DESTROY = ""
+
+                // bancor合约地址
+                tools.CoinTool.id_bancor = ""
+
+                // 购买VIP转账地址
+                tools.CoinTool.BUY_VIP_ADDR = ""
 
                 // 回调
                 callback()

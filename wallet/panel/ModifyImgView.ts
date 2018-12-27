@@ -67,7 +67,7 @@ namespace BlackCat {
             popupClose.classList.add("pc_cancel")
             popupClose.textContent = Main.langMgr.get("cancel") // "取消"
             popupClose.onclick = () => {
-                this.remove(300)
+                this.doCancel()
             }
             this.ObjAppend(popupbutbox, popupClose)
 
@@ -85,6 +85,20 @@ namespace BlackCat {
             if (ModifySexView.refer) {
                 Main.viewMgr.change(ModifySexView.refer);
                 ModifySexView.refer = null;
+            }
+        }
+
+        key_esc() {
+            this.doCancel()
+        }
+
+        private doCancel() {
+            this.remove(300)
+
+            if (ModifyImgView.callback_cancel) {
+                ModifyImgView.callback_cancel()
+                ModifyImgView.callback_cancel = null
+                ModifyImgView.callback = null
             }
         }
 
@@ -169,6 +183,7 @@ namespace BlackCat {
                     if (ModifyImgView.callback) {
                         ModifyImgView.callback();
                         ModifyImgView.callback = null;
+                        ModifyImgView.callback_cancel = null
                     }
                 }
                 else {

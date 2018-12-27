@@ -10,6 +10,8 @@ namespace BlackCat {
     export class Main {
 
         private static isCreated: boolean;
+        private static isInitex: boolean;
+        static isStart: boolean;
 
         static readonly platName = "BlaCat"
         static platLoginType = 0; // 0，SDK；1：PAGE
@@ -25,6 +27,9 @@ namespace BlackCat {
         static appkey: string;              // appkey
         static appname: string;             // appname
         static appicon: string;             // appicon
+        static appcoin: string;             // appcoin
+        static applang: string;             // app默认语言
+        static apprefer: string;            // app来源refer
         static app_recharge_addr: string;   // app充值地址
         private static app_trust: Array<any>; // app信任合约
 
@@ -51,10 +56,15 @@ namespace BlackCat {
 
         // SDK回调相关
         private static callback: Function; // 统一sdk调用回调接口，即sdk的listener
-        private static transCallback: Function; // 接口makeRawTransaction/makeRecharge回调函数
-        private static transGasCallback: Function; // 接口makeGasTransfer回调函数
+        private static transactionCallback: Function; // 接口makeRawTransaction/makeRecharge回调函数
+
+        private static transferCallback: Function; // 接口makeTransfer/makeGasTransfer/makeNeoTransfer回调函数
+
         private static transGasMultiCallback: Function; // 接口makeGasTransferMulti回调函数
+
         private static loginFunctionCallback: Function; // 接口login的回调函数
+        private static bancorCallback: Function; // bancor合约购买/卖出回调函数
+        private static buyVipCallback: Function; // 购买会员回调函数
         private static isLoginCallback: boolean;
 
 
@@ -76,6 +86,7 @@ namespace BlackCat {
             Main.langMgr = new LangMgr();
             Main.randNumber = parseInt((Math.random() * 10000000).toString())
             Main.urlHead = Main.getUrlHead()
+            Main.apprefer = Main.getUrlParam('refer')
 
             Main.reset(0)
 
@@ -83,6 +94,7 @@ namespace BlackCat {
             Main.update_timeout_min = 300;
 
             Main.isCreated = false;
+            Main.isStart = false;
 
             // NEO的随机数生成器
             Neo.Cryptography.RandomNumberGenerator.startCollectors();
@@ -117,8 +129,40 @@ namespace BlackCat {
                 Main.update()
             }
         }
+        
 
-        //获取余额信息
+        // 获取cgas余额
+        static async getCGASBalanceByAddress(id_CGAS: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_CGAS, address, 100000000)
+        }
+        // 获取cgas_old余额
+        static async getCGAS_OLDBalanceByAddress(id_CGAS: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_CGAS, address, 100000000)
+        }
+        // 获取cneo余额
+        static async getCNEOBalanceByAddress(id_CNEO: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_CNEO, address, 100000000)
+        }
+        static async getCNEO_OLDBalanceByAddress(id_CNEO: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_CNEO, address, 100000000)
+        }
+        // 获取bcp余额
+        static async getBCPBalanceByAddress(id_BCP: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_BCP, address, 100000000)
+        }
+        // 获取bct余额
+        static async getBCTBalanceByAddress(id_BCT: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_BCT, address, 10000)
+        }
+        // 获取btc余额
+        static async getBTCBalanceByAddress(id_BTC: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_BTC, address, 100000000)
+        }
+        // 获取eth余额
+        static async getETHBalanceByAddress(id_ETH: string, address: string) {
+            return Main.getNep5BalanceByAddress(id_ETH, address, 100000000)
+        }
+        // 获取nep5余额信息
         static async getNep5BalanceByAddress(id_hash: string, address: string, bits: number = 100000000) {
             var params = {
                 sbParamJson: ["(addr)" + address],
@@ -142,30 +186,29 @@ namespace BlackCat {
             return 0
         }
 
-        // 获取sgas余额
-        static async getSgasBalanceByAddress(id_SGAS: string, address: string) {
-            return Main.getNep5BalanceByAddress(id_SGAS, address, 100000000)
-        }
-
-
-
-
-
 
 
 
 
 
         // 对外接口：SDK初始化
-        init(appid: string, appkey: string, callback: Function, lang: string): void {
+        init(appid: string, appkey: string, listener: Function, lang: string): void {
             Main.appid = appid;
             Main.appkey = appkey;
-            Main.callback = callback;
+            Main.callback = listener;
             Main.langMgr.setType(lang);
         }
-        // 对外接口：SDK登录
-        async start(callback: Function = null) {
-            Main.loginFunctionCallback = callback;
+        // 对外接口：SDK初始化加强版
+        initex(params, callback = null): void {
+
+            Main.isInitex = true;
+
+            Main.appid = params.appid;
+            Main.appkey = params.appkey;
+            Main.callback = params.listener;
+            Main.langMgr.setType(params.lang);
+            Main.netMgr.setDefault(Number(params.default_net))
+
             // 创建遮罩层
             Main.viewMgr.mainView.createMask()
             if (Main.isCreated == false) {
@@ -181,14 +224,62 @@ namespace BlackCat {
                         // 创建定时器
                         Main.update();
                         Main.isCreated = true;
-                        // 检查登录
-                        Main.validateLogin();
+
+                        if (Main.viewMgr.viewConnecting.isCreated) Main.viewMgr.viewConnecting.remove()
+
+                        var result: Result = new Result();
+                        result.err = false
+                        result.info = 'success'
+
+                        // listener回调
+                        Main.listenerCallback("initexRes", result)
+                        // function回调
+                        if (callback) callback(result)
+
+                        // login接口调用了，表明initex执行较慢，此时执行登录验证
+                        if (Main.isStart == true) {
+                            // 检查登录
+                            Main.validateLogin();
+                        }
                     })
                 })
                 return
             }
-            // 检查登录
-            Main.validateLogin();
+        }
+        // 对外接口：SDK登录
+        async start(callback: Function = null) {
+            Main.isStart = true;
+            Main.loginFunctionCallback = callback;
+
+            if (!Main.isInitex) {
+                // 创建遮罩层
+                Main.viewMgr.mainView.createMask()
+                if (Main.isCreated == false) {
+                    // 选择BlaCat节点
+                    Main.netMgr.selectApi(() => {
+                        Main.netMgr.change(() => {
+                            // icon颜色
+                            Main.viewMgr.iconView.showSucc()
+                            // icon状态
+                            Main.viewMgr.iconView.removeState()
+                            // 底色
+                            Main.viewMgr.mainView.changNetType()
+                            // 创建定时器
+                            Main.update();
+                            Main.isCreated = true;
+                            // 检查登录
+                            Main.validateLogin();
+                        })
+                    })
+                    return
+                }
+                // 检查登录
+                Main.validateLogin();
+            }
+            else if (Main.isCreated) {
+                // 如果initex初始化完成，就执行登录验证
+                Main.validateLogin()
+            }
         }
 
 
@@ -225,38 +316,19 @@ namespace BlackCat {
 
 
         // 对外接口：SDK获取余额
-        async getBalance() {
-            var sgas = 0;
-            var gas = 0;
-            var bcp = 0;
-            var bct = 0;
-            var balances = (await tools.WWW.api_getBalance(Main.user.info.wallet)) as tools.BalanceInfo[];
-            if (balances) {
-                //余额不唯空
-                balances.map(item => (item.names = tools.CoinTool.assetID2name[item.asset])); //将列表的余额资产名称赋值
-                await balances.forEach(
-                    // 取GAS余额
-                    balance => {
-                        if (balance.asset == tools.CoinTool.id_GAS) {
-                            gas = balance.balance;
-                        }
-                    }
-                );
+        async getBalance(type: string = null) {
+            var callback_data  = {}
+            if (type) {
+                callback_data[type] = Main.viewMgr.payView[type]
             }
-
-            // var nep5balances = await tools.WWW.api_getnep5balanceofaddress(tools.CoinTool.id_SGAS, Main.user.info.wallet);
-            // if (nep5balances) {
-            //     sgas = Number(nep5balances[0]['nep5balance'])
-            // }
-            sgas = await Main.getSgasBalanceByAddress(tools.CoinTool.id_SGAS, Main.user.info.wallet)
-            bcp = await Main.getSgasBalanceByAddress(tools.CoinTool.id_BCP, Main.user.info.wallet)
-            bct = await Main.getSgasBalanceByAddress(tools.CoinTool.id_BCT, Main.user.info.wallet)
-
-            var callback_data = {
-                sgas: sgas,
-                gas: gas,
-                bcp: bcp,
-                bct: bct
+            else {
+                callback_data = {}
+                PayView.tokens_coin.forEach((coins) => {
+                    coins.forEach((coin) => {
+                        callback_data[coin] = Main.viewMgr.payView[coin]
+                    })
+                })
+                callback_data['sgas'] = Main.viewMgr.payView['cgas'] // 兼容之前的
             }
             Main.listenerCallback("getBalanceRes", callback_data);
             return callback_data;
@@ -272,6 +344,19 @@ namespace BlackCat {
             let type = Main.netMgr.type;
             Main.listenerCallback("getNetTypeRes", type)
             return type;
+        }
+        // 对外接口：SDK获取高度
+        async getHeight() {
+            await Main.viewMgr.payView.getHeight("nodes")
+            if (tools.WWW.api_clis && tools.WWW.api_clis != "") {
+                await Main.viewMgr.payView.getHeight("clis")
+            }
+            var callback_data = {
+                node: Main.viewMgr.payView.height_nodes,
+                cli: Main.viewMgr.payView.height_clis
+            }
+            Main.listenerCallback("getHeightRes", callback_data)
+            return callback_data;
         }
 
 
@@ -293,7 +378,7 @@ namespace BlackCat {
                 // 打开钱包了
 
                 // 重置状态（非信任合约、信任合约手续费够）
-                ViewTransConfirm.isTrustFeeLess = false
+                ViewTransactionConfirm.isTrustFeeLess = false
 
                 // 检查是否有未信任合约
                 let unTrust = Main.getUnTrustNnc(params);
@@ -307,7 +392,7 @@ namespace BlackCat {
                     }
                     else {
                         // 信任合约，不够手续费
-                        ViewTransConfirm.isTrustFeeLess = true
+                        ViewTransactionConfirm.isTrustFeeLess = true
                     }
                 }
 
@@ -318,13 +403,13 @@ namespace BlackCat {
                 }
 
                 // 记录回调，锁定状态，当前不接收makerawtransaction请求了
-                if (Main.transCallback) {
+                if (Main.transactionCallback) {
                     // 已经有请求在处理，返回
                     // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
                     Main.showErrMsg("main_wait_for_last_tran")
                     return;
                 }
-                Main.transCallback = callback;
+                Main.transactionCallback = callback;
 
                 // 打开确认页
 
@@ -336,46 +421,46 @@ namespace BlackCat {
                 list.ctm = Math.round(new Date().getTime() / 1000).toString();
                 list.cnts = "0"
                 list.type = "5"
+                list.state = "0"
 
-                ViewTransConfirm.list = list;
-                ViewTransConfirm.refer = ""
-                ViewTransConfirm.callback_params = params
+                ViewTransactionConfirm.list = list;
+                ViewTransactionConfirm.refer = ""
+                ViewTransactionConfirm.callback_params = params
 
-                ViewTransConfirm.callback = async (params, trust, net_fee) => {
+                ViewTransactionConfirm.callback = async (params, trust, net_fee) => {
                     console.log("[BlaCat]", '[main]', 'makeRawTransaction交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
                     // var net_fee = "0.00000001" // for test
-                    // var net_fee = ViewTransConfirm.net_fee
+                    // var net_fee = ViewTransactionConfirm.net_fee
 
                     setTimeout(async () => {
                         try {
-                            await this._makeRawTransaction(params, trust, net_fee, Main.transCallback)
+                            await this._makeRawTransaction(params, trust, net_fee, Main.transactionCallback)
                         }
                         catch (e) {
-                            console.log("[BlaCat]", '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust, net_fee, Main.transCallback) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'Main.transCallback =>', Main.transCallback, 'error => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeRawTransaction, _makeRawTransaction(params, trust, net_fee, Main.transactionCallback) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'error => ', e.toString())
                         }
                         Main.viewMgr.viewLoading.remove()
                     }, 300);
                 }
-                ViewTransConfirm.callback_cancel = () => {
+                ViewTransactionConfirm.callback_cancel = () => {
                     console.log("[BlaCat]", '[main]', 'makeRawTransaction交易取消..')
 
                     var res = new Result();
                     res.err = true;
                     res.info = 'cancel';
-                    if (Main.transCallback) Main.transCallback(res);
-                    Main.transCallback = null;
+                    if (Main.transactionCallback) Main.transactionCallback(res);
+                    Main.transactionCallback = null;
                     // listener回调
                     var callback_data = {
                         params: params,
                         res: res
                     }
                     Main.listenerCallback("makeRawTransactionRes", callback_data);
-                    Main.transCallback = null;
                 }
-                Main.viewMgr.change("ViewTransConfirm")
+                Main.viewMgr.change("ViewTransactionConfirm")
 
             } else {
                 // 未打开钱包
@@ -423,19 +508,25 @@ namespace BlackCat {
                 console.log("[BlaCat]", '[main]', '_makeRawTransaction, Main.wallet.makeRawTransaction(params, trust, net_fee) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
             }
 
-            // function回调
-            if (callback) callback(res);
+            // 重新获取钱包记录
+            await Main.viewMgr.payView.doGetWalletLists(1)
 
-
-            Main.transCallback = null;
             // listener回调
             var callback_data = {
                 params: params,
                 res: res
             }
             Main.listenerCallback("makeRawTransactionRes", callback_data);
-            // 重新获取钱包记录
-            await Main.viewMgr.payView.doGetWalletLists(1)
+            // function回调
+            if (callback) {
+                try {
+                    callback(res);
+                }
+                catch(e) {
+                    console.log("[BlaCat]", '[main]', '_makeRawTransaction, app callback error! Main.wallet.makeRawTransaction(params, trust, net_fee) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
+                }
+            }
+            Main.transactionCallback = null;
         }
         // 对外接口：充值
         async makeRecharge(params, callback) {
@@ -455,28 +546,49 @@ namespace BlackCat {
                 res.err = true
                 res.info = "app_wallet_not_config"
 
-                // function回调
-                callback(res);
-
                 // listener回调
                 var callback_data = {
                     params: params,
                     res: res
                 }
                 Main.listenerCallback("makeRechargeRes", callback_data);
+                // function回调
+                callback(res);
+
                 return;
             }
 
-            // 判断sgas余额
-            if (Main.viewMgr.payView && Main.viewMgr.payView.sgas < Number(params.count)) {
+            // 判断充值货币类型
+            var coin_type = "cgas";
+            if (params.hasOwnProperty('type')) {
+                if (Main.in_array(params.type, ["cgas", "cneo", "bcp", "bct", "btc", "eth"]) == false) {
+                    var res = new Result()
+                    res.err = true
+                    res.info = "type_error"
+
+                    // listener回调
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    Main.listenerCallback("makeRechargeRes", callback_data);
+                    // function回调
+                    callback(res);
+
+                    return
+                }
+            }
+            else {
+                params['type'] = coin_type;
+            }
+
+            // 判断余额
+            if (Main.viewMgr.payView && Main.viewMgr.payView[params['type']] < Number(params.count)) {
                 Main.showErrMsg('pay_not_enough_money')
 
                 var res = new Result()
                 res.err = true
-                res.info = "not_enough_sgas"
-
-                // function回调
-                callback(res);
+                res.info = "not_enough_" + params['type']
 
                 // listener回调
                 var callback_data = {
@@ -484,6 +596,9 @@ namespace BlackCat {
                     res: res
                 }
                 Main.listenerCallback("makeRechargeRes", callback_data);
+                // function回调
+                callback(res);
+
                 return
             }
 
@@ -491,7 +606,7 @@ namespace BlackCat {
                 // 打开钱包了
 
                 // 记录回调，锁定状态，当前不接收makerawtransaction请求了
-                if (Main.transCallback) {
+                if (Main.transactionCallback) {
                     // 已经有请求在处理，返回
                     // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
                     Main.showErrMsg(("main_wait_for_last_tran"))
@@ -500,9 +615,6 @@ namespace BlackCat {
                     res.err = true
                     res.info = "wait_for_last_tran"
 
-                    // function回调
-                    callback(res);
-
                     // listener回调
                     var callback_data = {
                         params: params,
@@ -510,15 +622,21 @@ namespace BlackCat {
                     }
                     Main.listenerCallback("makeRechargeRes", callback_data);
 
+                    // function回调
+                    callback(res);
+
                     return;
                 }
-                Main.transCallback = callback;
+                Main.transactionCallback = callback;
 
                 // 打开确认页
 
                 var list = new walletLists();
 
-                if (!params.hasOwnProperty("nnc")) params['nnc'] = tools.CoinTool.id_SGAS;
+                if (!params.hasOwnProperty("nnc")) {
+                    params['nnc'] = tools.CoinTool["id_" + params['type'].toUpperCase()];
+                }
+                
                 if (!params.hasOwnProperty("sbParamJson")) params['sbParamJson'] = ["(address)" + Main.user.info.wallet, "(address)" + Main.app_recharge_addr, "(integer)" + params.count * 100000000]
                 if (!params.hasOwnProperty("sbPushString")) params['sbPushString'] = "transfer"
 
@@ -529,21 +647,22 @@ namespace BlackCat {
                 list.ctm = Math.round(new Date().getTime() / 1000).toString();
                 list.cnts = params.count.toString();
                 list.type = "3";
+                list.type_detail = PayTransferView.log_type_detail[params['type']]
 
-                ViewTransConfirm.isTrustFeeLess = false
+                ViewTransactionConfirm.isTrustFeeLess = false
                 
-                ViewTransConfirm.list = list;
-                ViewTransConfirm.refer = ""
-                ViewTransConfirm.callback_params = params;
+                ViewTransactionConfirm.list = list;
+                ViewTransactionConfirm.refer = ""
+                ViewTransactionConfirm.callback_params = params;
 
-                ViewTransConfirm.callback = async (params) => {
+                ViewTransactionConfirm.callback = async (params, trust, net_fee) => {
                     console.log("[BlaCat]", '[main]', 'makeRecharge交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
                     setTimeout(async () => {
                         try {
-                            var res = await Main.wallet.makeRecharge(params);
+                            var res = await Main.wallet.makeRecharge(params, trust, net_fee);
                         }
                         catch (e) {
                             var res = new Result()
@@ -553,40 +672,57 @@ namespace BlackCat {
                             console.log("[BlaCat]", '[main]', 'makeRecharge, Main.wallet.makeRecharge(params) error, params => ', params, 'e => ', e.toString())
                         }
 
-                        // function回调
-                        if (Main.transCallback) Main.transCallback(res);
-                        Main.transCallback = null;
+                        // 重新获取钱包记录
+                        await Main.viewMgr.payView.doGetWalletLists(1)
+
+                        Main.viewMgr.viewLoading.remove()
+
                         // listener回调
                         var callback_data = {
                             params: params,
                             res: res
                         }
                         Main.listenerCallback("makeRechargeRes", callback_data);
-                        // 重新获取钱包记录
-                        await Main.viewMgr.payView.doGetWalletLists(1)
 
-                        Main.viewMgr.viewLoading.remove()
+                        // function回调
+                        if (Main.transactionCallback) {
+                            try {
+                                Main.transactionCallback(res);
+                            }
+                            catch (e) {
+                                console.log("[BlaCat]", '[main]', 'makeRecharge, app callback error! Main.wallet.makeRecharge(params) error, params => ', params, 'e => ', e.toString())
+                            }
+                        }
+                        Main.transactionCallback = null;
 
                     }, 300);
 
                 }
-                ViewTransConfirm.callback_cancel = () => {
+                ViewTransactionConfirm.callback_cancel = () => {
                     console.log("[BlaCat]", '[main]', 'makeRecharge交易取消..')
                     var res = new Result();
                     res.err = true;
                     res.info = 'cancel';
 
-                    if (Main.transCallback) Main.transCallback(res);
-                    Main.transCallback = null;
                     // listener回调
                     var callback_data = {
                         params: params,
                         res: res
                     }
                     Main.listenerCallback("makeRechargeRes", callback_data);
-                    Main.transCallback = null;
+                    // function回调
+                    if (Main.transactionCallback) {
+                        try {
+                            Main.transactionCallback(res);
+                        }
+                        catch (e) {
+                            console.log("[BlaCat]", '[main]', 'makeRecharge, app callback error! Main.wallet.makeRecharge(params) error, params => ', params, 'e => ', e.toString())
+                        }
+                        
+                    }
+                    Main.transactionCallback = null;
                 }
-                Main.viewMgr.change("ViewTransConfirm")
+                Main.viewMgr.change("ViewTransactionConfirm")
 
             } else {
                 // 未打开钱包
@@ -611,38 +747,64 @@ namespace BlackCat {
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
-        // 对外接口：gas转账
-        async makeGasTransfer(params, callback = null) {
-            if (Main.viewMgr.mainView.isHidden()) {
-                // 如果mainView隐藏，显示出来
-                Main.viewMgr.mainView.show()
-                Main.viewMgr.iconView.hidden()
+        // 对外接口：转账，支持（gas/cgas/neo/cneo/bcp/bct/btc/eth)
+        // 兼容老接口：makeGasTransfer，makeNeoTransfer, params带上参数type_first = 1
+        async makeTransfer(params, callback = null) {
+            var coin_type = params.type
+            var coin_type_first = ""
+            if (params.hasOwnProperty('type_first') && params['type_first'] == "1") {
+                coin_type_first = coin_type.charAt(0).toUpperCase() + coin_type.slice(1)
             }
+            var coin_type_upper = coin_type.toUpperCase()
 
-            // 判断gas余额
-            if (Main.viewMgr.payView && Main.viewMgr.payView.gas < Number(params.count)) {
-                Main.showErrMsg('pay_not_enough_money')
-
+            // 类型检查
+            if (!Main.viewMgr.payView.hasOwnProperty(coin_type)) {
                 var res = new Result()
                 res.err = true
-                res.info = "not_enough_gas"
-
-                // function回调
-                callback(res);
+                res.info = "unsupport type " + coin_type
 
                 // listener回调
                 var callback_data = {
                     params: params,
                     res: res
                 }
-                Main.listenerCallback("makeGasTransferRes", callback_data);
+                Main.listenerCallback("make"+coin_type_first+"TransferRes", callback_data);
+                // function回调
+                callback(res);
+
+                return
+            }
+            
+            if (Main.viewMgr.mainView.isHidden()) {
+                // 如果mainView隐藏，显示出来
+                Main.viewMgr.mainView.show()
+                Main.viewMgr.iconView.hidden()
+            }
+
+            // 判断余额
+            if (Main.viewMgr.payView && Main.viewMgr.payView[coin_type] < Number(params.count)) {
+                Main.showErrMsg('pay_not_enough_money')
+
+                var res = new Result()
+                res.err = true
+                res.info = "not_enough_" + coin_type
+
+                // listener回调
+                var callback_data = {
+                    params: params,
+                    res: res
+                }
+                Main.listenerCallback("make"+coin_type_first+"TransferRes", callback_data);
+                // function回调
+                callback(res);
+
                 return
             }
 
             if (Main.isWalletOpen()) {
                 // 打开钱包了
-                // 记录回调，锁定状态，当前不接收makeGasTransfer请求了
-                if (Main.transGasCallback) {
+                // 记录回调，锁定状态，当前不接收makeTransfer请求了
+                if (Main.transferCallback) {
                     // 已经有请求在处理，返回
                     // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
                     Main.showErrMsg(("main_wait_for_last_tran"))
@@ -651,27 +813,25 @@ namespace BlackCat {
                     res.err = true
                     res.info = "wait_for_last_tran"
 
-                    // function回调
-                    callback(res);
-
                     // listener回调
                     var callback_data = {
                         params: params,
                         res: res
                     }
-                    Main.listenerCallback("makeGasTransferRes", callback_data);
+                    Main.listenerCallback("make"+coin_type_first+"TransferRes", callback_data);
+
+                    // function回调
+                    callback(res);
 
                     return;
                 }
-                Main.transGasCallback = callback;
+                Main.transferCallback = callback;
 
                 // 打开确认页
 
                 var list = new walletLists();
 
-                // if (!params.hasOwnProperty("nnc")) params['nnc'] = tools.CoinTool.id_SGAS;
-                // if (!params.hasOwnProperty("sbParamJson")) params['sbParamJson'] = [ "(address)" + Main.user.info.wallet, "(address)" + Main.app_recharge_addr, "(integer)" + params.count * 100000000 ]
-                // if (!params.hasOwnProperty("sbPushString")) params['sbPushString'] = "transfer"
+                params['nnc'] = tools.CoinTool['id_' + coin_type_upper]
 
                 list.params = JSON.stringify(params);
                 list.wallet = Main.user.info.wallet;
@@ -680,22 +840,30 @@ namespace BlackCat {
                 list.ctm = Math.round(new Date().getTime() / 1000).toString();
                 list.cnts = params.count.toString();
                 list.type = "6";
+                list.type_detail = PayTransferView.log_type_detail[coin_type]
 
-                ViewTransConfirmGas.list = list;
-                ViewTransConfirmGas.refer = ""
-                ViewTransConfirmGas.callback_params = params;
+                ViewTransferConfirm.list = list;
+                ViewTransferConfirm.refer = ""
+                ViewTransferConfirm.callback_params = params;
 
-                ViewTransConfirmGas.callback = async (params, net_fee) => {
-                    console.log("[BlaCat]", '[main]', 'makeGasTransfer交易确认..')
+                ViewTransferConfirm.callback = async (params, net_fee) => {
+                    console.log("[BlaCat]", '[main]', 'makeTransfer交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
 
                     // var net_fee = "0.00000001" // for test
-                    // var net_fee = ViewTransConfirmGas.net_fee
+                    // var net_fee = ViewTransferConfirm.net_fee
 
                     setTimeout(async () => {
                         try {
-                            var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool.id_GAS, params.count, Neo.Fixed8.fromNumber(Number(net_fee)));
+                            if (Main.in_array(coin_type, ["gas", "neo"])) {
+                                // utxo
+                                var res: Result = await tools.CoinTool.rawTransaction(params.toaddr, tools.CoinTool["id_" + coin_type_upper], params.count, Neo.Fixed8.fromNumber(Number(net_fee)));
+                            }
+                            else {
+                                // nep5
+                                var res: Result = await tools.CoinTool.nep5Transaction(Main.user.info.wallet, params.toaddr, tools.CoinTool["id_" + coin_type_upper], params.count, net_fee);
+                            }
                             if (res.err == false) {
                                 params.sbPushString = "transfer"
                                 // 成功，上报
@@ -709,7 +877,8 @@ namespace BlackCat {
                                     JSON.stringify(params),
                                     Main.netMgr.type,
                                     "0",
-                                    net_fee
+                                    net_fee,
+                                    PayTransferView.log_type_detail[coin_type]
                                 );
                                 Main.appWalletLogId = logRes.data;
                                 // 重新获取钱包记录
@@ -722,41 +891,57 @@ namespace BlackCat {
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
 
-                            console.log("[BlaCat]", '[main]', 'makeGasTransfer, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'make'+coin_type_first+'Transfer, ViewTransferConfirm.callback error, params => ', params, 'e => ', e.toString())
                         }
 
-                        // function回调
-                        if (Main.transGasCallback) Main.transGasCallback(res);
-                        Main.transGasCallback = null;
+                        
+                        Main.viewMgr.viewLoading.remove()
+
                         // listener回调
                         var callback_data = {
                             params: params,
                             res: res
                         }
-                        Main.listenerCallback("makeGasTransferRes", callback_data);
+                        Main.listenerCallback("make"+coin_type_first+"TransferRes", callback_data);
 
-                        Main.viewMgr.viewLoading.remove()
+                        // function回调
+                        if (Main.transferCallback) {
+                            try {
+                                Main.transferCallback(res);
+                            }
+                            catch (e) {
+                                console.log("[BlaCat]", '[main]', 'make'+coin_type_first+'Transfer, app callback error! ViewTransferConfirm.callback error, params => ', params, 'e => ', e.toString())
+                            }
+                        }
+                        Main.transferCallback = null;
+
                     }, 300);
                 }
-                ViewTransConfirmGas.callback_cancel = () => {
-                    console.log("[BlaCat]", '[main]', 'makeGasTransfer交易取消..')
+                ViewTransferConfirm.callback_cancel = () => {
+                    console.log("[BlaCat]", '[main]', 'make'+coin_type_first+'Transfer交易取消..')
 
                     var res = new Result();
                     res.err = true;
                     res.info = 'cancel';
 
-                    if (Main.transGasCallback) {
-                        Main.transGasCallback(res);
-                        Main.transGasCallback = null;
-                    }
                     // listener回调
                     var callback_data = {
                         params: params,
                         res: res
                     }
-                    Main.listenerCallback("makeGasTransferRes", callback_data);
+                    Main.listenerCallback("make"+coin_type_first+"TransferRes", callback_data);
+
+                    if (Main.transferCallback) {
+                        try {
+                            Main.transferCallback(res);
+                        }
+                        catch(e) {
+
+                        }
+                    }
+                    Main.transferCallback = null;
                 }
-                Main.viewMgr.change("ViewTransConfirmGas")
+                Main.viewMgr.change("ViewTransferConfirm")
 
             } else {
                 // 未打开钱包
@@ -764,7 +949,7 @@ namespace BlackCat {
                 ViewWalletOpen.callback_params = params;
                 ViewWalletOpen.callback_callback = callback;
                 ViewWalletOpen.callback = (params, callback) => {
-                    this.makeGasTransfer(params, callback)
+                    this["make"+coin_type_first+"Transfer"](params, callback)
                 }
                 ViewWalletOpen.callback_cancel = (params, callback) => {
                     var res: Result = new Result();
@@ -775,12 +960,25 @@ namespace BlackCat {
                         params: params,
                         res: res
                     }
-                    Main.listenerCallback("makeGasTransferRes", callback_data);
+                    Main.listenerCallback("make"+coin_type_first+"TransferRes", callback_data);
                     callback(res)
                 }
                 Main.viewMgr.change("ViewWalletOpen")
             }
         }
+        // 对外接口：gas转账
+        async makeGasTransfer(params, callback = null) {
+            params['type'] = 'gas'
+            params['type_first'] = "1"
+            return await this.makeTransfer(params, callback)
+        }
+        // 对外接口：Neo转账
+        async makeNeoTransfer(params, callback = null) {
+            params['type'] = "neo"
+            params['type_first'] = "1"
+            return await this.makeTransfer(params, callback)
+        }
+        
         // 对外接口：gas转账（批量）
         async makeGasTransferMulti(params, callback = null) {
             if (Main.viewMgr.mainView.isHidden()) {
@@ -796,6 +994,8 @@ namespace BlackCat {
                 _count = floatNum.plus(_count, Number(params[i].count))
             }
 
+            params[0]['nnc'] = tools.CoinTool.id_GAS
+
             // 判定余额
             if (Main.viewMgr.payView && Main.viewMgr.payView.gas < Number(_count)) {
                 Main.showErrMsg('pay_not_enough_money')
@@ -804,15 +1004,16 @@ namespace BlackCat {
                 res.err = true
                 res.info = "not_enough_gas"
 
-                // function回调
-                callback(res);
-
                 // listener回调
                 var callback_data = {
                     params: params,
                     res: res
                 }
                 Main.listenerCallback("makeGasTransferMultiRes", callback_data);
+
+                // function回调
+                callback(res);
+
                 return
             }
 
@@ -831,10 +1032,6 @@ namespace BlackCat {
 
                 var list = new walletLists();
 
-                // if (!params.hasOwnProperty("nnc")) params['nnc'] = tools.CoinTool.id_SGAS;
-                // if (!params.hasOwnProperty("sbParamJson")) params['sbParamJson'] = [ "(address)" + Main.user.info.wallet, "(address)" + Main.app_recharge_addr, "(integer)" + params.count * 100000000 ]
-                // if (!params.hasOwnProperty("sbPushString")) params['sbPushString'] = "transfer"
-
                 list.params = JSON.stringify(params);
                 list.wallet = Main.user.info.wallet;
                 list.icon = Main.appicon;
@@ -842,12 +1039,13 @@ namespace BlackCat {
                 list.ctm = Math.round(new Date().getTime() / 1000).toString();
                 list.cnts = _count.toString(); // params.count.toString();
                 list.type = "6";
+                list.type_detail = PayTransferView.log_type_detail['gas']
 
-                ViewTransConfirmGas.list = list;
-                ViewTransConfirmGas.refer = ""
-                ViewTransConfirmGas.callback_params = params;
+                ViewTransferConfirm.list = list;
+                ViewTransferConfirm.refer = ""
+                ViewTransferConfirm.callback_params = params;
 
-                ViewTransConfirmGas.callback = async (params, net_fee) => {
+                ViewTransferConfirm.callback = async (params, net_fee) => {
                     console.log("[BlaCat]", '[main]', 'makeGasTransferMulti交易确认..')
 
                     Main.viewMgr.change("ViewLoading")
@@ -882,12 +1080,11 @@ namespace BlackCat {
                             res.info = 'make trans err'
                             res['ext'] = e.toString()
 
-                            console.log("[BlaCat]", '[main]', 'makeGasTransferMulti, ViewTransConfirmGas.callback error, params => ', params, 'e => ', e.toString())
+                            console.log("[BlaCat]", '[main]', 'makeGasTransferMulti, ViewTransferConfirm.callback error, params => ', params, 'e => ', e.toString())
                         }
 
-                        // function回调
-                        if (Main.transGasMultiCallback) Main.transGasMultiCallback(res);
-                        Main.transGasMultiCallback = null;
+                        Main.viewMgr.viewLoading.remove()
+
                         // listener回调
                         var callback_data = {
                             params: params,
@@ -895,10 +1092,20 @@ namespace BlackCat {
                         }
                         Main.listenerCallback("makeGasTransferMultiRes", callback_data);
 
-                        Main.viewMgr.viewLoading.remove()
+                        // function回调
+                        if (Main.transGasMultiCallback) {
+                            try {
+                                Main.transGasMultiCallback(res);
+                            }
+                            catch (e) {
+                                console.log("[BlaCat]", '[main]', 'makeGasTransferMulti, app callback error! ViewTransferConfirm.callback error, params => ', params, 'e => ', e.toString())
+                            }
+                        }
+                        Main.transGasMultiCallback = null;
+
                     }, 300);
                 }
-                ViewTransConfirmGas.callback_cancel = () => {
+                ViewTransferConfirm.callback_cancel = () => {
                     console.log("[BlaCat]", '[main]', 'makeGasTransfer交易取消..')
 
                     var res = new Result();
@@ -916,7 +1123,7 @@ namespace BlackCat {
                     }
                     Main.listenerCallback("makeRechargeRes", callback_data);
                 }
-                Main.viewMgr.change("ViewTransConfirmGas")
+                Main.viewMgr.change("ViewTransferConfirm")
 
             } else {
                 // 未打开钱包
@@ -967,6 +1174,424 @@ namespace BlackCat {
             }
             return res;
         }
+        // 对外接口：bancor交易
+        async bancor(params, callback = null) {
+            // 第一步，执行转账bcp到bancor合约
+            if (tools.CoinTool.id_bancor != "") {
+                if (Main.isWalletOpen()) {
+                    // 打开钱包了
+
+                    // 都是8位精度，四舍五入
+                    var size = 100000000
+                    params.count = floatNum.divide(Math.round(Number(params.count) * size), size).toString()
+    
+                    // 重置状态（非信任合约、信任合约手续费够）
+                    ViewTransactionConfirm.isTrustFeeLess = false
+
+                    var type_num = Number(params.type)
+                    switch (type_num) {
+                        case 1:
+                            // 购买代币，消耗BCP，BCP就是合约地址
+                            params['nnc'] = tools.CoinTool.id_BCP
+                            break;
+                        case 2:
+                            // 退回BCP，消耗代币，nnc就是代币合约地址
+                            params['nnc'] = params.asset
+                            break;
+                        default:
+                            var res: Result = new Result();
+                            res.err = true;
+                            res.info = 'type error'
+        
+                            var callback_data = {
+                                params: params,
+                                res: res
+                            }
+                            Main.listenerCallback("bancorRes", callback_data);
+                            callback(res)
+                            return
+                    }
+                    // 合约方法
+                    params['sbPushString'] = "transfer"
+                    // 合约参数，默认所有币种精度8位
+                    var scriptaddress = tools.CoinTool.id_bancor.hexToBytes().reverse();
+                    var bancorAddr = ThinNeo.Helper.GetAddressFromScriptHash( scriptaddress )
+                    params['sbParamJson'] = "(addr)" + Main.user.info.wallet + ",(address)" + bancorAddr + ",(integer)" + (params.count * size).toString()
+                    params['bancorAddr'] = bancorAddr
+    
+                    // 检查是否有未信任合约
+                    let unTrust = Main.getUnTrustNnc(params);
+                    if (unTrust.length == 0) {
+                        // 信任合约
+                        if (Main.viewMgr.payView.gas > Number(Main.user.info.service_charge) ) {
+                            // 手续费足够，直接操作
+                            console.log("[BlaCat]", '[main]', 'bancor, trust nnc ...')
+                            this._bancor(params, "0", Main.user.info.service_charge, callback)
+                            return
+                        }
+                        else {
+                            // 信任合约，不够手续费
+                            ViewTransactionConfirm.isTrustFeeLess = true
+                        }
+                    }
+    
+                    if (Main.viewMgr.mainView.isHidden()) {
+                        // 如果mainView隐藏，显示出来
+                        Main.viewMgr.mainView.show()
+                        Main.viewMgr.iconView.hidden()
+                    }
+    
+                    // 记录回调，锁定状态，当前不接收makerawtransaction请求了
+                    if (Main.bancorCallback) {
+                        // 已经有请求在处理，返回
+                        // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
+                        Main.showErrMsg("main_wait_for_last_tran")
+                        return;
+                    }
+                    Main.bancorCallback = callback;
+    
+                    // 打开确认页
+    
+                    var list = new walletLists();
+                    list.params = JSON.stringify(params);
+                    list.wallet = Main.user.info.wallet;
+                    list.icon = Main.appicon;
+                    list.name = Main.appname;
+                    list.ctm = Math.round(new Date().getTime() / 1000).toString();
+                    list.cnts = "0"
+                    list.type = "14"
+                    
+                    ViewTransactionConfirm.list = list;
+                    ViewTransactionConfirm.refer = ""
+                    ViewTransactionConfirm.callback_params = params
+    
+                    ViewTransactionConfirm.callback = async (params, trust, net_fee) => {
+                        console.log("[BlaCat]", '[main]', 'bancor交易确认..')
+    
+                        Main.viewMgr.change("ViewLoading")
+    
+                        // var net_fee = "0.00000001" // for test
+                        // var net_fee = ViewTransactionConfirm.net_fee
+    
+                        setTimeout(async () => {
+                            try {
+                                await this._bancor(params, trust, net_fee, Main.bancorCallback)
+                            }
+                            catch (e) {
+                                console.log("[BlaCat]", '[main]', 'bancor, _bancor(params, trust, net_fee, Main.bancorCallback) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'Main.bancorCallback =>', Main.bancorCallback, 'error => ', e.toString())
+                            }
+                            Main.viewMgr.viewLoading.remove()
+                        }, 300);
+                    }
+                    ViewTransactionConfirm.callback_cancel = () => {
+                        console.log("[BlaCat]", '[main]', 'bancor交易取消..')
+    
+                        var res = new Result();
+                        res.err = true;
+                        res.info = 'cancel';
+                        if (Main.bancorCallback) Main.bancorCallback(res);
+                        Main.bancorCallback = null;
+                        // listener回调
+                        var callback_data = {
+                            params: params,
+                            res: res
+                        }
+                        Main.listenerCallback("bancorRes", callback_data);
+                        Main.bancorCallback = null;
+                    }
+                    Main.viewMgr.change("ViewTransactionConfirm")
+    
+                } else {
+                    // 未打开钱包
+    
+                    if (Main.viewMgr.mainView.isHidden()) {
+                        // 如果mainView隐藏，显示出来
+                        Main.viewMgr.mainView.show()
+                        Main.viewMgr.iconView.hidden()
+                    }
+    
+                    ViewWalletOpen.refer = ""
+                    ViewWalletOpen.callback_params = params;
+                    ViewWalletOpen.callback_callback = callback;
+                    ViewWalletOpen.callback = (params, callback) => {
+                        this.bancor(params, callback)
+                    }
+                    ViewWalletOpen.callback_cancel = (params, callback) => {
+                        var res: Result = new Result();
+                        res.err = true;
+                        res.info = 'cancel'
+    
+                        var callback_data = {
+                            params: params,
+                            res: res
+                        }
+                        Main.listenerCallback("bancorRes", callback_data);
+                        callback(res)
+                    }
+                    Main.viewMgr.change("ViewWalletOpen")
+                }
+            }
+            else {
+                var res: Result = new Result();
+                res.err = true;
+                res.info = 'bancor not ready'
+
+                var callback_data = {
+                    params: params,
+                    res: res
+                }
+                Main.listenerCallback("bancorRes", callback_data);
+                callback(res)
+            }
+        }
+        // 对外接口：bancor交易的私有函数
+        private async _bancor(params, trust: string = "0", net_fee: string, callback = null) {
+            // 合约交易，延长钱包退出时间
+            Main.setLiveTime()
+
+            try {
+                // 购买代币，消耗BCP
+                // 退回BCP，消耗代币
+                var res = await tools.CoinTool.nep5Transaction(Main.user.info.wallet, params.bancorAddr, params.nnc, params.count, net_fee)
+
+                if (res) {
+                    console.log("[BlaCat]", '[main]', '_bancor转账结果 => ', res)
+                    if (res.err == false) {
+                        // 成功，上报
+                        await ApiTool.addUserWalletLogs(
+                            Main.user.info.uid,
+                            Main.user.info.token,
+                            res.info,
+                            "0",
+                            params.count,
+                            "14",
+                            JSON.stringify(params),
+                            //'{"sbPushString":"transfer", "toaddr":"' + bancorAddr + '", "count": "' + params.count + '"}',
+                            Main.netMgr.type,
+                            trust,
+                            net_fee
+                        );
+                    }
+                }
+            }
+            catch (e) {
+                var res = new Result()
+                res.err = true
+                res.info = e.toString()
+
+                console.log("[BlaCat]", '[main]', '_bancor, tools.CoinTool.nep5TransactionMain.user.info.wallet, bancorAddr, params.asset, params.count, net_fee) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
+            }
+
+            
+            // 重新获取钱包记录
+            await Main.viewMgr.payView.doGetWalletLists(1)
+            // 开启getNotifyPlat
+            Main.needGetPlatNotifys = true
+            Main.getPlatNotifys()
+
+            // listener回调
+            var callback_data = {
+                params: params,
+                res: res
+            }
+            Main.listenerCallback("bancorRes", callback_data);
+
+            // function回调
+            if (callback) {
+                try {
+                    callback(res);
+                }
+                catch (e) {
+                    console.log("[BlaCat]", '[main]', '_bancor, app callback error! tools.CoinTool.nep5TransactionMain.user.info.wallet, bancorAddr, params.asset, params.count, net_fee) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
+                }
+            }
+            Main.bancorCallback = null;
+        }
+        // 购买会员
+        async buyVip(params, callback = null) {
+            if (Main.isWalletOpen()) {
+                // 打开钱包了
+                // params = { pay_way: 支付币种(BCT/BCP)， month: 会员月份, invite: 邀请者 }
+
+                params.pay_way = params.pay_way.toUpperCase()
+                params.month = params.month.toString()
+
+                var nnc: string = ModifyVipView.getPayNnc(params.pay_way)
+                var target: string = ModifyVipView.getPayTarget()
+                var total = ModifyVipView.getPayAmount(params.pay_way, params.month)
+
+                // bcp是8位精度，四舍五入；bct4位
+                var size = 100000000
+                if (params.pay_way == "BCT") {
+                    size = 10000
+                }
+                // var total = floatNum.divide(Math.round(Number(params.count) * size), size)
+
+                var log_sbParamJson = "(addr)" + Main.user.info.wallet + ",(address)" + target + ",(integer)" + (total * size).toString()
+
+                // params添加
+                params['uid'] = Main.user.info.uid,
+                params['nnc'] = nnc
+                params['sbPushString'] = "transfer"
+                params['sbParamJson'] = log_sbParamJson
+                params['toaddr'] = target
+                params['total'] = total.toString()
+                params['refer'] = "1"
+
+                // 重置状态（非信任合约、信任合约手续费够）
+                ViewTransactionConfirm.isTrustFeeLess = false
+
+                // 检查是否有未信任合约
+                let unTrust = Main.getUnTrustNnc(params);
+                if (unTrust.length == 0) {
+                    // 信任合约
+                    if (Main.viewMgr.payView.gas > Number(Main.user.info.service_charge) ) {
+                        // 手续费足够，直接操作
+                        console.log("[BlaCat]", '[main]', 'bancor, trust nnc ...')
+                        this._buyVip(params, "0", Main.user.info.service_charge, callback)
+                        return
+                    }
+                    else {
+                        // 信任合约，不够手续费
+                        ViewTransactionConfirm.isTrustFeeLess = true
+                    }
+                }
+
+                if (Main.viewMgr.mainView.isHidden()) {
+                    // 如果mainView隐藏，显示出来
+                    Main.viewMgr.mainView.show()
+                    Main.viewMgr.iconView.hidden()
+                }
+
+                // 记录回调，锁定状态，当前不接收makerawtransaction请求了
+                if (Main.buyVipCallback) {
+                    // 已经有请求在处理，返回
+                    // Main.showErrMsg("请先确认或者取消上个交易请求再执行")
+                    Main.showErrMsg("main_wait_for_last_tran")
+                    return;
+                }
+                Main.buyVipCallback = callback;
+
+                // 打开确认页
+
+                var list = new walletLists();
+                list.params = JSON.stringify(params);
+                list.wallet = Main.user.info.wallet;
+                list.g_id = "0"
+                list.ctm = Math.round(new Date().getTime() / 1000).toString();
+                list.cnts = total.toString()
+                list.type = "16"
+                list.type_detail = PayTransferView.log_type_detail[params.pay_way.toLowerCase()]
+                
+                ViewTransactionConfirm.list = list;
+                ViewTransactionConfirm.refer = ""
+                ViewTransactionConfirm.callback_params = params
+
+                ViewTransactionConfirm.callback = async (params, trust, net_fee) => {
+                    console.log("[BlaCat]", '[main]', 'buyVip交易确认..')
+
+                    // Main.viewMgr.change("ViewLoading")
+
+                    // var net_fee = "0.00000001" // for test
+                    // var net_fee = ViewTransactionConfirm.net_fee
+
+                    // setTimeout(async () => {
+                    //     try {
+                    //         await this._buyVip(params, trust, net_fee, Main.buyVipCallback)
+                    //     }
+                    //     catch (e) {
+                    //         console.log("[BlaCat]", '[main]', 'buyVip, _buyVip(params, trust, net_fee, Main.bancorCallback) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'Main.buyVipCallback =>', Main.buyVipCallback, 'error => ', e.toString())
+                    //         Main.buyVipCallback = null
+                    //     }
+                    //     Main.viewMgr.viewLoading.remove()
+                    // }, 300);
+                    await this._buyVip(params, trust, net_fee, Main.buyVipCallback)
+                }
+                ViewTransactionConfirm.callback_cancel = () => {
+                    console.log("[BlaCat]", '[main]', 'buyVip交易取消..')
+
+                    var res = new Result();
+                    res.err = true;
+                    res.info = 'cancel';
+                    if (Main.buyVipCallback) Main.buyVipCallback(res);
+                    Main.buyVipCallback = null;
+
+                    // listener回调
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    Main.listenerCallback("buyVipRes", callback_data);
+                }
+                Main.viewMgr.change("ViewTransactionConfirm")
+
+            } else {
+                // 未打开钱包
+
+                if (Main.viewMgr.mainView.isHidden()) {
+                    // 如果mainView隐藏，显示出来
+                    Main.viewMgr.mainView.show()
+                    Main.viewMgr.iconView.hidden()
+                }
+
+                ViewWalletOpen.refer = ""
+                ViewWalletOpen.callback_params = params;
+                ViewWalletOpen.callback_callback = callback;
+                ViewWalletOpen.callback = (params, callback) => {
+                    this.buyVip(params, callback)
+                }
+                ViewWalletOpen.callback_cancel = (params, callback) => {
+                    var res: Result = new Result();
+                    res.err = true;
+                    res.info = 'cancel'
+
+                    var callback_data = {
+                        params: params,
+                        res: res
+                    }
+                    Main.listenerCallback("buyVipRes", callback_data);
+                    callback(res)
+                }
+                Main.viewMgr.change("ViewWalletOpen")
+            }
+        }
+        // 购买会员私有函数
+        private async _buyVip(params, trust: string = "0", net_fee: string, callback = null) {
+            // 合约交易，延长钱包退出时间
+            Main.setLiveTime()
+
+            try {
+                var res: Result = await ModifyVipView.pay(params.pay_way, params.month, params.invite, net_fee, trust, callback, true, params)
+            }
+            catch (e) {
+                var res = new Result()
+                res.err = true
+                res.info = e.toString()
+
+                console.log("[BlaCat]", '[main]', '_buyVip, ModifyVipView.pay(params.pay_way, params.month, params.invite, net_fee, trust, callback, true, params) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
+            }
+
+            // 重新获取钱包记录
+            //await Main.viewMgr.payView.doGetWalletLists(1)
+
+            // listener回调
+            var callback_data = {
+                params: params,
+                res: res
+            }
+            Main.listenerCallback("buyVipRes", callback_data);
+
+            // function回调
+            if (callback) {
+                try {
+                    callback(res);
+                }
+                catch (e) {
+                    console.log("[BlaCat]", '[main]', '_buyVip, app callback error! ModifyVipView.pay(params.pay_way, params.month, params.invite, net_fee, trust, callback, true, params) error, params => ', params, 'trust =>', trust, 'net_fee =>', net_fee, 'e => ', e.toString())
+                }
+            }
+            Main.buyVipCallback = null;
+        }
 
 
 
@@ -987,16 +1612,17 @@ namespace BlackCat {
                         Main.app_trust = []
                     }
 
-                    // listener回调
-                    Main.listenerCallback("loginRes", res.data.loginParam)
-                    // function回调
-                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res.data.loginParam)
 
                     Main.isLoginCallback = true;
                     // 首次登录，获取应用notify
                     Main.needGetAppNotifys = true;
                     // 首次登录，获取平台notify
                     Main.needGetPlatNotifys = true;
+
+                    // listener回调
+                    Main.listenerCallback("loginRes", res.data.loginParam)
+                    // function回调
+                    if (Main.loginFunctionCallback) Main.loginFunctionCallback(res.data.loginParam)
 
                     console.log("[BlaCat]", '[main]', 'loginCallback，轮询平台notify和应用notify')
                 }
@@ -1009,7 +1635,35 @@ namespace BlackCat {
         private static setGameInfo(param) {
             Main.appname = param.name;
             Main.appicon = param.icon;
+            Main.applang = param.lang;
             Main.app_recharge_addr = param.recharge_addr;
+
+            // 新数据格式
+            if (param.hasOwnProperty('region')) {
+                var appname = {}
+                var appicon = {}
+                for (let region in param.region) {
+                    if (region == Main.langMgr.type) {
+                        appname[region] = param.region[region]['name']
+                        appicon[region] = param.region[region]['icon']
+                    }
+                }
+                if (appname != {}) {
+                    Main.appname = JSON.stringify(appname);
+                }
+                if (appicon != {}) {
+                    Main.appicon = JSON.stringify(appicon);
+                }
+            }
+            if (param.hasOwnProperty('coin')) {
+                var appcoin = {}
+                for (let icon in param.coin) {
+                    appcoin[icon] = param.coin[icon]
+                }
+                if (appcoin != {}) {
+                    Main.appcoin = JSON.stringify(appcoin)
+                }
+            }
         }
         // SDK判断是否登录
         isLogined() {
@@ -1116,11 +1770,14 @@ namespace BlackCat {
                         // 没有pending数据，定时获取关闭
                         console.log("[BlaCat]", '[main]', 'getAppNotifys, 没有等待确认的数据，关闭轮询')
                         Main.needGetAppNotifys = false;
+                        Main.appWalletNotifyId = Main.appWalletLogId // 和最高记录对齐
                     }
 
                     // 有待通知列表
                     if (res.data.complete.length > 0) {
                         var new_app_notifys = new Array();
+
+                        var has_partner_txid = false; // 默认没有合伙人信息
 
                         // 和notifyTxids比较，看是否有新通知数据，更新最近记录ID，更新最近通知ID
                         await res.data.complete.forEach(
@@ -1129,6 +1786,9 @@ namespace BlackCat {
 
                                 if (!Main.appNotifyTxids.hasOwnProperty(list.txid)) {
                                     new_app_notifys.push(list);
+                                    if (list.type_detail == "3") {
+                                        has_partner_txid = true;
+                                    }
                                 }
 
                                 if (Main.appWalletNotifyId < list_id) Main.appWalletNotifyId = list_id;
@@ -1141,6 +1801,14 @@ namespace BlackCat {
 
                         if (new_app_notifys.length > 0) {
                             console.log("[BlaCat]", '[main]', 'getAppNotifys, 需要回调数据 => ', new_app_notifys)
+
+                            // 有合伙人
+                            if (has_partner_txid) {
+                                // 开启getNotifyPlat
+                                Main.needGetPlatNotifys = true
+                                Main.getPlatNotifys()
+                            }
+
                             // 有新数据
                             Main.listenerCallback("getAppNotifysRes", new_app_notifys);
                         }
@@ -1155,12 +1823,36 @@ namespace BlackCat {
             }
             return false;
         }
+        // 完成状态的plat_notify处理
         private static async doPlatNotify(params: Array<any>) {
             console.log("[BlaCat]", '[main]', 'doPlatNotify, params => ', params)
             var openTask = null; // 打开钱包任务
             for (let k in params) {
                 switch (params[k].type) {
-                    case "2": // sgas->gas退款
+                    // case "9": // 储值到交易钱包
+                    //     if (params[k].state == "1") {
+                    //         if (params[k].ext) {
+                    //             // 提交成功，循环获取结果，不需要开钱包
+                    //             try {
+                    //                 let ext_obj = JSON.parse(params[k].ext)
+                    //                 if (ext_obj.hasOwnProperty('txid')) {
+                    //                     Main.doPlatNotifyTransferRes(params[k], ext_obj['txid'])
+                    //                 }
+                    //             }
+                    //             catch(e) {
+                    //                 this.confirmPlatNotify(params[k])
+                    //             }
+                    //         }
+                    //         else {
+                    //             this.confirmPlatNotify(params[k])
+                    //         }
+                    //     }
+                    //     else {
+                    //         // 失败的，直接回调
+                    //         this.confirmPlatNotify(params[k])
+                    //     }
+                    //     break;
+                    case "2": // cgas->gas、cneo->neo退款
                         if (params[k].state == "1") {
                             if (params[k].ext) {
                                 // utxo->gas提交成功，循环获取结果，不需要开钱包
@@ -1176,7 +1868,7 @@ namespace BlackCat {
                                     openTask.push(params[k]);
                                     break;
                                 }
-                                // sgas->utxo确定，发起utxo->gas请求，需要打开钱包
+                                // cgas->utxo确定，发起utxo->gas请求，需要打开钱包
                                 Main.doPlatNotiyRefund(params[k])
                             }
                         }
@@ -1184,6 +1876,73 @@ namespace BlackCat {
                             // 失败的，直接回调
                             this.confirmPlatNotify(params[k])
                         }
+                        break;
+                    case "14": // bancor转账
+                        if (params[k].state == "1") {
+
+                            if (!Main.isWalletOpen()) {
+                                console.log("[BlaCat]", '[main]', '***getPlatNotifys，钱包未打开，收集数据')
+
+                                if (!openTask) {
+                                    openTask = new Array();
+                                }
+                                openTask.push(params[k]);
+                                break;
+                            }
+                            // cgas->utxo确定，发起utxo->gas请求，需要打开钱包
+                            Main.doPlatNotifyBancor(params[k])
+                            
+                        }
+                        else {
+                            // 失败的，直接回调
+                            this.confirmPlatNotify(params[k])
+                        }
+                        break;
+                    case "16": // 购买会员
+                        if (params[k].state == "1") {
+                            // 刷新个人信息isLogined
+                            try {
+                                var res = await Main.user.isLogined()
+                                // 刷新vip数据
+                                if (res && Main.viewMgr.personalCenterView) {
+                                    Main.viewMgr.personalCenterView.updateVip()
+                                }
+
+                                // 添加listener通知
+                                let params_tmp = JSON.parse(params[k].params);
+                                if (params_tmp.hasOwnProperty("refer") && params_tmp['refer'] == "1") {
+                                    var listener_res: Result = new Result()
+                                    listener_res.err = false
+                                    listener_res.info = params_tmp
+                                    Main.listenerCallback("buyVipResNotify", listener_res)
+                                }
+                            }
+                            catch (e) {}
+                        }
+                        // 失败的，直接回调
+                        this.confirmPlatNotify(params[k])
+                        break
+                    case "17": // 合伙人
+                        if (params[k].state == "1") {
+                            // 刷新个人信息isLogined
+                            try {
+                                var res = await Main.user.isLogined()
+                                // 刷新vip数据
+                                if (res && Main.viewMgr.personalCenterView) {
+                                    Main.viewMgr.personalCenterView.updateVip()
+                                }
+
+                                // 添加listener通知
+                                let params_tmp = JSON.parse(params[k].params);
+                                var listener_res: Result = new Result()
+                                listener_res.err = false
+                                listener_res.info = params_tmp
+                                Main.listenerCallback("PartnerResNotify", listener_res)
+                            }
+                            catch (e) {}
+                        }
+                        // 失败的，直接回调
+                        this.confirmPlatNotify(params[k])
                         break;
                 }
             }
@@ -1213,29 +1972,81 @@ namespace BlackCat {
                 Main.showConFirm("main_need_open_wallet_confirm")
             }
         }
-        static async continueRefund() {
+        static async continueWithOpenWallet() {
             // 钱包未打开，有需要打开钱包的操作
             ViewConfirm.callback = () => {
                 // 确认打开钱包，去打开钱包
                 ViewWalletOpen.refer = null
+                ViewWalletOpen.callback = null
                 Main.viewMgr.change("ViewWalletOpen")
             }
             // Main.showConFirm("提现操作需要打开钱包，是否立即打开？")
             Main.showConFirm("main_need_open_wallet_confirm")
         }
+        private static async doPlatNotifyBancor(params) {
+            try {
+                var params_obj = JSON.parse(params.params)
+            }
+            catch (e) {
+                // 数据异常了
+                Main.showErrMsg("main_bancor_second_fail")
+                return
+            }
+
+            if (params_obj['type'] == "1") {
+                // 购买代币
+                var params_data = {
+                    nnc: tools.CoinTool.id_bancor,
+                    sbParamJson: ["(hex160)"+params_obj['asset'], "(hex256)"+params.txid],
+                    sbPushString: "purchase",
+                }
+            }
+            else if (params_obj['type'] == "2") {
+                // 卖出代币
+                var params_data = {
+                    nnc: tools.CoinTool.id_bancor,
+                    sbParamJson: ["(hex160)"+params_obj['asset'], "(hex256)"+params.txid],
+                    sbPushString: "sale",
+                }
+            }
+
+            if (params_data) {
+                var res: Result = await Main.wallet.bancorTransaction(params_data, params.net_fee)
+                if (res.err === false) {
+                    this.confirmPlatNotify(params)
+                    // 刷新交易记录
+                    Main.viewMgr.payView.doGetWalletLists(1)
+                }
+            }
+        }
         private static async doPlatNotiyRefund(params) {
+
+            var key = "cgas"
+            for (let k in PayTransferView.log_type_detail) {
+                if (PayTransferView.log_type_detail[k] == params.type_detail) {
+                    key = k
+                }
+            }
+
+            var id_asset = tools.CoinTool.id_GAS
+            if (key == "cneo") {
+                id_asset = tools.CoinTool.id_NEO
+            }
+            var id_asset_name = key.toUpperCase() //'CGAS'
+            var id_asset_nep5 = tools.CoinTool["id_" + id_asset_name];
+
             //tx的第一个utxo就是给自己的
             var utxo: tools.UTXO = new tools.UTXO();
             utxo.addr = Main.user.info.wallet;
             utxo.txid = params.txid;
-            utxo.asset = tools.CoinTool.id_GAS;
+            utxo.asset = id_asset;
             utxo.count = Neo.Fixed8.parse(params.cnts.toString());
             utxo.n = 0;
 
             // 生成转换请求
             var utxos_assets = {};
-            utxos_assets[tools.CoinTool.id_GAS] = [];
-            utxos_assets[tools.CoinTool.id_GAS].push(utxo);
+            utxos_assets[id_asset] = [];
+            utxos_assets[id_asset].push(utxo);
 
             console.log("[BlaCat]", '[main]', 'doPlatNotiyRefund, utxos_assets => ', utxos_assets);
 
@@ -1251,33 +2062,87 @@ namespace BlackCat {
 
                 }
 
-                var refundcounts = Number(params.cnts) - Number(net_fee)
-                if (refundcounts < Number(net_fee)) {
-                    // 不够支付手续
-
-                    var makeTranRes: Result = tools.CoinTool.makeTran(
-                        utxos_assets,
-                        Main.user.info.wallet,
-                        tools.CoinTool.id_GAS,
-                        Neo.Fixed8.fromNumber(Number(params.cnts)),
-                    );
+                if (id_asset_name == "CGAS") {
+                    var refundcounts = Number(params.cnts) - Number(net_fee)
+                    if (refundcounts < Number(net_fee)) {
+                        // 不够支付手续
+                        var makeTranRes: Result = tools.CoinTool.makeTran(
+                            utxos_assets,
+                            Main.user.info.wallet,
+                            id_asset,
+                            Neo.Fixed8.fromNumber(Number(params.cnts)),
+                        );
+                    }
+                    else {
+                        var makeTranRes: Result = tools.CoinTool.makeTran(
+                            utxos_assets,
+                            Main.user.info.wallet,
+                            id_asset,
+                            Neo.Fixed8.fromNumber(Number(params.cnts) - Number(net_fee)),
+                            Neo.Fixed8.Zero,
+                            // 余额作为手续费
+                            1
+                        );
+                    }
                 }
                 else {
+                    // NEO
                     var makeTranRes: Result = tools.CoinTool.makeTran(
                         utxos_assets,
                         Main.user.info.wallet,
-                        tools.CoinTool.id_GAS,
-                        Neo.Fixed8.fromNumber(Number(params.cnts) - Number(net_fee)),
-                        Neo.Fixed8.Zero,
-                        // 余额作为手续费
-                        1
+                        id_asset,
+                        Neo.Fixed8.fromNumber(Number(params.cnts)),
                     );
+                    
+                    // ***************** CNEO退款暂时不支持支付GAS手续费 ****************************
+                    if (Number(net_fee) > 0 && Main.viewMgr.payView.gas >= Number(net_fee)) {
+                        // 有足够GAS支付手续费
+                        try {
+                            // 获取用户utxo
+                            var user_utxos_assets = await tools.CoinTool.getassets();
+                            console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_utxos_assets => ', user_utxos_assets)
+    
+                            var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                                user_utxos_assets,
+                                Main.user.info.wallet,
+                                tools.CoinTool.id_GAS,
+                                Neo.Fixed8.Zero,
+                                Neo.Fixed8.fromNumber(Number(net_fee)),
+                            );
+    
+                            // inputs、outputs、oldarr塞入
+                            var user_tran = user_makeTranRes.info.tran
+                            for (let i = 0; i < user_tran.inputs.length; i++) {
+                                makeTranRes.info.tran.inputs.push(user_tran.inputs[i])
+                            }
+                            for (let i = 0; i < user_tran.outputs.length; i++) {
+                                makeTranRes.info.tran.outputs.push(user_tran.outputs[i])
+                            }
+                            var user_oldarr = user_makeTranRes.info.oldarr
+                            for (let i = 0; i < user_oldarr.length; i++) {
+                                makeTranRes.info.oldarr.push(user_oldarr[i])
+                            }
+                            console.log("[BlaCat]", '[PayView]', 'makeRefundTransaction, user_makeTranRes => ', user_makeTranRes)
+                        }
+                        catch (e) {
+                            let errmsg = Main.langMgr.get(e.message);
+                            if (errmsg) {
+                                Main.showErrMsg((e.message)); // "GAS余额不足"
+                            }
+                            else {
+                                Main.showErrMsg(("pay_makeMintGasNotEnough"))
+                            }
+    
+                            return;
+                        }
+
+                    }
                 }
 
             }
             catch (e) {
                 // Main.showErrMsg("生成转换请求（utxo->gas）失败");
-                Main.showErrMsg(("main_refund_second_fail"))
+                Main.showErrMsg(("main_refund_second_"+ id_asset_name +"_fail"))
                 return;
             }
 
@@ -1289,24 +2154,23 @@ namespace BlackCat {
 
             //sign and broadcast
             //做智能合约的签名
-            // 考虑到老的sgas合约，这里合约地址应该是记录的合约地址
-            let id_SGAS = tools.CoinTool.id_SGAS;
+            // 考虑到老的cgas合约，这里合约地址应该是记录的合约地址
             try {
                 let params_decode = JSON.parse(params.params)
                 if (params_decode && params_decode.hasOwnProperty("nnc")) {
-                    id_SGAS = params_decode.nnc
+                    id_asset_nep5 = params_decode.nnc
                 }
             }
             catch (e) { }
-            var r = await tools.WWW.api_getcontractstate(id_SGAS);
+            var r = await tools.WWW.api_getcontractstate(id_asset_nep5);
 
             if (r && r["script"]) {
-                var sgasScript = r["script"].hexToBytes();
+                var Script = r["script"].hexToBytes();
 
                 var sb = new ThinNeo.ScriptBuilder();
                 sb.EmitPushNumber(new Neo.BigInteger(0));
                 sb.EmitPushNumber(new Neo.BigInteger(0));
-                tran.AddWitnessScript(sgasScript, sb.ToArray());
+                tran.AddWitnessScript(Script, sb.ToArray());
 
                 var txid = tran.GetHash().clone().reverse().toHexString();
 
@@ -1348,6 +2212,20 @@ namespace BlackCat {
             } else {
                 // Main.showErrMsg("获取转换合约失败！");
                 Main.showErrMsg(("main_refund_getScript_err"))
+            }
+        }
+        private static async doPlatNotifyTransferRes(params, txid) {
+            var r = await tools.WWW.getrawtransaction(txid)
+            if (r) {
+                console.log("[BlaCat]", '[main]', 'doPlatNotifyTransferRes, txid: ' + txid + ", r => ", r)
+                await Main.confirmPlatNotify(params)
+                // 刷新payview交易状态
+                Main.viewMgr.payView.doGetWalletLists()
+            }
+            else {
+                setTimeout(() => {
+                    this.doPlatNotifyTransferRes(params, txid)
+                }, 10000);
             }
         }
         private static async doPlatNotifyRefundRes(params, txid) {
@@ -1398,8 +2276,9 @@ namespace BlackCat {
                     }
                     else {
                         // 没有pending数据，定时获取关闭
-                        console.log("[BlaCat]", '[main]', 'getPlatNotifys, 没有等待确认的数据，关闭轮询')
+                        console.log("[BlaCat]", '[main]', '***getPlatNotifys, 没有等待确认的数据，关闭轮询')
                         Main.needGetPlatNotifys = false;
+                        Main.platWalletNotifyId = Main.appWalletLogId // 和最高记录对齐
                     }
 
 
@@ -1797,7 +2676,7 @@ namespace BlackCat {
         private static setTsOffset(loginParam) {
             let curr_ts = Math.round((new Date()).getTime() / 1000);
             Main.tsOffset = (curr_ts - loginParam.time) * 1000
-            console.log('[BlaCat]', '[Main]', 'setTsOffset, tsOffset => ', Main.tsOffset)
+            console.log('[BlaCat]', '[Main]', 'setTsOffset, tsOffset时间偏移(s) => ', Main.tsOffset/1000)
         }
         // 获取url主机头
         private static getUrlHead() {
@@ -1826,6 +2705,30 @@ namespace BlackCat {
             // 对应删除原数组arr的对应数组项
             arr.splice(random, 1);
             return Main.randomSort(arr, newArr);
+        }
+
+        static check(){
+            //判断访问设备，方便后面针对不同设备调用代码  
+            var dev = "";  
+            if ((navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {  
+                //设备为移动端  
+                dev = "mobile";  
+            }  
+            else {  
+                //设备为pc  
+                dev = "pc";  
+            }  
+            return dev;
+        }
+
+        static in_array(search:string, array: Array<string>)
+        {
+            for (let k=0; k<array.length; k++) {
+                if (array[k] == search) {
+                    return true
+                }
+            }
+            return false
         }
     }
 }

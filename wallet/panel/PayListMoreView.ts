@@ -59,13 +59,11 @@ namespace BlackCat {
             this.doGetWalletLists()
         }
 
-        remove() {
-            super.remove()
-            this.reset();
-        }
-
         toRefer() {
-            Main.viewMgr.change("PayView")
+            if (PayListMoreView.refer) {
+                Main.viewMgr.change(PayListMoreView.refer);
+                PayListMoreView.refer = null;
+            }
         }
 
         reset() {
@@ -78,7 +76,8 @@ namespace BlackCat {
                 return;
             }
 
-            var res = await ApiTool.getWalletListss(Main.user.info.uid, Main.user.info.token, this.page, this.num, Main.netMgr.type);
+            // 获取已确认的订单
+            var res = await ApiTool.getWalletListss(Main.user.info.uid, Main.user.info.token, this.page, this.num, Main.netMgr.type, 0);
 
             if (res.r) {
                 if (res.data && res.data.length >= 1) {
@@ -97,6 +96,12 @@ namespace BlackCat {
                             // li
                             var listObj = this.objCreate("li")
                             listObj.onclick = () => {
+                                for (var i in this.listsDiv.children) {
+                                    if (this.listsDiv.children[i].className == "active") {
+                                        this.listsDiv.children[i].classList.remove('active')
+                                    }
+                                }
+                                listObj.classList.add("active")
                                 this.hidden()
                                 PayListDetailView.refer = "PayListMoreView"
                                 PayListDetailView.list = list;

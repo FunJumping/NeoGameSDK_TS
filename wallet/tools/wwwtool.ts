@@ -9,7 +9,9 @@ namespace BlackCat.tools {
         static api_nodes: string
         // static apiaggr: string;
         static api_clis: string;
+
         static api_cgas: string;
+        static api_cneo: string;
 
         static makeRpcUrl(url: string, method: string, ..._params: any[]) {
             var urlout = url + "?jsonrpc=2.0&id=1&method=" + method + "&params=[";
@@ -92,6 +94,14 @@ namespace BlackCat.tools {
         static async api_getAllAssets() {
             var str = WWW.makeRpcUrl(WWW.api_nodes, "getallasset");
             var result = await fetch(str, { "method": "get" });
+            var json = await result.json();
+            var r = json["result"];
+            return r;
+        }
+        static async api_getAllNep5AssetBalanceOfAddress(address: string) {
+
+            var postdata = WWW.makeRpcPostBody("getallnep5assetofaddress", address, 1);
+            var result = await fetch(WWW.api_nodes, { "method": "post", "body": JSON.stringify(postdata) });
             var json = await result.json();
             var r = json["result"];
             return r;

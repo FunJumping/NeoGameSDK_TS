@@ -6,14 +6,34 @@ namespace BlackCat.tools {
     export class CoinTool {
         static readonly id_GAS: string = "0x602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7";
         static readonly id_NEO: string = "0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b";
-        static id_SGAS: string = "";
-        static id_SGAS_OLD: Array<string> = [];
+        
+        static id_CGAS: string = "";
+        static id_CGAS_OLD: Array<string> = [];
+
+        static id_CNEO: string = ""
+        static id_CNEO_OLD: Array<string> = [];
 
         static id_BCT: string = "";
         static id_BCP: string = "";
+        
+        // BCT
+        static id_BCT_DESTROY: string = ""
+        // BTC-nep5
+        static id_BTC: string = "";
+        static id_BTC_DESTROY: string = "";
+        // ETH-nep5
+        static id_ETH: string = "";
+        static id_ETH_DESTROY: string = "";
+        // CNEO
+        static id_CNEO_DESTROY: string = ""
+
+        // bancor合约转账地址
+        static id_bancor: string = ""
+
+        // 购买会员转账地址
+        static BUY_VIP_ADDR: string = ""
 
 
-        // static readonly id_SGAS_RATE: number = 100000000;
         static assetID2name: { [id: string]: string } = {};
         static name2assetID: { [id: string]: string } = {};
         static async initAllAsset() {
@@ -140,14 +160,29 @@ namespace BlackCat.tools {
                 count = count.add(us[i].count);//添加至count中
                 scraddr = us[i].addr;
                 clonearr.shift();               //删除已塞入的utxo
-                old.push(new OldUTXO(us[i].txid, us[i].n));
+                old.push(new OldUTXO(us[i].txid, us[i].n, assetid));
+
+                if (split) {
+                    // 需要拆分
+                    if (us.length >= split_num) {
+                        // utxo数量已经很多了，不用再拆
+                        if (count.compareTo(sendcount) > 0) {
+                            // gas数量足够了
+                            break;
+                        }
+                    }
+                }
+                else {
+                    // 不拆分，只要gas数量足够就中断
+                    if (count.compareTo(sendcount) > 0) {
+                        break;
+                    }
+                }
                 if (us.length >= split_num && count.compareTo(sendcounts) > 0) // 如果utxo数量大于拆分最小数量，判断输入是否足够
                 {
                     break;      //如果足够则跳出循环
                 }
             }
-
-            console.log(count.getData().toNumber())
 
             if (count.compareTo(sendcounts) >= 0)//输入大于等于输出
             {
@@ -166,7 +201,7 @@ namespace BlackCat.tools {
                     var change = count.subtract(sendcounts);
                     if (change.compareTo(Neo.Fixed8.Zero) > 0) {
                         // 找零>split_min并且utxo数量<split_num
-                        if (change.compareTo(Neo.Fixed8.fromNumber(split_min)) > 0 && us.length < split_num) {
+                        if (split && change.compareTo(Neo.Fixed8.fromNumber(split_min)) > 0 && us.length < split_num) {
                             // 拆分utxo
                             var change_num: number = change.getData().toNumber() / 100000000
                             // 取整
@@ -274,7 +309,7 @@ namespace BlackCat.tools {
                 count = count.add(us[i].count);//添加至count中
                 scraddr = us[i].addr;
                 clonearr.shift();               //删除已塞入的utxo
-                old.push(new OldUTXO(us[i].txid, us[i].n));
+                old.push(new OldUTXO(us[i].txid, us[i].n, assetid));
                 if (count.compareTo(sendcounts) > 0) //判断输入是否足够
                 {
                     break;      //如果足够则跳出循环
@@ -350,40 +385,107 @@ namespace BlackCat.tools {
             }
             var _count = Neo.Fixed8.parse(count + "");
             var utxos = await CoinTool.getassets();
-            try {
-                var tranres = CoinTool.makeTran(utxos, targetaddr, asset, _count, net_fee, 0);  //获得tran和改变后的utxo
-                var tran: ThinNeo.Transaction = tranres.info['tran'];
 
-                if (tran.witnesses == null)
-                    tran.witnesses = [];
-                let txid = tran.GetHash().clone().reverse().toHexString();
-                var msg = tran.GetMessage().clone();
-                var pubkey = arr[n].pubkey.clone();
-                var prekey = arr[n].prikey.clone();
-                var addr = arr[n].address;
-                var signdata = ThinNeo.Helper.Sign(msg, prekey);
-                tran.AddWitness(signdata, pubkey, addr);
-
-                var data: Uint8Array = tran.GetRawData();
-
-                var res: Result = new Result();
-                var height = await tools.WWW.api_getHeight_nodes();
-                var result = await tools.WWW.api_postRawTransaction(data);
-                if (result["sendrawtransactionresult"]) {
-                    res.err = !result;
-                    res.info = txid;
-                    let olds = tranres.info['oldarr'] as OldUTXO[];
-                    olds.map(old => old.height = height);
-                    OldUTXO.oldutxosPush(olds);
+            if (asset == tools.CoinTool.id_GAS) {
+                // GAS
+                try {
+                    var tranres = CoinTool.makeTran(utxos, targetaddr, asset, _count, net_fee, 0);  //获得tran和改变后的utxo
+                    var tran: ThinNeo.Transaction = tranres.info['tran'];
+    
+                    if (tran.witnesses == null)
+                        tran.witnesses = [];
+                    let txid = tran.GetHash().clone().reverse().toHexString();
+                    var msg = tran.GetMessage().clone();
+                    var pubkey = arr[n].pubkey.clone();
+                    var prekey = arr[n].prikey.clone();
+                    var addr = arr[n].address;
+                    var signdata = ThinNeo.Helper.Sign(msg, prekey);
+                    tran.AddWitness(signdata, pubkey, addr);
+    
+                    var data: Uint8Array = tran.GetRawData();
+    
+                    var res: Result = new Result();
+                    var height = await tools.WWW.api_getHeight_nodes();
+                    var result = await tools.WWW.api_postRawTransaction(data);
+                    if (result["sendrawtransactionresult"]) {
+                        res.err = !result;
+                        res.info = txid;
+                        let olds = tranres.info['oldarr'] as OldUTXO[];
+                        olds.map(old => old.height = height);
+                        OldUTXO.oldutxosPush(olds);
+                    }
+                    else {
+                        res.err = true;
+                        res.info = "no txid"
+                    }
+                    return res;
+                } catch (error) {
+                    throw error;
                 }
-                else {
-                    res.err = true;
-                    res.info = "no txid"
-                }
-                return res;
-            } catch (error) {
-                throw error;
             }
+            else {
+                // NEO
+                try {
+                    var tranres = CoinTool.makeTran(utxos, targetaddr, asset, _count, Neo.Fixed8.Zero, 0);  //获得tran和改变后的utxo
+                    
+                    // 手续费
+                    if (net_fee.compareTo(Neo.Fixed8.Zero) > 0) {
+                        // 有手续费
+                        var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                            utxos,
+                            add,
+                            tools.CoinTool.id_GAS,
+                            Neo.Fixed8.Zero,
+                            net_fee,
+                        );
+                        // inputs、outputs、oldarr塞入
+                        var user_tran = user_makeTranRes.info.tran
+                        for (let i = 0; i < user_tran.inputs.length; i++) {
+                            tranres.info.tran.inputs.push(user_tran.inputs[i])
+                        }
+                        for (let i = 0; i < user_tran.outputs.length; i++) {
+                            tranres.info.tran.outputs.push(user_tran.outputs[i])
+                        }
+                        var user_oldarr = user_makeTranRes.info.oldarr
+                        for (let i = 0; i < user_oldarr.length; i++) {
+                            tranres.info.oldarr.push(user_oldarr[i])
+                        }
+                    }
+
+                    var tran: ThinNeo.Transaction = tranres.info['tran'];
+    
+                    if (tran.witnesses == null)
+                        tran.witnesses = [];
+                    let txid = tran.GetHash().clone().reverse().toHexString();
+                    var msg = tran.GetMessage().clone();
+                    var pubkey = arr[n].pubkey.clone();
+                    var prekey = arr[n].prikey.clone();
+                    var addr = arr[n].address;
+                    var signdata = ThinNeo.Helper.Sign(msg, prekey);
+                    tran.AddWitness(signdata, pubkey, addr);
+    
+                    var data: Uint8Array = tran.GetRawData();
+    
+                    var res: Result = new Result();
+                    var height = await tools.WWW.api_getHeight_nodes();
+                    var result = await tools.WWW.api_postRawTransaction(data);
+                    if (result["sendrawtransactionresult"]) {
+                        res.err = !result;
+                        res.info = txid;
+                        let olds = tranres.info['oldarr'] as OldUTXO[];
+                        olds.map(old => old.height = height);
+                        OldUTXO.oldutxosPush(olds);
+                    }
+                    else {
+                        res.err = true;
+                        res.info = "no txid"
+                    }
+                    return res;
+                } catch (error) {
+                    throw error;
+                }
+            }
+            
         }
 
         /**
@@ -512,13 +614,49 @@ namespace BlackCat.tools {
          * invokeTrans 方式调用合约塞入attributes
          * @param script 合约的script
          */
-        static async contractInvokeTrans_attributes(script: Uint8Array) {
+        static async contractInvokeTrans_attributes(script: Uint8Array, net_fee: string = "0", not_send: boolean = false) {
             let current: LoginInfo = LoginInfo.getCurrentLogin();
             var addr = current.address;
-            var tran: ThinNeo.Transaction = new ThinNeo.Transaction();
-            //合约类型
-            tran.inputs = [];
-            tran.outputs = [];
+
+            var tran: ThinNeo.Transaction;
+
+            // 有网络手续费
+            if (Number(net_fee) > 0) {
+
+                // makeTranRes.info.tran.extdata.gas = Neo.Fixed8.fromNumber(Number(net_fee));
+                try {
+                    // 获取用户utxo
+                    var user_utxos_assets = await tools.CoinTool.getassets();
+                    console.log("[BlaCat]", '[cointool]', 'contractInvokeTrans_attributes, user_utxos_assets => ', user_utxos_assets)
+
+                    var user_makeTranRes: Result = tools.CoinTool.makeTran(
+                        user_utxos_assets,
+                        Main.user.info.wallet,
+                        tools.CoinTool.id_GAS,
+                        Neo.Fixed8.Zero,
+                        Neo.Fixed8.fromNumber(Number(net_fee)),
+                    );
+
+                    // inputs、outputs、oldarr塞入
+                    var tran = user_makeTranRes.info.tran as ThinNeo.Transaction
+                    var oldarr = user_makeTranRes.info.oldarr
+                    console.log("[BlaCat]", '[cointool]', 'contractInvokeTrans_attributes, user_makeTranRes => ', user_makeTranRes)
+                }
+                catch (e) {
+                    var res: Result = new Result();
+                    res.err = true
+                    res.info = e.toString()
+                    return res;
+                }
+            }
+            else {
+                tran = new ThinNeo.Transaction();
+                //合约类型
+                tran.inputs = [];
+                tran.outputs = [];
+            }
+
+
             tran.type = ThinNeo.TransactionType.InvocationTransaction;
             tran.extdata = new ThinNeo.InvokeTransData();
             //塞入脚本
@@ -540,10 +678,32 @@ namespace BlackCat.tools {
             let txid = tran.GetHash().clone().reverse().toHexString();
 
             var res: Result = new Result();
+
+            if (not_send) {
+                // 不发送请求，后续自行发送，给出txid等信息
+                res.err = false
+                res.info = txid
+                res['data'] = data
+
+                // 记录使用的utxo，后面不再使用，需要记录高度
+                if (Number(net_fee) > 0 && oldarr) {
+                    var height = await tools.WWW.api_getHeight_nodes();
+                    oldarr.map(old => old.height = height);
+                    res['oldarr'] = oldarr
+                }
+                return res
+            }
+
             var result = await tools.WWW.api_postRawTransaction(data);
             if (result["sendrawtransactionresult"]) {
                 if (!result["txid"]) {
                     result["txid"] = txid
+                }
+                // 记录使用的utxo，后面不再使用，需要记录高度
+                if (Number(net_fee) > 0 && oldarr) {
+                    var height = await tools.WWW.api_getHeight_nodes();
+                    oldarr.map(old => old.height = height);
+                    tools.OldUTXO.oldutxosPush(oldarr);
                 }
             }
             res.err = !result["sendrawtransactionresult"];
@@ -591,8 +751,10 @@ namespace BlackCat.tools {
          * @param tatgeraddr 转账的地址
          * @param asset nep5资产id
          * @param amount 转账数额
+         * @param net_fee 手续费
+         * @param not_send false（默认）发送请求到链上，true：不发送请求
          */
-        static async nep5Transaction(address: string, tatgeraddr, asset: string, amount: string) {
+        static async nep5Transaction(address: string, tatgeraddr, asset: string, amount: string, net_fee:string = "0", not_send: boolean = false) {
             let res = await tools.WWW.getNep5Asset(asset);
             var decimals = res["decimals"] as number;
             var numarr = amount.split(".");
@@ -625,19 +787,19 @@ namespace BlackCat.tools {
             sb.EmitParamJson(["(address)" + address, "(address)" + tatgeraddr, "(integer)" + intv]);//第二个参数是个数组
             sb.EmitPushString("transfer");
             sb.EmitAppCall(scriptaddress);
-            var result = await CoinTool.contractInvokeTrans_attributes(sb.ToArray())
+            var result = await CoinTool.contractInvokeTrans_attributes(sb.ToArray(), net_fee, not_send)
             return result;
         }
 
-
-
         /**
-         * 获得utxos
+         * 获取合约utxo资产
+         * 
+         * @param id_hash 合约hash
          */
-        static async getsgasAssets(id_SGAS: string = this.id_SGAS): Promise<{ [id: string]: UTXO[] }> {
+        static async getNep5Assets(id_hash: string): Promise<{ [id: string]: UTXO[] }> {
             //获得高度
             var height = await tools.WWW.api_getHeight_nodes();
-            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_SGAS.hexToBytes().reverse())
+            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_hash.hexToBytes().reverse())
             var utxos = await tools.WWW.api_getUTXO(scriptHash);   //获得utxo
 
             var olds = OldUTXO.getOldutxos();       //获得以标记的utxo(交易过的utxo 存储在本地的标记)
@@ -647,7 +809,7 @@ namespace BlackCat.tools {
                 let findutxo = false;
                 for (let i = 0; i < utxos.length; i++) {
                     let utxo = utxos[i];
-                    if (utxo.txid == old.txid && old.n == utxo.n && height - old.height <= 2) {
+                    if (utxo.txid == old.txid && old.n == utxo.n && height - old.height <= 2 && utxo.asset == old.asset) {
                         findutxo = true;
                         utxos.splice(i, 1);
                     }
@@ -676,12 +838,11 @@ namespace BlackCat.tools {
             return assets;
         }
 
-
         /**
          * 协调获取CGAS的UTXO
          */
-        static async getCgasAssets(id_SGAS: string = this.id_SGAS, amount: number): Promise<{ [id: string]: UTXO[] }> {
-            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_SGAS.hexToBytes().reverse())
+        static async getCgasAssets(id_CGAS: string = this.id_CGAS, amount: number): Promise<{ [id: string]: UTXO[] }> {
+            var scriptHash = ThinNeo.Helper.GetAddressFromScriptHash(id_CGAS.hexToBytes().reverse())
             var utxos = await tools.WWW.api_getAvailableUTXOS(scriptHash, amount);   //获得utxo
 
             var assets = {};        //对utxo进行归类，并且将count由string转换成 Neo.Fixed8
