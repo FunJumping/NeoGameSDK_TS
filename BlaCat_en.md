@@ -1,44 +1,43 @@
-* [<strong>BlaCatSDK使用文档</strong>](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#blacatsdk使用文档)
-* [<strong>BlaCatSDK Usage Documentation</strong>](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#blacatsdk-usage-documentation)
-	* [1. BlaCat Introduction](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-blacat-introduction)
-	* [2. Fundamental Applications](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-fundamental-applications)
-		* [1. SDK Introduction](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-sdk-introduction)
-		* [2. SDK Initialization (init)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-sdk-initialization-init)
-		* [3. Login(login)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#3-loginlogin)
-		* [4. Recharge](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#4-recharge)
-			* [1). Initiate Recharge(makeRecharge)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-initiate-rechargemakerecharge)
-			* [2). Confirm Recharge(Frontend)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-confirm-rechargefrontend)
-				* [1)). Onchain Transaction Process Completion Callback(getAppNotifysRes)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-onchain-transaction-process-completion-callbackgetappnotifysres)
-				* [2)). Confirm Receipt(confirmAppNotify)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-confirm-receiptconfirmappnotify)
-			* [3). Confirm Recharge(Backend)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#3-confirm-rechargebackend)
-				* [1)). Interface Description](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-interface-description)
-				* [2)). sign Signature Algorithm](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-sign-signature-algorithm)
-				* [3)). sign Signature Algorithm(PHP)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#3-sign-signature-algorithmphp)
-		* [5. Get balance(getBalance)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#5-get-balancegetbalance)
-		* [6. Get User Information(getUserInfo)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#6-get-user-informationgetuserinfo)
-		* [7. Get Current Network type(getNetType)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#7-get-current-network-typegetnettype)
-		* [8. Gas transfer(makeGasTransfer)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#8-gas-transfermakegastransfer)
-		* [9. GAS Batch Transfer(makeGasTransferMulti)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#9-gas-batch-transfermakegastransfermulti)
-	* [3. Advanced Applications](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#3-advanced-applications)
-		* [1. How to call smart contracts](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-how-to-call-smart-contracts)
-		* [2. Read Contracts(invokescript)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-read-contractsinvokescript)
-		* [3. Write Smart Contracts(makeRawTransaction)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#3-write-smart-contractsmakerawtransaction)
-	* [4. Supplementary Features](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#4-supplementary-features)
-		* [1. Setting the SDK language(setLang)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#1-setting-the-sdk-languagesetlang)
-		* [2. Set initial default network(setDefaultType)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#2-set-initial-default-networksetdefaulttype)
-		* [3. Expand/Icon SDK(showMain/showIcon)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#3-expandicon-sdkshowmainshowicon)
 
+* [<strong>BlaCatSDK Usage Documentation</strong>](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat_en.md#blacatsdk-usage-documentation)
+	* [1、BlaCat Introduction](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#一BlacatIntroduction)
+	* [2、Fundamental Application](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#二基础应用)
+		* [1 SDK Introduction](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1引入sdk)
+		* [2、SDK Initialization（init）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#2初始化sdkinit)
+		* [3、Login（login）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#3登录login)
+		* [4、Recharge](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#4充值)
+			* [1.Initiate Recharge（makeRecharge）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1发起充值makerecharge)
+			* [2.Confirm Recharge（Frontend）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#2确认充值前端)
+				* [1））、On Chain Transaction Completion Process Callback（getAppNotifysRes）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1交易链上处理完成回调getappnotifysres)
+				* [2））Confirm Receipt（confirmAppNotify)](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#2确认收到confirmappnotify)
+			* [3）Confirm Recharge（Backend））](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#3确认充值后端)
+				* [1））Interface Description](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1接口说明)
+				* [2））、sign Signature Algorithm](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#2sign签名算法)
+				* [3））、sign Signature Algorithm（PHP）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#3sign签名算法php)
+		* [5、Get Balance（getBalance）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#5获取余额getbalance)
+		* [6、Retrieve User Information（getUserInfo）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#6获取用户信息getuserinfo)
+		* [7、Get Current Network Category（getNetType）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#7获取当前网络类型getnettype)
+		* [8、GAS Transfer（makeGasTransfer）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#8gas转账makegastransfer)
+		* [9、GAS Batch Transfer（makeGasTransferMulti）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#9gas批量转账makegastransfermulti)
+	* [3 Advanced Application](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#三进阶应用)
+		* [1、How to Invoke Smart Contracts](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1智能合约调用方式)
+		* [2、Read Smart Contract（invokescript）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#2合约读取invokescript)
+		* [3、Write Smart Contract（makeRawTransaction）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#3合约写入makerawtransaction)
+	* [4 Supplementary Features](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#四辅助功能)
+		* [1、Set Up SDK Language（setLang）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#1设置sdk语言setlang)
+		* [2、Set Up Initial Default Network（setDefaultType）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#2设置初始默认网络setdefaulttype)
+		* [3 Launch/ ThumbnailSDK（showMain/showIcon）](https://github.com/FunJumping/NeoGameSDK_TS/blob/master/BlaCat.md#3展开缩略sdkshowmainshowicon)
 
 # **BlaCatSDK Usage Documentation**
 
-This document illustrates how to use the BlaCatSDK(NeoGameSDK) and how to access the NEO public blockchain.
+•	This document illustrates how to use the BlaCatSDK(NeoGameSDK) and how to access the NEO public blockchain。
 
 ## 1. BlaCat Introduction
-BlaCat is a blockchain game platform running as a side chain based on NEO high-performance blockchain，The platform’s business mainly consists of wallet, transaction/trading market, game platform and user community.BlaCat’s biggest technological feature is the ZoroChain，It provides an integrated blockchain technology solution for high-speed DAPP development.
+•	BlaCat is a blockchain game platform running as a side chain based on NEO high-performance blockchain，The platform’s business mainly consists of：wallet、transaction/trading market、game platform and user community。BlaCat’s biggest technological feature is the ZoroChain，It provides an integrated blockchain technology solution for high-speed DAPP development。
 
-## 2. Fundamental Applications
-### 1. SDK Introduction
-To use the BlaCatSDK，you firstly need to access these necessary files to run the BlacatSDK
+## 2.Fundamental Applications
+### •	1、SDK Introduction
+•	To use the BlaCatSDK，you firstly need to access these necessary files to run the BlacatSDK
 
     <link rel="stylesheet" href="res/css/panel.css" type="text/css" />
     <script src="lib/rollup/aes.js"></script>
@@ -50,85 +49,84 @@ To use the BlaCatSDK，you firstly need to access these necessary files to run t
     <script src="lib/neo-ts.js"></script>
     <script src="lib/qr-code-with-logo.browser.min.js"></script>
     <script src="lib/code.js"></script>
-### 2. SDK Initialization (init)
-Before using the BlaCatSDK，you need to perform some initialization processes BlackCat.SDK.init(appid, appkey, listener, lang)
+### 2、SDK Initialization（init）
+•	Before using the BlaCatSDK，you need to perform some initialization processes BlackCat.SDK.init(appid, appkey, listener, lang
 `BlackCat.SDK.init(appid, appkey, listener, lang)`
 
-**	Parameter Description：** 
+**Parameter Description：** 
 
-|Parameter Name|Required |Type |Description|
+|Parameter Name|Required|Type|Description|
 |:----    |:---|:----- |-----   |
-|appid |is  |string |BlaCat assigned by的appid   |
-|appkey |is  |string |BlaCat assigned by 的appkey   |
-|listener |is |function |Application Registration of SDK Callback Function
-|lang |not  |string |SDK language，Default cn(Chinese)，can be changed to desirable values cn, en   |
-** Return Description：** 
+|appid |is  |string |BlaCat assigned by appid   |
+|appkey |is  |string |BlaCat assigned bappkey   |
+|listener |is  |function |Application Registration of SDK Callback Function |
+|lang |not  |string |SDK language，Default cn（中文），can change to desirable values cn、en|
+**Return Description：** 
 NO Return
 
-**	Callback Mode Description：** 
-BlaCatSDK supports two types of callback modes，one is when initializing the SDK(init)register a callback function (recommended)，another is a function callback mode.Some function/feature callbacks，such as switching network type notification, transaction confirmation completion notification, etc.，can be done only through the first mode
+**•	Callback Mode Description：** 
+ BlaCatSDK supports two types of callback modes，one is when initializing the SDK（init）register a callback function (recommended)，another is a function callback mode。Some function/feature callbacks，such as switching network type notification、Transaction confirmation completion notification, etc.，can be done only through the first mode。。
 
-Callback method one (recommended):
+•	Callback method one (recommended)：
 
     var listener = function(data)
     {
-    	//Callback process，data is JSON format String
+    	// Callback process，data is JSON format String
 		var res = JSON.parse(data)
 		console.log('listener => ', res)
 		switch (res.cmd) {
 			case "loginRes": // login success callback
-				// You need to send the received data to the server for verification before you sign in to the app
+				// You need to send the received data to the server for verification before you sign in to the app	
 				break;
 			case "logoutRes": // logout callback
 				break;
 			case "makeRechargeRes": // Recharge callback
 				break;
-			case "getAppNotifysRes": //  TradeChain process completion callback
+			case "getAppNotifysRes": //TradeChain process completion callback
 				break;
-			case "confirmAppNotifyRes": // TradeChain process completion receipt acknowledgement callback
+			case "confirmAppNotifyRes": //TradeChain process completion receipt acknowledgement callback
 				break;
 			case "getBalanceRes": // Get Balance
 				break;
-			case "getUserInfoRes": //Get Login User Information
+			case "getUserInfoRes": // Get Login User Information
 				break;
 			case "getNetTypeRes": // Get network type
 				break;
-			case "invokescriptRes": //Read Smart Contract Call
+			case "invokescriptRes": // Read Smart Contract Call
 				break;
 			case "makeRawTransactionRes": // Write Smart Contract Request Result
 				break;
-			case "makeGasTransferRes": // GAS Transfer Callback
+			case "makeGasTransferRes": //  GAS Transfer Callback
 				break;
 			case "makeGasTransferMultiRes": // GAS Batch Transfer Callback
 				break;
-			case "changeNetTypeRes": //Network Switch Callback
+			case "changeNetTypeRes": // Network Switch Callback
 				break;
 		}
     };
 	BlackCat.SDK.init(appid, appkey, listener, lang)
 
-	Callback Method 2：
+•	Callback Mode 2：
     
     BlackCat.SDK.functionName(data, function(res) {  
 	    //Callback result processing
 	})
 
-
-### 3. Login(login)
-You need to initialize first(init)before you can call.
+### 3、Login （login）
+You need to initialize first（init）Before you can call。
 ``` 
-  // Method 1，results in listener notification
+  // Mode 1，results in listener notification
   BlackCat.SDK.login()
   
-  //  Method 2
+  // Mode 2
   BlackCat.SDK.login(function(res) {
-    // Interface callback
+    //  Interface callback
   })
 ```
 
 **Return Description：** 
 ``` 
-//Method 1
+// Mode 1
 {
     "cmd": "loginRes",
     "data": {
@@ -140,7 +138,7 @@ You need to initialize first(init)before you can call.
     }
 }
   
-// Method 2
+// Mode 2
 {
 	"g_id": "5",
 	"time": 1531891115,
@@ -151,36 +149,35 @@ You need to initialize first(init)before you can call.
 ```
 
 **Special Instructions：** 
-The data returned by the interface，data validity needs to be examined on the application server，Login verification cannot be done on the client
+ The data returned by the interface，data validity needs to be examined on the application server，Login verification cannot be done on the client
 
-**Return Parameter Description：** 
+**Return Parameter 	Instructions：** 
 
-|Parameter name| required|type|Description|
+|Parameter name|required|type|description|
 |:----    |:---|:----- |-----   |
-|g_id |is |string |Application ID(appid)，BlaCat distribution   |
-|uid |is |string | BlaCat user uid    |
-|time     |is  |string | Login Timestamp，per second  |
-|wallet     |is  |string | User wallet address  |
-|sign     |is|string | Request Signature   |
+|g_id |is  |string |User ID（appid），BlaCat Distribution   |
+|uid |is  |string | BlaCat User uid    |
+|time     |is  |string | Login Timestamp，per second    |
+|wallet     |is  |string | User wallet address   |
+|sign     |is  |string | Request Signature    |
 
-**sign Verification Method：** 
+**Sign Verification Method：** 
 Parameters are sorted in ascending order
 ```
 g_id=1&time=1528371487&uid=sj_5mqbokfwk328&wallet=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT
-```
-Add an application signature login key(BlaCat distribution)
+
+```Add an application signature login key（BlaCat distribution）
 ```
 g_id=1&time=1528371487&uid=sj_5mqbokfwk328&wallet=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT222
 ```
-
-Calculate md5(lowercase)
+Calculating md5（lowercase）
 ```
 md5("g_id=1&time=1528371487&uid=sj_5mqbokfwk328&wallet=AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT222")
 ```
-Obtain sign
+Obtained signature
 `860b5f9f52a9f07e961f2454e0e89bbe`
 
-**sign Generation Method(PHP)：** 
+**sign Generation Algorithm（PHP）：** 
 ```
 function getLoginSign($params, $login_key) {
 	ksort($params);
@@ -189,36 +186,35 @@ function getLoginSign($params, $login_key) {
 }
 ```
 
-### 4. Recharge
-#### 1). Initiate Recharge(makeRecharge)
-Client application initiates a recharge interface，initiates a payment transaction on the chain.The following is a payment of 0.001 sgas code
-``` 
+### 4、Recharge
+#### 1）、Initiate Recharge（makeRecharge）
+Client application initiates a recharge interface，initiates a payment transaction on the chain。The following is a payment of 0.001 sgas code.
   var params = { count: "0.001", extString: "makeRecharge" };
   
-  // method 1，results in listener notification
+  //mode 1，results in listener notification
   BlackCat.SDK.makeRecharge(params)
   
-  // mode 2
+  // Mode 2
   BlackCat.SDK.makeRecharge(params, function(res){
-    // interface callback
-    if(res.err == false){
-      // Get the txid of the successfully submitted payment transaction
+    // Interface Callback
+    if（res.err == false）{
+      //Get the txid of the successfully submitted payment transaction
       var txid = res.info.txid;
       alert('Payment submission successful，waiting to be confirmed on chain');
     }
   })
 ```
-**params  Parameters：** 
+**params Parameters：** 
 
-|Parameter Name|Required|Type| Description|
+|Paramter name|Required|Type|Description|
 |:----    |:---|:----- |-----   |
-|count | is |string |Amount of gas to be converted  |
-|extString | is  |string |Transmission Parameters |
+|count |is  |string |Number of sgas that must be converted  |
+|extString |is  |string |Transmission parameters  |
 
 **Return Example**
 
 ``` 
-// Callback Data of Method 1：
+// Mode1 Callback data：
 {
     "cmd": "makeRechargeRes",
     "data": {
@@ -242,7 +238,7 @@ Client application initiates a recharge interface，initiates a payment transact
     }
 }
 
-// Method 2’s res callback function：
+// Mode2 function callback res：
 {
 	"err": false,
 	"info": {
@@ -250,21 +246,17 @@ Client application initiates a recharge interface，initiates a payment transact
 	}
 }
 ```
-**Return Description**
-This callback indicates that the recharge request is already on the chain and waits for the Neo chain to confirm. The Neo chain confirms that it is possible to succeed and possibly fail.
+**Return example**Return Description: This callback indicates that the refill request has been put on blockchain and waits for the NEO blockchain to confirm. It may be successful or it may fail.。
 
-#### 2). Confirm Recharge(Frontend)
-If the recharge is successful, the backend server of BLACATSDK notifies the app backend to recharge the callback interface.Meanwhile BLACATSDK will also give the front-end initialization registration listener a transaction chain processing completion callback (getAppNotifysRes) callback
+#### 2）、Confirm the recharge (front end)
+If the recharge is successful, the backend server of BlaCatSDK will notify the application backend refill callback interface, and also will give registered listener a callback (getAppNotifysRes) on the transaction chain.
 
-##### 1)). Onchain Transaction Process Completion Callback(getAppNotifysRes)
-getAppNotifysRes callback，is a callback received when transaction execution is done through BlacatSDK
-This callback indicates that the transaction has been processed on the chain..If the callback result is state=0, the execution of the transaction on the chain fails. If the callback result is state=1, the application should also judge the execution result of its own logic to determine the final execution result. This callback only indicates that the transaction has been processed on the chain
-
-
+##### 1））callback on the transaction chain (getAppNotifysRes)
+The getAppNotifysRes callback is received by the transaction executed by the BlaCatSDK. It indicates that the transaction has been processed on the blockchain. If the callback result state=0, it means that the execution of the transaction on the blockchain failed. If the callback result is state=1, the application should also determine the execution result of its own logic. This callback only indicates that the transaction has been processed on the blockchain.
 **Return example**
 
 ``` 
-// Mode 1(Only supports the callback method of mode one)
+// Mode 1（Only supports mode 1 callback mode）
 {
     "cmd": "getAppNotifysRes",
     "data": [
@@ -278,31 +270,31 @@ This callback indicates that the transaction has been processed on the chain..If
     ]
 }
 ```
-##### 2)). Confirm Receipt(confirmAppNotify)
-When the application obtains the getAppNotifysRes callback and processes the corresponding front-end logic, it should acknowledge receipt of the processing completion callback on the transaction chain. If it does not confirm processing, the next time the user logs into the game, they will receive the getappnotifysres callback again
+##### 2））、Confirm receipt (confirmAppNotify)
+When the application obtains the getAppNotifysRes callback and processes the corresponding front-end logic, it should confirm that the callback is received on the transaction blockchain. If you do not confirm the processing, the next time the user logs in to the game, he will receive the getAppNotifysRes callback again.
 ``` 
 var params = {
 	txid: "340645e5f0307c285c19c54bc245935ce5dcef5a284bcb86a11e91ac7f80da32"
 }
 
-// Method 1
+// Mode 1
 BlackCat.SDK.confirmAppNotify(params)
 
-// Method 2
+// Mode 2
 BlackCat.SDK.confirmAppNotify(params, function(res){
 	console.log('[BlackCat]', 'confirmAppNotify.callback.function.res => ', res)
 })
 ```
-**params Parameters：** 
+**params Paramters：** 
 
 |Parameter name|Required|Type|Description|
 |:----    |:---|:----- |-----   |
-|txid |iw  |String | transaction txid   |
+|txid |is  |String |Transaction txid   |
 
-**return example**
+**Return example**
 
 ``` 
-// Method 1
+// Mode 1
 {
     "cmd": "confirmAppNotifyRes",
     "data": {
@@ -315,7 +307,7 @@ BlackCat.SDK.confirmAppNotify(params, function(res){
         }
     }
 }
-// Method 2
+// Mode 2
 {
 	"res": {
 		"err": false,
@@ -324,51 +316,51 @@ BlackCat.SDK.confirmAppNotify(params, function(res){
 }
 ```
 
-#### 3). Confirm Recharge(Backend)
-If the top-up is successful, the BLACATSDK backend server notifies the app backend to recharge the callback interface
-##### 1)). Interface Description
-**Required URL：** 
-- `Application Recharge Callback Interface(http)
+#### 3）、 Confirm the recharge (back end)
+If the recharge is successful, the backend server of BlaCatSDK will notify the application backend refill callback interface.
+##### 1））、Interface description
+**Request URL：** 
+- ` http://Application Recharge Callback Interface `
   
-**Required Method：**
+**Request Method：**
 - POST 
 
 **Parameter：** 
 
-|Parameter Name|Required |Type|Description|
+|Parameter name |Reqiured|Type|Description|
 |:----    |:---|:----- |-----   |
-|g_id |is  |string |Application id，NEOGAME distribution  |
+|g_id |is  |string |Applicationid，NEOGAME Distribution   |
 |txid |is  |string |Transaction txid   |
-|from |is  |string | The wallet address where the payment originated    |
-|count     |is  |string | Payment sgas number    |
-|tm     |is  |string | Request time stamp，Units per second    |
-|params|is|String|Request parameters params，JSON|
-|net_type|is|String|Network Type.MainNet：1，Testnet：2|
-|sign     |is  |string | Request Signature |
+|from |is  |string | wallet address    |
+|count     |is  |string | sgas amount    |
+|tm     |id  |string | request timestamp（second） |
+|params|id|String|Paramter params，JSON|
+|net_type|is|String|Main network: 1, test network: 2|
+|sign     |is  |string | request signature    |
 
 
  **Note** 
 
-- No notification will be sent after successful transaction confirmation
-- If sending a notification fails, it will attempt to send multiple times.
+- When the transaction confirmation is successfully sent, the notification will no longer be initiated.
+-If the notification is sent, it will try to send multiple times.
 
-##### 2)). sign Signature Algorithm
+##### 2））、sign Signature Algorithm
 
-Trade Confirmation Notification POST parameters are sorted in ascending  order
+Transaction confirmation POST parameters arranged in ascending dictionary
 ```
 count=0.001&from=AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU&g_id=6&net_type=2&params=%7B%22count%22%3A%220.001%22%2C%22extString%22%3A%22makeRecharge%22%2C%22nnc%22%3A%220x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54%22%2C%22sbParamJson%22%3A%5B%22%28address%29AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU%22%2C%22%28address%29AFuzEa913voSXEenPqPCDgEuvhB3dAenqw%22%2C%22%28integer%29100000%22%5D%2C%22sbPushString%22%3A%22transfer%22%7D&tm=1533559801&txid=0xce91599a94e405e09ed3e02e782c57fd32578769e11ff75382fd033c0fca5a71
 ```
-Add app Signature Payment key(NEOGAME distribution)
+Add payment application signature  Key  (NEOGAME distribution)
 ```
 count=0.001&from=AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU&g_id=6&net_type=2&params=%7B%22count%22%3A%220.001%22%2C%22extString%22%3A%22makeRecharge%22%2C%22nnc%22%3A%220x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54%22%2C%22sbParamJson%22%3A%5B%22%28address%29AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU%22%2C%22%28address%29AFuzEa913voSXEenPqPCDgEuvhB3dAenqw%22%2C%22%28integer%29100000%22%5D%2C%22sbPushString%22%3A%22transfer%22%7D&tm=1533559801&txid=0xce91599a94e405e09ed3e02e782c57fd32578769e11ff75382fd033c0fca5a71&key=222
 ```
-Calculate md5(lowercase)
+Calculating md5 (lowercase)
 ```
 md5("count=0.001&from=AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU&g_id=6&net_type=2&params=%7B%22count%22%3A%220.001%22%2C%22extString%22%3A%22makeRecharge%22%2C%22nnc%22%3A%220x2761020e5e6dfcd8d37fdd50ff98fa0f93bccf54%22%2C%22sbParamJson%22%3A%5B%22%28address%29AMgPM4VyYxoaoRcLXQLtyo2mRmrb3Us9NU%22%2C%22%28address%29AFuzEa913voSXEenPqPCDgEuvhB3dAenqw%22%2C%22%28integer%29100000%22%5D%2C%22sbPushString%22%3A%22transfer%22%7D&tm=1533559801&txid=0xce91599a94e405e09ed3e02e782c57fd32578769e11ff75382fd033c0fca5a71&key=222")
 ```
-Obtain sign
+Obtained signature
 `bda7145c6d139ec3149bea6140aae883`
-##### 3)). sign Signature Algorithm(PHP)
+##### 3））、sign Signature Algorithm（PHP）
 ```
 function getNotifySign($params, $key)
 {
@@ -378,22 +370,22 @@ function getNotifySign($params, $key)
 }
 ```
 
-### 5. Get balance(getBalance)
-Get the current user's sgas and gas balances
+### 5、Get the balance（getBalance）
+Get the basic information of the current user
 ``` 
-// Method 1
+// Mode 1
 BlackCat.SDK.getBalance()
 
-// Method 2
+// Mode 2
 BlackCat.SDK.getBalance(function(res){
 	console.log("getbalance.callback.function.res ", res)
 })
 ```
 
-**return example**
+**Return Example**
 
 ``` 
-// Method 1：
+// Mode 1：
 {
     "cmd": "getBalanceRes",
     "data": {
@@ -401,20 +393,20 @@ BlackCat.SDK.getBalance(function(res){
         "gas": 1230.19491
     }
 }
-// Method 2：
+// Mode 2：
 {
 	"sgas": 0,
 	"gas": 1
 }
 ```
 
-### 6. Get User Information(getUserInfo)
-Get basic information for the current user
+### 6、Get user information（getUserInfo）
+Get the basic information of the current user
 ``` 
-// Method 1
+// Mode 1
 BlackCat.SDK.getUserInfo()
 
-// Method 2
+// Mode 2
 BlackCat.SDK.getUserInfo(function(res){
 	console.log('[BlackCat]', 'getUserInfo.callback.function.res => ', res)
 })
@@ -423,7 +415,7 @@ BlackCat.SDK.getUserInfo(function(res){
 **Return Example**
 
 ``` 
-// Method 1
+// Mode 1
 {
     "cmd": "getUserInfoRes",
     "data": {
@@ -442,7 +434,7 @@ BlackCat.SDK.getUserInfo(function(res){
         "icon": ""
     }
 }
-// Method 2
+// Mode 2
 {
   "uid": "sj_xxs23",
   "name": "136****3882",
@@ -461,13 +453,13 @@ BlackCat.SDK.getUserInfo(function(res){
 ```
 
 
-### 7. Get Current Network type(getNetType)
-Gets the current network type, 1 represents the main network, and 2 indicates the test net
+### Get the current network type（getNetType）
+Get the current network type, 1 for the main network and 2 for the test network
 ``` 
-// Method 1
+// Mode 1
 BlackCat.SDK.getNetType()
 
-// Method 2
+// Mode 2
 BlackCat.SDK.getNetType(function(res){
 	console.log("getNetType.callback.function.res ", res)
 })
@@ -476,17 +468,17 @@ BlackCat.SDK.getNetType(function(res){
 **Return Example**
 
 ``` 
-// Method 1：
+// Mode 1：
 {
     "cmd": "getNetTypeRes",
     "data": 2
 }
-Method 2：
+Mode 2：
 2
 ```
 
-### 8. Gas transfer(makeGasTransfer)
-Perform gas transfer operation, the call requires a wallet user signature.
+### 8、GAS transfer (makeGasTransfer)
+Perform a GAS transfer operation that requires a wallet user signature.。
 ``` 
 var params = {
 	toaddr: "AQXPAKF7uD5rYbBnqikGDVcsP1Ukpkopg5",
@@ -494,26 +486,26 @@ var params = {
 	extString: "makeGasTransfer"
 }
 
-// Method 1
+// Mode 1
 BlackCat.SDK.makeGasTransfer(params)
 
-// Method 2
+// Mode 2
 BlackCat.SDK.makeGasTransfer(params, function(res){
     console.log("makeGasTransfer.callback.function.res ", res)
 })
 ```
-**params Parameters：** 
+**params Paramters：** 
 
-|Parameter Name|Required |Type|Description|
+|Parameter Name|Required|Type|Description|
 |:----    |:---|:----- |-----   |
-|toaddr |是  |String |Receiving Address   |
-|count |是  |string | Number of transfers   |
-|extString |是  |string |Transmission parameters |
+|toaddr |YES  |String |transfer receipt addres   |
+|count |YES  |string |transfer amount   |
+|extString |YES  |string |Pass through parameter |
 
 **Return Example**
 
 ``` 
-Method 1：
+Mode 1：
 {
     "cmd": "makeGasTransferRes",
     "data": {
@@ -529,7 +521,7 @@ Method 1：
     }
 }
 
-Method 2：
+Mode 2：
 {
 	"res": {
 		"err": false,
@@ -538,8 +530,8 @@ Method 2：
 }
 ```
 
-### 9. GAS Batch Transfer(makeGasTransferMulti)
-Perform gas bulk transfer operation, the call requires a user wallet signature.
+### 9、GAS multiple transfer (makeGasTransferMulti)
+Perform a GAS multiple transfer operation that requires a wallet user signature.
 ``` 
 var params = [
 	{
@@ -554,26 +546,26 @@ var params = [
 	}
 ]
 
-// Method 1
+//Mode 1
 BlackCat.SDK.makeGasTransferMulti(params)
 
-// Method 2
+// Mode 2
 BlackCat.SDK.makeGasTransferMulti(params, function(res){
     console.log("makeGasTransferMulti.callback.function.res ", res)
 })
 ```
-**params Parameters：** 
+**params Paramters：** 
 
-|Parameter Name|Required|Type|Description|
+|Parameter Name|Required|Type |Description|
 |:----    |:---|:----- |-----   |
-|toaddr |is  |String Receiving Address   |
-|count |is  |string |Number of transfers  |
-|extString |is  |string |Transmission parameters |
+|toaddr |YES  |String |receipt address   |
+|count |YES  |string |transfer amount   |
+|extString |YES  |string |pass through parameter |
 
 **Return Example**
 
 ``` 
-Method 1：
+Mode 1：
 {
     "cmd": "makeGasTransferMultiRes",
     "data": {
@@ -598,7 +590,7 @@ Method 1：
     }
 }
 
-Method 2：
+Mode 2：
 {
 	"res": {
 		"err": false,
@@ -607,11 +599,12 @@ Method 2：
 }
 ```
 
-## 3. Advanced Applications
-### 1. How to call smart contracts
-In general, there are two types of smart contract calls, one is a contract read request (Invokescript) and one is a contract write request (makerawtransaction). The read request does not make any changes, but simply reads the relevant data. Write requests make data changes that require a user authorization signature. Our top-up request, which belongs to the contract writing request, requires the user to open the wallet to request an authorization signature to execute.
-### 2. Read Contracts(invokescript)
-Only reads the smart contract information , this does not require a wallet user signature to invoke.
+## 三、Advanced applications
+### 1、1.	Smart contract calling method
+In general, there are two types of smart contract calls, one is a contract read request (invokescript) and the other is a contract write request (makeRawTransaction). The read request is not modified, just read the relevant data. The write request will change and require the user to authorize the signature. Our recharge request is a write request which need the user to open the wallet to request the authorization signature then to execute.
+
+### 2、Contract reading (invokescript)
+Read smart contract information in read-only mode, which can be called without user signature.。
 ``` 
   var params = {
       sbParamJson: ["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT"],
@@ -620,31 +613,31 @@ Only reads the smart contract information , this does not require a wallet user 
 	  extString: "invokeScript"
   };
   
-  // Method 1
+  // Mode 1
   BlackCat.SDK.invokescript(params)
   
-  // Method 2
+  // Mode 2
   BlackCat.SDK.invokescript(params, function(res){
-    // Interface Callback
-    if(res.err == false){
-      // Get Contract Call Data results
+    // interface callback
+    if（res.err == false）{
+      // Get contract call data result
       var stack = res.info.stack;
     }
   })
 ```
 **params Parameters：** 
 
-|Parameter Name|Required |Type |Description|
+|Parameter Name|Required|Type|Description|
 |:----    |:---|:----- |-----   |
-|sbParamJson |is  |Array |Array of contract parameters   |
-|sbPushString |is  |string |Contract Method Name  |
-|nnc |is  |string |Contract Address  |
-|extString |is  |string |Transmission parameters |
+|sbParamJson |YES  |Array |contract parameters   |
+|sbPushString |YES  |string |contract method name   |
+|nnc |YES  |string |contract address  |
+|extString |YES  |string |getAppNotifysRes passthrough parameter  |
 
-**Return example**
+**Return Example**
 
 ``` 
-// Method 1
+// Mode 1
 {
     "cmd": "invokescriptRes",
     "data": {
@@ -673,7 +666,7 @@ Only reads the smart contract information , this does not require a wallet user 
     }
 }
 
-// Method 2
+// Mode 2
 {
 	"err": false,
 	"info": {
@@ -688,8 +681,8 @@ Only reads the smart contract information , this does not require a wallet user 
 }
 ```
 
-### 3. Write Smart Contracts(makeRawTransaction)
-Editing the smart contract in write mode, this requires a wallet user to sign.
+### 3、Contract writing (makeRawTransaction)
+The smart contract is operated in write mode, which requires the wallet user to sign
 ``` 
   var params = {
       sbParamJson: ["(addr)AYkiQ74FHWFygR39WizXCz9f4xCLRYCxMT","(address)AWPVmAobCJGxrupvQSnovofakaVb2ue65a","(integer)100000"],
@@ -698,31 +691,31 @@ Editing the smart contract in write mode, this requires a wallet user to sign.
 	  extString: "makeRawTransaction"
   };
   
-  // Method 1
+  // Mode 1
   BlackCat.SDK.makeRawTransaction(params)
   
-  // Method 2
+  // Mode 2
   BlackCat.SDK.makeRawTransaction(params, function(res){
-    //  Interface Callback
-    if(res.err == false){
-      // Get Contract Execution Results
+    // Interface Callback
+    if（res.err == false）{
+      // 获取合约执行结果
       var txid = res.info.txid;
     }
   })
-```
-**params Parameters：** 
 
-|Paramter Name|Required |Type|Description|
+```**params Paramters：** 
+
+|sbParamJson|Required|Type|Description|
 |:----    |:---|:----- |-----   |
-|sbParamJson |is  |Array |Array of Contract Parameter  |
-|sbPushString |is |string |Contract Method Name   |
-|nnc |is  |string |Contract Address   |
-|extString |is  |string |getAppNotifysRes Transmission Parameters |
+|sbParamJson |YES  |Array |contract parameters   |
+|sbPushString |YES  |string |contract method name   |
+|nnc |YES  |string |contract address   |
+|extString |YES  |string |getAppNotifysRes passthrough parameter  |
 
 **Return Example**
 
 ``` 
-Method 1：
+Mode 1：
 {
     "cmd": "makeRawTransactionRes",
     "data": {
@@ -745,7 +738,7 @@ Method 1：
     }
 }
 
-// Method 2
+// Mode 2
 {
 	"err": false,
 	"info": {
@@ -754,18 +747,18 @@ Method 1：
 }
 ```
 
-## 4. Supplementary Features
-### 1. Setting the SDK language(setLang)
-Set the currentSDK language，options are cn, en
+## 4、Auxiliary functions
+### 1、Set the SDK language (setLang)
+
 ``` 
 BlackCat.SDK.setLang(lang)
 ```
-### 2. Set initial default network(setDefaultType)
-Set the initial default network type(1：Main net；2：Test net)
+### 2、Set the initial default network (setDefaultType)
+Set the current SDK language Chinese or English
 ``` 
 BlackCat.SDK.setDefaultType(2)
 ```
-### 3. Expand/Icon SDK(showMain/showIcon)
+### Set the initial default network type (1: main network; 2: test network)
 ``` 
 BlackCat.SDK.showMain()
 BlackCat.SDK.showIcon()
